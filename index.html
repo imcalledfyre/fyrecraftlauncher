@@ -306,20 +306,21 @@
             <!-- Play Tab -->
             <div id="Play" class="tab-content">
                 <h1>Play Fyrecraft</h1>
+                <h3>Warning to Magecraft users: Adding magecraft to the server list or direct connecting will crash your computer :D</h3>
                 <div class="download-option">
                     <div>
                         <h3>Desktop edition</h3>
-                        <p>20MB Browseer game | Version C1S4</p>
+                        <p>20MB Browseer game | Version 4.0</p>
                     </div>
-                    <button class="download-btn" onclick="window.location.href='https://example.com'">Download</button>
+                    <button class="download-btn" onclick="window.location.href='desktop/index.html'">Play now</button>
 
                 </div>
                 <div class="download-option">
                     <div>
-                        <h3>macOS (10.15+)</h3>
-                        <p>92MB DMG | Version 2.4.0</p>
+                        <h3>Chromebook Edition (or devices that are NOT mms desktops)</h3>
+                        <p>20MB WASM loader | Version 4.0</p>
                     </div>
-                    <button class="download-btn">Download</button>
+                    <button class="download-btn" onclick="window.location.href='chromebook/launcher.html'">Play now</button>
                 </div>
             </div>
 
@@ -330,18 +331,17 @@
                     <div class="feature-card">
                         <h3>Getting Started</h3>
                         <p>New to Fyrecraft? Just go to TODO: ADD EMBED play tab to play!.</p>
-                        <button class="download-btn" style="margin-top: 10px;">View Guide</button>
+                        <button class="download-btn" style="margin-top: 10px;">Watch setup instructions</button>
                     </div>
                     <div class="feature-card">
                         <h3>Troubleshooting</h3>
                         <p>Common issues and solutions for installation and performance problems.</p>
-                        <button class="download-btn" style="margin-top: 10px;">View Solutions</button>
+                    <button class="download-btn" onclick="window.location.href='lag.html'">view solutions</button>
                     </div>
                 </div>
                 <h2 style="margin-top: 30px;">Contact Support</h2>
                 <p>Email: <a href="mailto:imcalledfyre@imcalledfyre.com" style="color: #ff00aa;">imcalleddyre@imcalledfyre.com</a></p>
-                <p>Discord: <a href="https://discord.gg/fyrecraft" style="color: #6a00ff;">dsc.gg/fyrecraft</a></p>
-                <p>Twitter: <a href="https://twitter.com/FyrecraftHelp" style="color: #1DA1F2;">@FyrecraftHelp</a></p>
+                <p>Discord (fastest responses): <a href="https://discord.gg/fyrecraft" style="color: #6a00ff;">Cick to join (blocked at school tho)</a></p>
             </div>
 
             <!-- About Tab -->
@@ -349,15 +349,15 @@
                 <h1>About Fyrecraft</h1>
                 <div class="feature-card" style="margin-bottom: 20px;">
                     <h2>Our Mission</h2>
-                    <p>Fyrecraft was born from a simple idea: gaming should be seamless, social, and spectacular. We're building the platform we always wanted as players - one that removes barriers and enhances every gaming experience.</p>
+                    <p>we aim to have minecraft yeet indeed :D</p>
                 </div>
                 <div class="feature-card" style="margin-bottom: 20px;">
                     <h2>The Team</h2>
-                    <p>We're a distributed team of 23 developers, designers, and gaming enthusiasts from 12 different countries. What unites us is our passion for creating the ultimate gaming platform.</p>
+                    <p>fyre.</p>
                 </div>
                 <div class="feature-card">
                     <h2>Technology</h2>
-                    <p>Fyrecraft is built on cutting-edge technology including Electron, React, and WebAssembly. Our infrastructure runs on a global network of edge servers for maximum performance.</p>
+                    <p>Fyrecraft is built on cutting-edge technology including Java, React, and WebAssembly. Our infrastructure runs on a high speed central server for minimal lag.</p>
                 </div>
             </div>
         </div>
@@ -396,7 +396,7 @@
                 loadingText.textContent = `Loading ${assetName}... (${progress}%)`;
                 
                 if (progress >= 100) {
-                    loadingText.textContent = "Launch sequence ready!";
+                    loadingText.textContent = "Launching!";
                     setTimeout(completeLoading, 500);
                 }
             }
@@ -540,7 +540,7 @@
                     
                     // Create particle explosion
                     const particles = [];
-                    const particleCount = 100;
+                    const particleCount = 1000;
                     const containerRect = document.querySelector('.container').getBoundingClientRect();
                     
                     for (let i = 0; i < particleCount; i++) {
