@@ -66,27 +66,33 @@
         return document.cookie.includes("banned=true") || localStorage.getItem("banned") === "true" || sessionStorage.getItem("banned") === "true";
     }
 
-    function showBanScreen() {
-        document.body.innerHTML = "";
-        let banMessage = document.createElement("div");
-        banMessage.style.position = "fixed";
-        banMessage.style.top = "0";
-        banMessage.style.left = "0";
-        banMessage.style.width = "100vw";
-        banMessage.style.height = "100vh";
-        banMessage.style.backgroundColor = "black";
-        banMessage.style.color = "red";
-        banMessage.style.display = "flex";
-        banMessage.style.alignItems = "center";
-        banMessage.style.justifyContent = "center";
-        banMessage.style.fontSize = "36px";
-        banMessage.innerText = "Suspicious Activity Detected - This device has been banned from Fyrecraft Online Services";
-        document.body.appendChild(banMessage);
+function showBanScreen() {
+    if (document.readyState !== "complete") {
+        window.addEventListener("load", showBanScreen);
+        return;
     }
+    
+    document.body.innerHTML = "";
+    let banMessage = document.createElement("div");
+    banMessage.style.position = "fixed";
+    banMessage.style.top = "0";
+    banMessage.style.left = "0";
+    banMessage.style.width = "100vw";
+    banMessage.style.height = "100vh";
+    banMessage.style.backgroundColor = "black";
+    banMessage.style.color = "red";
+    banMessage.style.display = "flex";
+    banMessage.style.alignItems = "center";
+    banMessage.style.justifyContent = "center";
+    banMessage.style.fontSize = "24px";
+    banMessage.innerText = "You have been banned from Fyrecraft Online Services.";
+    document.body.appendChild(banMessage);
+}
+
 
     if (isBanned()) {
         showBanScreen();
-        throw new Error("User is banned.");
+        throw new Error("Ø");
     }
 
     let originalWebSocket = window.WebSocket;
