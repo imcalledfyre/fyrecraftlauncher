@@ -442,59 +442,101 @@
     
     <div class="link-grid">
         <!-- Google -->
-        <div class="link-card" data-url="https://www.google.com/verify.txt" data-site="https://google.com">
+        <div class="link-card" data-url="https://im-the-biggest-bird.vonar.ch/verify.txt" data-site="https://im-the-biggest-bird.vonar.ch">
             <div class="status-indicator"></div>
-            <h3>Google</h3>
+            <h3>Main URL (biggest bird)</h3>
         </div>
 
         <!-- YouTube -->
-        <div class="link-card" data-url="https://www.youtube.com/verify.txt" data-site="https://youtube.com">
+        <div class="link-card" data-url="https://king-golovich-is-goat.tradekinginternational.com/verify.txt" data-site="https://king-golovich-is-goat.tradekinginternational.com">
             <div class="status-indicator"></div>
-            <h3>YouTube</h3>
+            <h3>Alt link #1 (king golovich)</h3>
         </div>
 
         <!-- Discord -->
-        <div class="link-card" data-url="https://discord.com/verify.txt" data-site="https://discord.com">
+        <div class="link-card" data-url="https://biggestbirdtwo.tradekinginternational.com/verify.txt" data-site="https://biggestbirdtwo.tradekinginternational.com">
             <div class="status-indicator"></div>
-            <h3>Discord</h3>
+            <h3>Alt link #2 (biggest bird two)</h3>
         </div>
 
-        <!-- Minecraft -->
-        <div class="link-card" data-url="https://www.minecraft.net/verify.txt" data-site="https://minecraft.net">
-            <div class="status-indicator"></div>
-            <h3>Minecraft</h3>
-        </div>
+ 
+    <style>
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .link-card {
+            background: rgba(30, 30, 60, 0.4);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid #555;
+        }
+        
+        .link-card:hover {
+            background: rgba(40, 40, 80, 0.6);
+            transform: translateY(-3px);
+        }
+        
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            background: #555;
+            transition: all 0.3s ease;
+        }
+        
+        .status-indicator.online {
+            background: #0f0;
+            box-shadow: 0 0 10px #0f0;
+        }
+    </style>
 
-        <!-- GitHub -->
-        <div class="link-card" data-url="https://github.com/verify.txt" data-site="https://github.com">
-            <div class="status-indicator"></div>
-            <h3>GitHub</h3>
-        </div>
-
-        <!-- Twitter -->
-        <div class="link-card" data-url="https://twitter.com/verify.txt" data-site="https://twitter.com">
-            <div class="status-indicator"></div>
-            <h3>Twitter</h3>
-        </div>
-
-        <!-- Fyrecraft -->
-        <div class="link-card" data-url="https://fyrecraft.com/verify.txt" data-site="https://fyrecraft.com">
-            <div class="status-indicator"></div>
-            <h3>Fyrecraft</h3>
-        </div>
-
-        <!-- Wikipedia -->
-        <div class="link-card" data-url="https://www.wikipedia.org/verify.txt" data-site="https://wikipedia.org">
-            <div class="status-indicator"></div>
-            <h3>Wikipedia</h3>
-        </div>
-
-        <!-- Cloudflare -->
-        <div class="link-card" data-url="https://cloudflare.com/verify.txt" data-site="https://cloudflare.com">
-            <div class="status-indicator"></div>
-            <h3>Cloudflare</h3>
-        </div>
-    </div>
+    <script>
+        // Check all links on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            const cards = document.querySelectorAll('.link-card');
+            
+            for (const card of cards) {
+                const status = card.querySelector('.status-indicator');
+                const verifyUrl = card.getAttribute('data-url');
+                const siteUrl = card.getAttribute('data-site');
+                
+                try {
+                    const response = await fetch(verifyUrl, {
+                        cache: 'no-store',
+                        headers: {
+                            'Cache-Control': 'no-cache'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const text = await response.text();
+                        const firstLine = text.split('\n')[0].trim();
+                        
+                        if (firstLine.includes('works')) {
+                            status.classList.add('online');
+                            card.style.borderLeft = '3px solid #0f0';
+                            
+                            // Make card clickable to open site
+                            card.addEventListener('click', () => {
+                                window.open(siteUrl, '_blank');
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.log(`Failed to verify ${siteUrl}:`, error);
+                }
+            }
+        });
+    </script>
+</div>
 
     <style>
         .link-grid {
