@@ -56,14 +56,7 @@
     "use strict";
 
     function banUser() {
-        document.cookie = "banned=true; path=/; max-age=31536000"; // 1 year ban
-        localStorage.setItem("banned", "true");
-        sessionStorage.setItem("banned", "true");
         showBanScreen();
-    }
-
-    function isBanned() {
-        return document.cookie.includes("banned=true") || localStorage.getItem("banned") === "true" || sessionStorage.getItem("banned") === "true";
     }
 
     function showBanScreen() {
@@ -80,13 +73,8 @@
         banMessage.style.alignItems = "center";
         banMessage.style.justifyContent = "center";
         banMessage.style.fontSize = "24px";
-        banMessage.innerText = "You have been banned from Fyrecraft Online Services. IMAGINE THAT 😂";
+        banMessage.innerText = "You have been banned from this site.";
         document.body.appendChild(banMessage);
-    }
-
-    if (isBanned()) {
-        showBanScreen();
-        throw new Error("User is banned.");
     }
 
     let originalWebSocket = window.WebSocket;
