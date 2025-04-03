@@ -4,6 +4,77 @@
     <meta charset="UTF-8">
     <title>Fyrecraft Launcher</title>
     <style>
+        /* Terms of Service Modal Styles */
+        #tos-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        #tos-content {
+            background: rgba(20, 20, 40, 0.9);
+            max-width: 800px;
+            max-height: 80vh;
+            padding: 30px;
+            border-radius: 15px;
+            overflow-y: auto;
+            border: 1px solid #6a00ff;
+            box-shadow: 0 0 30px rgba(106, 0, 255, 0.5);
+        }
+        
+        #tos-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .tos-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        #tos-accept {
+            background: linear-gradient(135deg, #6a00ff, #ff00aa);
+            color: white;
+            box-shadow: 0 4px 15px rgba(106, 0, 255, 0.4);
+        }
+        
+        #tos-decline {
+            background: rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .tos-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        #tos-decline:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        #tos-accept:hover {
+            box-shadow: 0 6px 20px rgba(106, 0, 255, 0.6);
+        }
+
+        /* Existing Styles */
         * {
             margin: 0;
             padding: 0;
@@ -230,10 +301,50 @@
             color: white;
             cursor: pointer;
             font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
+    <!-- Terms of Service Modal -->
+    <div id="tos-modal">
+        <div id="tos-content">
+            <h1>Fyrecraft Terms of Service</h1>
+            <h2>SCROLL DOWN</h2>
+            <p>By using Fyrecraft, you agree to the following terms:</p>
+
+            <h3>TEACHERS + STUDENT NOTICE</h3>
+            <p>You agree that if you are using this site in school you are done with all work, and if you break this rule,<b>YOU</b> are responsible for any grade reductions or punishments</p>
+            <p>This site is designed to be used outside of school.</p>
+            
+            <h3>1. Acceptable Use</h3>
+            <p>You agree not to use Fyrecraft for any illegal activities or to connect to unauthorized servers. Magecraft users connecting to Fyrecraft will be banned.</p>
+            
+            <h3>2. Chromebook Edition</h3>
+            <p>The Chromebook edition is not supported on MMS Windows desktop devices. Using it will cause game crashes.</p>
+            
+            <h3>3. Account Responsibility</h3>
+            <p>You are responsible for all activities that occur under your account.</p>
+            
+            <h3>4. Modifications</h3>
+            <p>Fyrecraft may update these terms at any time. Continued use constitutes acceptance.</p>
+            
+            <h3>5. Limitation of Liability</h3>
+            <p>Fyrecraft is not responsible for any damages resulting from use of the game.</p>
+
+            <h3>6. In-Game bans</h3>
+            <p>If you get banned in-game, you must wait out ALL ban/mute times, and ban evasion, or other forms of alt account abuse will increase your ban duration.</p>
+            <div id="tos-actions">
+                <button id="tos-decline">Decline</button>
+                <button id="tos-accept">I Accept</button>
+            </div>
+        </div>
+    </div>
+
     <canvas id="space-bg"></canvas>
 
     <div id="loading-screen">
@@ -274,7 +385,7 @@
                     </div>
                     <div class="feature-card">
                         <h3>Performance</h3>
-                        <p>Optimized rendering engine in Chromebook Edition delivers up to 40% better FPS than  Desktop edition.</p>
+                        <p>Optimized rendering engine in Chromebook Edition delivers up to 40% better FPS than Desktop edition.</p>
                     </div>
                     <div class="feature-card">
                         <h3>Don't use Chromebook edition on MMS Desktops</h3>
@@ -288,7 +399,7 @@
                 <h1>Fyrecraft News</h1>
                 <div class="news-item">
                     <h2>Version 1.0 "NebulaFC" Released</h2>
-                    <p>We're thrilled to announce the launch of our  new website! The "Nebula" update brings:</p>
+                    <p>We're thrilled to announce the launch of our new website! The "Nebula" update brings:</p>
                     <p>• Completely redesigned UI with dark cosmic theme</p>
                     <p>• New URL for unbl0cked access anywhere</p>
                     <p>• Server performance improvements up to 40% faster loading</p>
@@ -314,7 +425,6 @@
                         <p>20MB Browseer game | Version 4.0</p>
                     </div>
                     <button class="download-btn" onclick="window.location.href='desktop/index.html'">Play now</button>
-
                 </div>
                 <div class="download-option">
                     <div>
@@ -337,7 +447,7 @@
                     <div class="feature-card">
                         <h3>Troubleshooting</h3>
                         <p>Common issues and solutions for installation and performance problems.</p>
-                    <button class="download-btn" onclick="window.location.href='lag.html'">view solutions</button>
+                        <button class="download-btn" onclick="window.location.href='lag.html'">view solutions</button>
                     </div>
                 </div>
                 <h2 style="margin-top: 30px;">Contact Support</h2>
@@ -365,271 +475,300 @@
     </div>
 
     <script>
-        // First, load Three.js from CDN
-        function loadScript(src) {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
+        // Check if ToS was accepted
+        const tosAccepted = localStorage.getItem('tosAccepted') === 'true';
+        const tosModal = document.getElementById('tos-modal');
+        
+        if (!tosAccepted) {
+            // Show ToS modal
+            tosModal.style.display = 'flex';
+            
+            // Handle accept button
+            document.getElementById('tos-accept').addEventListener('click', function() {
+                localStorage.setItem('tosAccepted', 'true');
+                tosModal.style.display = 'none';
+                startLoadingProcess();
             });
+            
+            // Handle decline button
+            document.getElementById('tos-decline').addEventListener('click', function() {
+                alert('You must accept the Terms of Service to use Fyrecraft.');
+                // Optionally redirect away
+                // window.location.href = 'https://google.com';
+            });
+        } else {
+            // Hide ToS modal and start loading
+            tosModal.style.display = 'none';
+            startLoadingProcess();
         }
-
-        // Assets to preload
-        const assetsToLoad = [
-            { type: 'script', url: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js' },
-            // Add other assets here if needed
-        ];
-
-        // Real loading system
-        async function initializeLoader() {
-            const loadingBar = document.getElementById('loading-bar');
-            const loadingText = document.getElementById('loading-text');
-            const totalAssets = assetsToLoad.length;
-            let loadedAssets = 0;
-
-            // Update loading progress
-            function updateProgress(assetName) {
-                loadedAssets++;
-                const progress = Math.round((loadedAssets / totalAssets) * 100);
-                loadingBar.style.width = `${progress}%`;
-                loadingText.textContent = `Loading ${assetName}... (${progress}%)`;
-                
-                if (progress >= 100) {
-                    loadingText.textContent = "Launching!";
-                    setTimeout(completeLoading, 500);
-                }
-            }
-
-            // Load all assets
-            for (const asset of assetsToLoad) {
-                try {
-                    if (asset.type === 'script') {
-                        await loadScript(asset.url);
-                    } else if (asset.type === 'image') {
-                        await new Promise((resolve, reject) => {
-                            const img = new Image();
-                            img.src = asset.url;
-                            img.onload = resolve;
-                            img.onerror = reject;
-                        });
-                    }
-                    updateProgress(asset.url.split('/').pop());
-                } catch (error) {
-                    console.error(`Failed to load ${asset.url}:`, error);
-                    updateProgress(asset.url.split('/').pop());
-                }
-            }
-
-            if (totalAssets === 0) {
-                updateProgress('complete');
-            }
-        }
-
-        function completeLoading() {
-            document.getElementById('loading-screen').style.opacity = '0';
-            document.getElementById('main-content').style.opacity = '1';
-            setTimeout(() => {
-                document.getElementById('loading-screen').style.display = 'none';
-                initializeApp();
-            }, 500);
-        }
-
-        function initializeApp() {
-            // Initialize Three.js starfield
-            if (typeof THREE !== 'undefined') {
-                const canvas = document.getElementById('space-bg');
-                const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                const renderer = new THREE.WebGLRenderer({ 
-                    canvas, 
-                    antialias: true,
-                    alpha: true
+        
+        function startLoadingProcess() {
+            // First, load Three.js from CDN
+            function loadScript(src) {
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
                 });
-                
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                renderer.setPixelRatio(window.devicePixelRatio);
-                
-                // Create enhanced starfield with different sizes
-                const starsGeometry = new THREE.BufferGeometry();
-                const starCount = 10000;
-                const positions = new Float32Array(starCount * 3);
-                const sizes = new Float32Array(starCount);
-                const colors = new Float32Array(starCount * 3);
-                
-                for (let i = 0; i < starCount; i++) {
-                    // Positions
-                    const i3 = i * 3;
-                    positions[i3] = (Math.random() - 0.5) * 2000;
-                    positions[i3 + 1] = (Math.random() - 0.5) * 2000;
-                    positions[i3 + 2] = (Math.random() - 0.5) * 2000;
+            }
+
+            // Assets to preload
+            const assetsToLoad = [
+                { type: 'script', url: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js' },
+                // Add other assets here if needed
+            ];
+
+            // Real loading system
+            async function initializeLoader() {
+                const loadingBar = document.getElementById('loading-bar');
+                const loadingText = document.getElementById('loading-text');
+                const totalAssets = assetsToLoad.length;
+                let loadedAssets = 0;
+
+                // Update loading progress
+                function updateProgress(assetName) {
+                    loadedAssets++;
+                    const progress = Math.round((loadedAssets / totalAssets) * 100);
+                    loadingBar.style.width = `${progress}%`;
+                    loadingText.textContent = `Loading ${assetName}... (${progress}%)`;
                     
-                    // Sizes (random between 0.05 and 0.3)
-                    sizes[i] = 0.05 + Math.random() * 0.25;
-                    
-                    // Colors (white with occasional blue/purple tint)
-                    colors[i3] = 0.8 + Math.random() * 0.2; // R
-                    colors[i3 + 1] = 0.8 + Math.random() * 0.2; // G
-                    colors[i3 + 2] = 0.9 + Math.random() * 0.1; // B
-                    
-                    // Occasionally make some stars colored
-                    if (Math.random() > 0.9) {
-                        colors[i3] = 0.6 + Math.random() * 0.4; // More red/purple
-                        colors[i3 + 2] = 0.8 + Math.random() * 0.2; // More blue
+                    if (progress >= 100) {
+                        loadingText.textContent = "Launching!";
+                        setTimeout(completeLoading, 500);
                     }
                 }
-                
-                starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-                starsGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-                
-                const starsMaterial = new THREE.PointsMaterial({
-                    size: 0.1,
-                    vertexColors: true,
-                    transparent: true,
-                    opacity: 0.9,
-                    sizeAttenuation: true
-                });
-                
-                const starfield = new THREE.Points(starsGeometry, starsMaterial);
-                scene.add(starfield);
-                
-                camera.position.z = 100;
-                
-                // Animation loop with subtle movement
-                function animate() {
-                    requestAnimationFrame(animate);
-                    
-                    // Slow rotation for parallax effect
-                    starfield.rotation.x += 0.0001;
-                    starfield.rotation.y += 0.0002;
-                    
-                    // Twinkling effect
-                    const time = Date.now() * 0.0005;
-                    starsMaterial.opacity = 0.7 + Math.sin(time) * 0.2;
-                    
-                    renderer.render(scene, camera);
+
+                // Load all assets
+                for (const asset of assetsToLoad) {
+                    try {
+                        if (asset.type === 'script') {
+                            await loadScript(asset.url);
+                        } else if (asset.type === 'image') {
+                            await new Promise((resolve, reject) => {
+                                const img = new Image();
+                                img.src = asset.url;
+                                img.onload = resolve;
+                                img.onerror = reject;
+                            });
+                        }
+                        updateProgress(asset.url.split('/').pop());
+                    } catch (error) {
+                        console.error(`Failed to load ${asset.url}:`, error);
+                        updateProgress(asset.url.split('/').pop());
+                    }
                 }
-                animate();
-                
-                window.addEventListener('resize', () => {
-                    camera.aspect = window.innerWidth / window.innerHeight;
-                    camera.updateProjectionMatrix();
-                    renderer.setSize(window.innerWidth, window.innerHeight);
-                });
+
+                if (totalAssets === 0) {
+                    updateProgress('complete');
+                }
             }
 
-            // Tab functionality
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    document.querySelectorAll('.tab-button, .tab-content').forEach(element => {
-                        element.classList.remove('active');
+            function completeLoading() {
+                document.getElementById('loading-screen').style.opacity = '0';
+                document.getElementById('main-content').style.opacity = '1';
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                    initializeApp();
+                }, 500);
+            }
+
+            function initializeApp() {
+                // Initialize Three.js starfield
+                if (typeof THREE !== 'undefined') {
+                    const canvas = document.getElementById('space-bg');
+                    const scene = new THREE.Scene();
+                    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                    const renderer = new THREE.WebGLRenderer({ 
+                        canvas, 
+                        antialias: true,
+                        alpha: true
                     });
-                    button.classList.add('active');
-                    document.getElementById(button.dataset.tab).classList.add('active');
-                });
-            });
-
-            // Launch button with enhanced animation
-            const launchBtn = document.querySelector('.launch-button');
-            if (launchBtn) {
-                launchBtn.addEventListener('click', function() {
-                    // Visual feedback
-                    this.style.transform = 'scale(1.05)';
-                    this.style.boxShadow = '0 15px 30px rgba(106, 0, 255, 0.5)';
                     
-                    // Create particle explosion
-                    const particles = [];
-                    const particleCount = 1000;
-                    const containerRect = document.querySelector('.container').getBoundingClientRect();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    renderer.setPixelRatio(window.devicePixelRatio);
                     
-                    for (let i = 0; i < particleCount; i++) {
-                        const particle = document.createElement('div');
-                        particle.style.position = 'absolute';
-                        particle.style.width = `${4 + Math.random() * 8}px`;
-                        particle.style.height = particle.style.width;
-                        particle.style.backgroundColor = ['#6a00ff', '#ff00aa', '#ffffff'][Math.floor(Math.random() * 3)];
-                        particle.style.borderRadius = '50%';
-                        particle.style.left = `${launchBtn.offsetLeft + launchBtn.offsetWidth/2}px`;
-                        particle.style.top = `${launchBtn.offsetTop + launchBtn.offsetHeight/2}px`;
-                        particle.style.pointerEvents = 'none';
-                        particle.style.transform = 'translate(-50%, -50%)';
-                        particle.style.opacity = '1';
-                        particle.style.zIndex = '10';
-                        document.body.appendChild(particle);
+                    // Create enhanced starfield with different sizes
+                    const starsGeometry = new THREE.BufferGeometry();
+                    const starCount = 10000;
+                    const positions = new Float32Array(starCount * 3);
+                    const sizes = new Float32Array(starCount);
+                    const colors = new Float32Array(starCount * 3);
+                    
+                    for (let i = 0; i < starCount; i++) {
+                        // Positions
+                        const i3 = i * 3;
+                        positions[i3] = (Math.random() - 0.5) * 2000;
+                        positions[i3 + 1] = (Math.random() - 0.5) * 2000;
+                        positions[i3 + 2] = (Math.random() - 0.5) * 2000;
                         
-                        const angle = Math.random() * Math.PI * 2;
-                        const velocity = 1 + Math.random() * 4;
-                        const lifetime = 800 + Math.random() * 700;
+                        // Sizes (random between 0.05 and 0.3)
+                        sizes[i] = 0.05 + Math.random() * 0.25;
                         
-                        particles.push({
-                            element: particle,
-                            x: 0,
-                            y: 0,
-                            vx: Math.cos(angle) * velocity,
-                            vy: Math.sin(angle) * velocity,
-                            lifetime: lifetime,
-                            age: 0
-                        });
+                        // Colors (white with occasional blue/purple tint)
+                        colors[i3] = 0.8 + Math.random() * 0.2; // R
+                        colors[i3 + 1] = 0.8 + Math.random() * 0.2; // G
+                        colors[i3 + 2] = 0.9 + Math.random() * 0.1; // B
+                        
+                        // Occasionally make some stars colored
+                        if (Math.random() > 0.9) {
+                            colors[i3] = 0.6 + Math.random() * 0.4; // More red/purple
+                            colors[i3 + 2] = 0.8 + Math.random() * 0.2; // More blue
+                        }
                     }
                     
-                    // Animate particles
-                    const particleInterval = setInterval(() => {
-                        particles.forEach(p => {
-                            p.x += p.vx;
-                            p.y += p.vy;
-                            p.vy += 0.1; // gravity
-                            p.age += 16;
-                            
-                            p.element.style.left = `${p.x + launchBtn.offsetLeft + launchBtn.offsetWidth/2}px`;
-                            p.element.style.top = `${p.y + launchBtn.offsetTop + launchBtn.offsetHeight/2}px`;
-                            p.element.style.opacity = 1 - (p.age / p.lifetime);
-                            
-                            if (p.age >= p.lifetime) {
-                                p.element.remove();
-                            }
+                    starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                    starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                    starsGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+                    
+                    const starsMaterial = new THREE.PointsMaterial({
+                        size: 0.1,
+                        vertexColors: true,
+                        transparent: true,
+                        opacity: 0.9,
+                        sizeAttenuation: true
+                    });
+                    
+                    const starfield = new THREE.Points(starsGeometry, starsMaterial);
+                    scene.add(starfield);
+                    
+                    camera.position.z = 100;
+                    
+                    // Animation loop with subtle movement
+                    function animate() {
+                        requestAnimationFrame(animate);
+                        
+                        // Slow rotation for parallax effect
+                        starfield.rotation.x += 0.0001;
+                        starfield.rotation.y += 0.0002;
+                        
+                        // Twinkling effect
+                        const time = Date.now() * 0.0005;
+                        starsMaterial.opacity = 0.7 + Math.sin(time) * 0.2;
+                        
+                        renderer.render(scene, camera);
+                    }
+                    animate();
+                    
+                    window.addEventListener('resize', () => {
+                        camera.aspect = window.innerWidth / window.innerHeight;
+                        camera.updateProjectionMatrix();
+                        renderer.setSize(window.innerWidth, window.innerHeight);
+                    });
+                }
+
+                // Tab functionality
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        document.querySelectorAll('.tab-button, .tab-content').forEach(element => {
+                            element.classList.remove('active');
                         });
+                        button.classList.add('active');
+                        document.getElementById(button.dataset.tab).classList.add('active');
+                    });
+                });
+
+                // Launch button with enhanced animation
+                const launchBtn = document.querySelector('.launch-button');
+                if (launchBtn) {
+                    launchBtn.addEventListener('click', function() {
+                        // Visual feedback
+                        this.style.transform = 'scale(1.05)';
+                        this.style.boxShadow = '0 15px 30px rgba(106, 0, 255, 0.5)';
                         
-                        // Remove dead particles
-                        for (let i = particles.length - 1; i >= 0; i--) {
-                            if (particles[i].age >= particles[i].lifetime) {
-                                particles.splice(i, 1);
+                        // Create particle explosion
+                        const particles = [];
+                        const particleCount = 1000;
+                        const containerRect = document.querySelector('.container').getBoundingClientRect();
+                        
+                        for (let i = 0; i < particleCount; i++) {
+                            const particle = document.createElement('div');
+                            particle.style.position = 'absolute';
+                            particle.style.width = `${4 + Math.random() * 8}px`;
+                            particle.style.height = particle.style.width;
+                            particle.style.backgroundColor = ['#6a00ff', '#ff00aa', '#ffffff'][Math.floor(Math.random() * 3)];
+                            particle.style.borderRadius = '50%';
+                            particle.style.left = `${launchBtn.offsetLeft + launchBtn.offsetWidth/2}px`;
+                            particle.style.top = `${launchBtn.offsetTop + launchBtn.offsetHeight/2}px`;
+                            particle.style.pointerEvents = 'none';
+                            particle.style.transform = 'translate(-50%, -50%)';
+                            particle.style.opacity = '1';
+                            particle.style.zIndex = '10';
+                            document.body.appendChild(particle);
+                            
+                            const angle = Math.random() * Math.PI * 2;
+                            const velocity = 1 + Math.random() * 4;
+                            const lifetime = 800 + Math.random() * 700;
+                            
+                            particles.push({
+                                element: particle,
+                                x: 0,
+                                y: 0,
+                                vx: Math.cos(angle) * velocity,
+                                vy: Math.sin(angle) * velocity,
+                                lifetime: lifetime,
+                                age: 0
+                            });
+                        }
+                        
+                        // Animate particles
+                        const particleInterval = setInterval(() => {
+                            particles.forEach(p => {
+                                p.x += p.vx;
+                                p.y += p.vy;
+                                p.vy += 0.1; // gravity
+                                p.age += 16;
+                                
+                                p.element.style.left = `${p.x + launchBtn.offsetLeft + launchBtn.offsetWidth/2}px`;
+                                p.element.style.top = `${p.y + launchBtn.offsetTop + launchBtn.offsetHeight/2}px`;
+                                p.element.style.opacity = 1 - (p.age / p.lifetime);
+                                
+                                if (p.age >= p.lifetime) {
+                                    p.element.remove();
+                                }
+                            });
+                            
+                            // Remove dead particles
+                            for (let i = particles.length - 1; i >= 0; i--) {
+                                if (particles[i].age >= particles[i].lifetime) {
+                                    particles.splice(i, 1);
+                                }
                             }
-                        }
+                            
+                            if (particles.length === 0) {
+                                clearInterval(particleInterval);
+                            }
+                        }, 16);
                         
-                        if (particles.length === 0) {
-                            clearInterval(particleInterval);
-                        }
-                    }, 16);
-                    
-                    setTimeout(() => {
-                        launchBtn.style.transform = 'scale(1)';
-                        launchBtn.style.boxShadow = '0 8px 20px rgba(106, 0, 255, 0.3)';
-                    }, 300);
-                    
-                    // Here you would add your actual launch functionality
-                    console.log('Launch sequence initiated!');
+                        setTimeout(() => {
+                            launchBtn.style.transform = 'scale(1)';
+                            launchBtn.style.boxShadow = '0 8px 20px rgba(106, 0, 255, 0.3)';
+                        }, 300);
+                        
+                        // Here you would add your actual launch functionality
+                        console.log('Launch sequence initiated!');
+                    });
+                }
+
+                // Download buttons functionality
+                document.querySelectorAll('.download-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        // Visual feedback
+                        this.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1)';
+                        }, 200);
+                        
+                        // Here you would add actual download functionality
+                        console.log('Download initiated for:', this.parentElement.querySelector('h3').textContent);
+                    });
                 });
             }
 
-            // Download buttons functionality
-            document.querySelectorAll('.download-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Visual feedback
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = 'scale(1)';
-                    }, 200);
-                    
-                    // Here you would add actual download functionality
-                    console.log('Download initiated for:', this.parentElement.querySelector('h3').textContent);
-                });
-            });
+            // Start the loading process
+            initializeLoader();
         }
-
-        // Start the loading process
-        initializeLoader();
     </script>
 </body>
 </html>
