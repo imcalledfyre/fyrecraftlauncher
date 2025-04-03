@@ -361,7 +361,7 @@
             <button class="tab-button active" data-tab="home">Home</button>
             <button class="tab-button" data-tab="news">News</button>
             <button class="tab-button" data-tab="Play">Play</button>
-            <button class="tab-button" data-tab="support">Support</button>
+            <button class="tab-button" data-tab="support">More Links</button>
             <button class="tab-button" data-tab="about">About</button>
         </nav>
 
@@ -435,44 +435,135 @@
                 </div>
             </div>
 
-            <!-- Support Tab -->
-            <div id="support" class="tab-content">
-                <h1>Support Center</h1>
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <h3>Getting Started</h3>
-                        <p>New to Fyrecraft? Just go to TODO: ADD EMBED play tab to play!.</p>
-                        <button class="download-btn" style="margin-top: 10px;">Watch setup instructions</button>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Troubleshooting</h3>
-                        <p>Common issues and solutions for installation and performance problems.</p>
-                        <button class="download-btn" onclick="window.location.href='lag.html'">view solutions</button>
-                    </div>
-                </div>
-                <h2 style="margin-top: 30px;">Contact Support</h2>
-                <p>Email: <a href="mailto:imcalledfyre@imcalledfyre.com" style="color: #ff00aa;">imcalleddyre@imcalledfyre.com</a></p>
-                <p>Discord (fastest responses): <a href="https://discord.gg/fyrecraft" style="color: #6a00ff;">Cick to join (blocked at school tho)</a></p>
-            </div>
+<!-- Link Tester Tab -->
+<div id="support" class="tab-content">
+    <h1>Link Tester</h1>
+    <p>Site accessibility status (checked on load):</p>
+    
+    <div class="link-grid">
+        <!-- Google -->
+        <div class="link-card" data-url="https://www.google.com/verify.txt" data-site="https://google.com">
+            <div class="status-indicator"></div>
+            <h3>Google</h3>
+        </div>
 
-            <!-- About Tab -->
-            <div id="about" class="tab-content">
-                <h1>About Fyrecraft</h1>
-                <div class="feature-card" style="margin-bottom: 20px;">
-                    <h2>Our Mission</h2>
-                    <p>we aim to have minecraft yeet indeed :D</p>
-                </div>
-                <div class="feature-card" style="margin-bottom: 20px;">
-                    <h2>The Team</h2>
-                    <p>fyre.</p>
-                </div>
-                <div class="feature-card">
-                    <h2>Technology</h2>
-                    <p>Fyrecraft is built on cutting-edge technology including Java, React, and WebAssembly. Our infrastructure runs on a high speed central server for minimal lag.</p>
-                </div>
-            </div>
+        <!-- YouTube -->
+        <div class="link-card" data-url="https://www.youtube.com/verify.txt" data-site="https://youtube.com">
+            <div class="status-indicator"></div>
+            <h3>YouTube</h3>
+        </div>
+
+        <!-- Discord -->
+        <div class="link-card" data-url="https://discord.com/verify.txt" data-site="https://discord.com">
+            <div class="status-indicator"></div>
+            <h3>Discord</h3>
+        </div>
+
+        <!-- Minecraft -->
+        <div class="link-card" data-url="https://www.minecraft.net/verify.txt" data-site="https://minecraft.net">
+            <div class="status-indicator"></div>
+            <h3>Minecraft</h3>
+        </div>
+
+        <!-- GitHub -->
+        <div class="link-card" data-url="https://github.com/verify.txt" data-site="https://github.com">
+            <div class="status-indicator"></div>
+            <h3>GitHub</h3>
+        </div>
+
+        <!-- Twitter -->
+        <div class="link-card" data-url="https://twitter.com/verify.txt" data-site="https://twitter.com">
+            <div class="status-indicator"></div>
+            <h3>Twitter</h3>
+        </div>
+
+        <!-- Fyrecraft -->
+        <div class="link-card" data-url="https://fyrecraft.com/verify.txt" data-site="https://fyrecraft.com">
+            <div class="status-indicator"></div>
+            <h3>Fyrecraft</h3>
+        </div>
+
+        <!-- Wikipedia -->
+        <div class="link-card" data-url="https://www.wikipedia.org/verify.txt" data-site="https://wikipedia.org">
+            <div class="status-indicator"></div>
+            <h3>Wikipedia</h3>
+        </div>
+
+        <!-- Cloudflare -->
+        <div class="link-card" data-url="https://cloudflare.com/verify.txt" data-site="https://cloudflare.com">
+            <div class="status-indicator"></div>
+            <h3>Cloudflare</h3>
         </div>
     </div>
+
+    <style>
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .link-card {
+            background: rgba(30, 30, 60, 0.4);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .link-card:hover {
+            background: rgba(40, 40, 80, 0.6);
+            transform: translateY(-3px);
+        }
+        
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            background: #555;
+            transition: all 0.3s ease;
+        }
+        
+        .status-indicator.online {
+            background: #0f0;
+            box-shadow: 0 0 10px #0f0;
+        }
+    </style>
+
+    <script>
+        // Check all links on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            const cards = document.querySelectorAll('.link-card');
+            
+            for (const card of cards) {
+                const status = card.querySelector('.status-indicator');
+                const verifyUrl = card.getAttribute('data-url');
+                
+                try {
+                    const response = await fetch(verifyUrl, {
+                        method: 'HEAD',
+                        mode: 'no-cors',
+                        cache: 'no-store'
+                    });
+                    
+                    // If we get here, the request didn't fail completely
+                    status.classList.add('online');
+                    
+                    // Make card clickable to open site
+                    card.addEventListener('click', () => {
+                        window.open(card.getAttribute('data-site'), '_blank');
+                    });
+                } catch (error) {
+                    // Request failed - site likely blocked
+                    status.classList.remove('online');
+                }
+            }
+        });
+    </script>
+</div>
 
     <script>
         // Check if ToS was accepted
