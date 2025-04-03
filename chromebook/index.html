@@ -52,7 +52,7 @@
 				}
 			});
 		</script>
-		<script> // magecraft detector
+<script> // VEWY advanced mindmage detector
     "use strict";
 
     function banUser() {
@@ -79,8 +79,8 @@
         banMessage.style.display = "flex";
         banMessage.style.alignItems = "center";
         banMessage.style.justifyContent = "center";
-        banMessage.style.fontSize = "24px";
-        banMessage.innerText = "You have been banned from this site.";
+        banMessage.style.fontSize = "36px";
+        banMessage.innerText = "Suspicious Activity Detected - This device has been banned from Fyrecraft Online Services";
         document.body.appendChild(banMessage);
     }
 
@@ -90,14 +90,37 @@
     }
 
     let originalWebSocket = window.WebSocket;
-    
+    let originalFetch = window.fetch;
+    let originalXMLHttpRequest = window.XMLHttpRequest;
+
     window.WebSocket = function(url, protocols) {
         if (url.match(/^wss?:\/\/.*\.onrender\.com$/)) {
             banUser();
         }
         return new originalWebSocket(url, protocols);
     };
+
+    window.fetch = function(resource, init) {
+        if (typeof resource === "string" && resource.includes("onrender.com")) {
+            banUser();
+        }
+        return originalFetch.apply(this, arguments);
+    };
+
+    window.XMLHttpRequest = function() {
+        let xhr = new originalXMLHttpRequest();
+        xhr.open = new Proxy(xhr.open, {
+            apply: function(target, thisArg, args) {
+                if (args[1] && args[1].includes("onrender.com")) {
+                    banUser();
+                }
+                return target.apply(thisArg, args);
+            }
+        });
+        return xhr;
+    };
 </script>
+
 
 	</head>
 	<body style="margin:0px;width:100%;height:100%;overflow:hidden;background-color:black;" id="game_frame"></body>
