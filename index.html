@@ -876,15 +876,17 @@
             function createGameCard(game) {
               const card = document.createElement('div');
               card.classList.add('game-card');
-              
               const img = document.createElement('img');
-              img.src = game.image;
+              img.src = `${game.directory}/${game.image}`;
               img.alt = game.name;
+              img.width = 128;
+              img.height = 128;
               card.appendChild(img);
-              
-              const title = document.createElement('div');
-              title.textContent = game.name;
-              card.appendChild(title);
+
+const title = document.createElement('div');
+title.textContent = game.name;
+card.appendChild(title);
+
               
               // Clicking on the game card opens the game launcher page
               card.addEventListener('click', () => {
