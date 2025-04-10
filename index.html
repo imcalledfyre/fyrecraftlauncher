@@ -1,908 +1,935 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Fyrecraft Launcher</title>
-    <style>
-        /* Terms of Service Modal Styles */
-        #tos-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        #tos-content {
-            background: rgba(20, 20, 40, 0.9);
-            max-width: 800px;
-            max-height: 80vh;
-            padding: 30px;
-            border-radius: 15px;
-            overflow-y: auto;
-            border: 1px solid #6a00ff;
-            box-shadow: 0 0 30px rgba(106, 0, 255, 0.5);
-        }
-        
-        #tos-actions {
-            margin-top: 20px;
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-        }
-        
-        .tos-btn {
-            padding: 12px 24px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            font-size: 16px;
-        }
-        
-        #tos-accept {
-            background: linear-gradient(135deg, #6a00ff, #ff00aa);
-            color: white;
-            box-shadow: 0 4px 15px rgba(106, 0, 255, 0.4);
-        }
-        
-        #tos-decline {
-            background: rgba(255, 255, 255, 0.1);
-            color: #aaa;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .tos-btn:hover {
-            transform: translateY(-2px);
-        }
-        
-        #tos-decline:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        #tos-accept:hover {
-            box-shadow: 0 6px 20px rgba(106, 0, 255, 0.6);
-        }
+  <meta charset="UTF-8">
+  <title>Fyrecraft Launcher</title>
+  <style>
+    /* Terms of Service Modal Styles */
+    #tos-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    #tos-content {
+      background: rgba(20, 20, 40, 0.9);
+      max-width: 800px;
+      max-height: 80vh;
+      padding: 30px;
+      border-radius: 15px;
+      overflow-y: auto;
+      border: 1px solid #6a00ff;
+      box-shadow: 0 0 30px rgba(106, 0, 255, 0.5);
+    }
+    
+    #tos-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+    
+    .tos-btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      font-size: 16px;
+    }
+    
+    #tos-accept {
+      background: linear-gradient(135deg, #6a00ff, #ff00aa);
+      color: white;
+      box-shadow: 0 4px 15px rgba(106, 0, 255, 0.4);
+    }
+    
+    #tos-decline {
+      background: rgba(255, 255, 255, 0.1);
+      color: #aaa;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .tos-btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    #tos-decline:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    #tos-accept:hover {
+      box-shadow: 0 6px 20px rgba(106, 0, 255, 0.6);
+    }
 
-        /* Existing Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    /* Existing Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #0a0a1a;
-            color: #e0e0e0;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #0a0a1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #0a0a1a;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            transition: opacity 0.5s;
-        }
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #0a0a1a;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 0.5s;
+    }
 
-        #loading-bar-container {
-            width: 300px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            margin-top: 20px;
-            overflow: hidden;
-        }
+    #loading-bar-container {
+      width: 300px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
 
-        #loading-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #6a00ff, #ff00aa);
-            transition: width 0.3s ease;
-        }
+    #loading-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #6a00ff, #ff00aa);
+      transition: width 0.3s ease;
+    }
 
-        #loading-text {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #aaa;
-        }
+    #loading-text {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #aaa;
+    }
 
-        #main-content {
-            opacity: 0;
-            transition: opacity 0.5s;
-            margin: 10px;
-        }
+    #main-content {
+      opacity: 0;
+      transition: opacity 0.5s;
+      margin: 10px;
+    }
 
-        .navbar {
-            background: rgba(20, 20, 40, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 10px;
-            margin: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            display: flex;
-            justify-content: center;
-        }
+    .navbar {
+      background: rgba(20, 20, 40, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 10px;
+      margin: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      display: flex;
+      justify-content: center;
+    }
 
-        .tab-button {
-            background: none;
-            border: none;
-            padding: 12px 25px;
-            margin: 0 5px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            color: #aaa;
-            position: relative;
-            overflow: hidden;
-        }
+    .tab-button {
+      background: none;
+      border: none;
+      padding: 12px 25px;
+      margin: 0 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      color: #aaa;
+      position: relative;
+      overflow: hidden;
+    }
 
-        .tab-button::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #6a00ff, #ff00aa);
-            transition: width 0.3s ease;
-        }
+    .tab-button::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #6a00ff, #ff00aa);
+      transition: width 0.3s ease;
+    }
 
-        .tab-button:hover {
-            color: #fff;
-        }
+    .tab-button:hover {
+      color: #fff;
+    }
 
-        .tab-button.active {
-            color: #fff;
-        }
+    .tab-button.active {
+      color: #fff;
+    }
 
-        .tab-button.active::before {
-            width: 100%;
-        }
+    .tab-button.active::before {
+      width: 100%;
+    }
 
-        .container {
-            background: rgba(20, 20, 40, 0.6);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 30px;
-            margin: 10px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-            min-height: 60vh;
-        }
+    .container {
+      background: rgba(20, 20, 40, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 30px;
+      margin: 10px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      min-height: 60vh;
+    }
 
-        .launch-button {
-            background: linear-gradient(135deg, #6a00ff, #ff00aa);
-            border: none;
-            padding: 18px 36px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            box-shadow: 0 8px 20px rgba(106, 0, 255, 0.3);
-            transition: all 0.3s ease;
-            margin: 20px 0;
-            position: relative;
-            overflow: hidden;
-        }
+    .launch-button {
+      background: linear-gradient(135deg, #6a00ff, #ff00aa);
+      border: none;
+      padding: 18px 36px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 8px 20px rgba(106, 0, 255, 0.3);
+      transition: all 0.3s ease;
+      margin: 20px 0;
+      position: relative;
+      overflow: hidden;
+    }
 
-        .launch-button::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-            transform: scale(0);
-            transition: transform 0.5s ease;
-        }
+    .launch-button::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+      transform: scale(0);
+      transition: transform 0.5s ease;
+    }
 
-        .launch-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(106, 0, 255, 0.4);
-        }
+    .launch-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(106, 0, 255, 0.4);
+    }
 
-        .launch-button:hover::after {
-            transform: scale(1);
-        }
+    .launch-button:hover::after {
+      transform: scale(1);
+    }
 
-        .tab-content {
-            display: none;
-            padding: 20px;
-            animation: fadeIn 0.5s ease;
-        }
+    .tab-content {
+      display: none;
+      padding: 20px;
+      animation: fadeIn 0.5s ease;
+    }
 
-        .tab-content.active {
-            display: block;
-        }
+    .tab-content.active {
+      display: block;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        h1, h2, h3 {
-            color: #fff;
-            margin-bottom: 20px;
-        }
+    h1, h2, h3 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
 
-        p {
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
+    p {
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
 
-        #space-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
+    #space-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
 
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
 
-        .feature-card {
-            background: rgba(30, 30, 60, 0.4);
-            border-radius: 10px;
-            padding: 20px;
-            border-left: 3px solid #6a00ff;
-        }
+    .feature-card {
+      background: rgba(30, 30, 60, 0.4);
+      border-radius: 10px;
+      padding: 20px;
+      border-left: 3px solid #6a00ff;
+    }
 
-        .news-item {
-            background: rgba(30, 30, 60, 0.4);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-left: 3px solid #ff00aa;
-        }
+    .news-item {
+      background: rgba(30, 30, 60, 0.4);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 3px solid #ff00aa;
+    }
 
-        .download-option {
-            background: rgba(30, 30, 60, 0.4);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .download-option {
+      background: rgba(30, 30, 60, 0.4);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        .download-btn {
-            background: linear-gradient(135deg, #6a00ff, #ff00aa);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.2s;
-        }
+    .download-btn {
+      background: linear-gradient(135deg, #6a00ff, #ff00aa);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.2s;
+    }
 
-        .download-btn:hover {
-            transform: scale(1.05);
-        }
-    </style>
+    .download-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Styles for the Games tab */
+    #games input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #555;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      background: #1a1a2e;
+      color: #e0e0e0;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+      gap: 20px;
+    }
+
+    .game-card {
+      background: rgba(30, 30, 60, 0.4);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .game-card:hover {
+      transform: translateY(-3px);
+      background: rgba(40, 40, 80, 0.6);
+    }
+
+    .game-card img {
+      width: 128px;
+      height: 128px;
+      object-fit: cover;
+      margin-bottom: 8px;
+    }
+  </style>
 </head>
 <body>
-    <!-- Terms of Service Modal -->
-    <div id="tos-modal">
-        <div id="tos-content">
-            <h1>Fyrecraft Terms of Service</h1>
-            <h2>SCROLL DOWN</h2>
-            <p>By using Fyrecraft, you agree to the following terms:</p>
+  <!-- Terms of Service Modal -->
+  <div id="tos-modal">
+    <div id="tos-content">
+      <h1>Fyrecraft Terms of Service</h1>
+      <h2>SCROLL DOWN</h2>
+      <p>By using Fyrecraft, you agree to the following terms:</p>
 
-            <h3>TEACHERS + STUDENT NOTICE</h3>
-            <p>You agree that if you are using this site in school you are done with all work, and if you break this rule,<b>YOU</b> are responsible for any grade reductions or punishments</p>
-            <p>This site is designed to be used outside of school.</p>
-            
-            <h3>1. Acceptable Use</h3>
-            <p>You agree not to use Fyrecraft for any illegal activities or to connect to unauthorized servers. Magecraft users connecting to Fyrecraft will be banned.</p>
-            
-            <h3>2. Chromebook Edition</h3>
-            <p>The Chromebook edition is not supported on MMS Windows desktop devices. Using it will cause game crashes.</p>
-            
-            <h3>3. Account Responsibility</h3>
-            <p>You are responsible for all activities that occur under your account.</p>
-            
-            <h3>4. Modifications</h3>
-            <p>Fyrecraft may update these terms at any time. Continued use constitutes acceptance.</p>
-            
-            <h3>5. Limitation of Liability</h3>
-            <p>Fyrecraft is not responsible for any damages resulting from use of the game.</p>
+      <h3>TEACHERS + STUDENT NOTICE</h3>
+      <p>You agree that if you are using this site in school you are done with all work, and if you break this rule,<b>YOU</b> are responsible for any grade reductions or punishments</p>
+      <p>This site is designed to be used outside of school.</p>
+      
+      <h3>1. Acceptable Use</h3>
+      <p>You agree not to use Fyrecraft for any illegal activities or to connect to unauthorized servers. Magecraft users connecting to Fyrecraft will be banned.</p>
+      
+      <h3>2. Chromebook Edition</h3>
+      <p>The Chromebook edition is not supported on MMS Windows desktop devices. Using it will cause game crashes.</p>
+      
+      <h3>3. Account Responsibility</h3>
+      <p>You are responsible for all activities that occur under your account.</p>
+      
+      <h3>4. Modifications</h3>
+      <p>Fyrecraft may update these terms at any time. Continued use constitutes acceptance.</p>
+      
+      <h3>5. Limitation of Liability</h3>
+      <p>Fyrecraft is not responsible for any damages resulting from use of the game.</p>
 
-            <h3>6. In-Game bans</h3>
-            <p>If you get banned in-game, you must wait out ALL ban/mute times, and ban evasion, or other forms of alt account abuse will increase your ban duration.</p>
-            <div id="tos-actions">
-                <button id="tos-decline">Decline</button>
-                <button id="tos-accept">I Accept</button>
-            </div>
-        </div>
+      <h3>6. In-Game bans</h3>
+      <p>If you get banned in-game, you must wait out ALL ban/mute times, and ban evasion, or other forms of alt account abuse will increase your ban duration.</p>
+      <div id="tos-actions">
+        <button id="tos-decline">Decline</button>
+        <button id="tos-accept">I Accept</button>
+      </div>
     </div>
+  </div>
 
-    <canvas id="space-bg"></canvas>
+  <canvas id="space-bg"></canvas>
 
-    <div id="loading-screen">
-        <h1>Initializing Fyrecraft</h1>
-        <div id="loading-bar-container">
-            <div id="loading-bar"></div>
-        </div>
-        <div id="loading-text">Connecting to FCService</div>
-        <div id="loading-text">Contact us on Discord if services are down.</div>
+  <div id="loading-screen">
+    <h1>Initializing Fyrecraft</h1>
+    <div id="loading-bar-container">
+      <div id="loading-bar"></div>
     </div>
+    <div id="loading-text">Connecting to FCService</div>
+    <div id="loading-text">Contact us on Discord if services are down.</div>
+  </div>
 
-    <div id="main-content">
-        <nav class="navbar">
-            <button class="tab-button active" data-tab="home">Home</button>
-            <button class="tab-button" data-tab="news">News</button>
-            <button class="tab-button" data-tab="Play">Play</button>
-            <button class="tab-button" data-tab="support">More Links</button>
-            <button class="tab-button" data-tab="about">About</button>
-        </nav>
+  <div id="main-content">
+    <nav class="navbar">
+      <button class="tab-button active" data-tab="home">Home</button>
+      <button class="tab-button" data-tab="news">News</button>
+      <button class="tab-button" data-tab="Play">Play</button>
+      <button class="tab-button" data-tab="support">More Links</button>
+      <button class="tab-button" data-tab="games">Games</button>
+      <button class="tab-button" data-tab="about">About</button>
+    </nav>
 
-        <div class="container">
-            <!-- Home Tab -->
-            <div id="home" class="tab-content active">
-                <h1>Welcome to Fyrecraft Launcher</h1>
-                <p>Embark on an interstellar journey with Fyrecraft - the ultimate Eagler platform that takes your experience beyond the stars.</p>
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <h3>Cross-Platform</h3>
-                        <p>Play seamlessly across Chromebook, Desktop, and Home devices with progress tracking, and account saving.</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Built-In Chat</h3>
-                        <p>Talk with your friends and strangers and have fun!</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Cloud Sync</h3>
-                        <p>Your worlds and settings follow you across all devices automatically for free.</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Performance</h3>
-                        <p>Optimized rendering engine in Chromebook Edition delivers up to 40% better FPS than Desktop edition.</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Don't use Chromebook edition on MMS Desktops</h3>
-                        <p>For some reason MMS's Windows desktop devices think that Fyrecraft is running an exploit on devices because we use WASM technologies.</p>
-                    </div>
-                </div>
-            </div>
+    <div class="container">
+      <!-- Home Tab -->
+      <div id="home" class="tab-content active">
+        <h1>Welcome to Fyrecraft Launcher</h1>
+        <p>Embark on an interstellar journey with Fyrecraft - the ultimate Eagler platform that takes your experience beyond the stars.</p>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h3>Cross-Platform</h3>
+            <p>Play seamlessly across Chromebook, Desktop, and Home devices with progress tracking, and account saving.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Built-In Chat</h3>
+            <p>Talk with your friends and strangers and have fun!</p>
+          </div>
+          <div class="feature-card">
+            <h3>Cloud Sync</h3>
+            <p>Your worlds and settings follow you across all devices automatically for free.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Performance</h3>
+            <p>Optimized rendering engine in Chromebook Edition delivers up to 40% better FPS than Desktop edition.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Don't use Chromebook edition on MMS Desktops</h3>
+            <p>For some reason MMS's Windows desktop devices think that Fyrecraft is running an exploit on devices because we use WASM technologies.</p>
+          </div>
+        </div>
+      </div>
 
-            <!-- News Tab -->
-            <div id="news" class="tab-content">
-                <h1>Fyrecraft News</h1>
+      <!-- News Tab -->
+      <div id="news" class="tab-content">
+        <h1>Fyrecraft News</h1>
+        
                 <div class="news-item">
-                    <h2>Version 1.0 "NebulaFC" Released</h2>
-                    <p>We're thrilled to announce the launch of our new website! The "Nebula" update brings:</p>
-                    <p>• Completely redesigned UI with dark cosmic theme</p>
-                    <p>• New URL for unbl0cked access anywhere</p>
-                    <p>• Server performance improvements up to 40% faster loading</p>
-                    <p>• Experimental FCV2 renderer support</p>
-                </div>
-                <div class="news-item">
-                    <h2>Upcoming Community Event</h2>
-                    <p>Join us on April 15th for the Trial of Fyre tournament!</p>
-                    <p>• No prize poo because im broke!!</p>
-                    <p>• Exclusive in-game ranks for participants</p>
-                    <p>• Special guest appearances from top creators</p>
-                </div>
-            </div>
+          <h2>Version 1.1 "The Games Update" Released</h2>
+          <p>We're thrilled to announce the launch of our new website! The "The Games Update" update brings:</p>
+          <p>• Add games.</p>
+          <p>• Add Search</p>
+          <p>• Fast game loading powered by other devices on the network (kinda broken but ill fix in 1.2)</p>
+          <p>• The acutal games will be added this wekend</p>
+        </div>
+        <div class="news-item">
+          <h2>Version 1.0 "NebulaFC" Released</h2>
+          <p>We're thrilled to announce the launch of our new website! The "Nebula" update brings:</p>
+          <p>• Completely redesigned UI with dark cosmic theme</p>
+          <p>• New URL for unbl0cked access anywhere</p>
+          <p>• Server performance improvements up to 40% faster loading</p>
+          <p>• Experimental FCV2 renderer support in Chromebook edition.</p>
+        </div>
+        <div class="news-item">
+          <h2>Upcoming Community Event</h2>
+          <p>Join us on [monthplaceholder[ [dateplaceholder]'th for the Trial of Fyre tournament!</p>
+          <p>• No prize pool because im broke!!</p>
+          <p>• in-game ranks for participants</p>
+        </div>
+      </div>
 
-            <!-- Play Tab -->
-            <div id="Play" class="tab-content">
-                <h1>Play Fyrecraft</h1>
-                <h3>Warning to Magecraft users using fyrecraft client: Adding magecraft to the server list or direct connecting will ban your device off Fyrecraft!!</h3>
-                <p>Using other servers on here is against our Terms of Service.</p>
-                <div class="download-option">
-                    <div>
-                        <h3>Desktop edition</h3>
-                        <p>20MB Browseer game | Version 4.0</p>
-                        <h3>KNOWN ISSUE: DOES NOT LAUNCH. WE WILL FIX THIS SOON</h3>
-                    </div>
-                    <button class="download-btn" onclick="window.location.href='desktop/index.html'">Play now</button>
-                </div>
-                <div class="download-option">
-                    <div>
-                        <h3>Chromebook Edition (or devices that are NOT mms desktops)</h3>
-                        <p>20MB WASM loader | Version 4.0</p>
-                    </div>
-                    <button class="download-btn" onclick="window.location.href='chromebook/launcher.html'">Play now</button>
-                </div>
-            </div>
+      <!-- Play Tab -->
+      <div id="Play" class="tab-content">
+        <h1>Play Fyrecraft</h1>
+        <h3>Warning to Magecraft users using fyrecraft client: Adding magecraft to the server list or direct connecting will ban your device off Fyrecraft!!</h3>
+        <p>Using other servers on here is against our Terms of Service.</p>
+        <div class="download-option">
+          <div>
+            <h3>Desktop edition</h3>
+            <p>20MB Browseer game | Version 4.0</p>
+            <h3>KNOWN ISSUE: DOES NOT LAUNCH. WE WILL FIX THIS SOON</h3>
+          </div>
+          <button class="download-btn" onclick="window.location.href='desktop/index.html'">Play now</button>
+        </div>
+        <div class="download-option">
+          <div>
+            <h3>Chromebook Edition (or devices that are NOT mms desktops)</h3>
+            <p>20MB WASM loader | Version 4.0</p>
+          </div>
+          <button class="download-btn" onclick="window.location.href='chromebook/launcher.html'">Play now</button>
+        </div>
+      </div>
 
-<!-- Link Tester Tab -->
-<div id="support" class="tab-content">
-    <h1>Link Tester</h1>
-    <p>Site accessibility status (checked on load):</p>
-    
-    <div class="link-grid">
-        <!-- Google -->
-        <div class="link-card" data-url="https://im-the-biggest-bird.vonar.ch/verify.txt" data-site="https://im-the-biggest-bird.vonar.ch">
+      <!-- Link Tester Tab -->
+      <div id="support" class="tab-content">
+        <h1>Link Tester</h1>
+        <p>Site accessibility status (checked on load):</p>
+        <div class="link-grid">
+          <!-- Google -->
+          <div class="link-card" data-url="https://im-the-biggest-bird.vonar.ch/verify.txt" data-site="https://im-the-biggest-bird.vonar.ch">
             <div class="status-indicator"></div>
             <h3>Main URL (biggest bird)</h3>
-        </div>
+          </div>
 
-        <!-- YouTube -->
-        <div class="link-card" data-url="https://king-golovich-is-goat.tradekinginternational.com/verify.txt" data-site="https://king-golovich-is-goat.tradekinginternational.com">
+          <!-- YouTube -->
+          <div class="link-card" data-url="https://king-golovich-is-goat.tradekinginternational.com/verify.txt" data-site="https://king-golovich-is-goat.tradekinginternational.com">
             <div class="status-indicator"></div>
             <h3>Alt link #1 (king golovich)</h3>
-        </div>
+          </div>
 
-        <!-- Discord -->
-        <div class="link-card" data-url="https://biggestbirdtwo.tradekinginternational.com/verify.txt" data-site="https://biggestbirdtwo.tradekinginternational.com">
+          <!-- Discord -->
+          <div class="link-card" data-url="https://biggestbirdtwo.tradekinginternational.com/verify.txt" data-site="https://biggestbirdtwo.tradekinginternational.com">
             <div class="status-indicator"></div>
             <h3>Alt link #2 (biggest bird two)</h3>
+          </div>
         </div>
 
- 
-    <style>
-        .link-grid {
+        <style>
+          .link-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
             margin-top: 20px;
-        }
-        
-        .link-card {
+          }
+          
+          .link-card {
             background: rgba(30, 30, 60, 0.4);
             border-radius: 10px;
             padding: 15px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            border-left: 3px solid #555;
-        }
-        
-        .link-card:hover {
+          }
+          
+          .link-card:hover {
             background: rgba(40, 40, 80, 0.6);
             transform: translateY(-3px);
-        }
-        
-        .status-indicator {
+          }
+          
+          .status-indicator {
             width: 15px;
             height: 15px;
             border-radius: 50%;
             margin: 0 auto 10px;
             background: #555;
             transition: all 0.3s ease;
-        }
-        
-        .status-indicator.online {
+          }
+          
+          .status-indicator.online {
             background: #0f0;
             box-shadow: 0 0 10px #0f0;
-        }
-    </style>
+          }
+        </style>
 
-    <script>
-        // Check all links on page load
-        document.addEventListener('DOMContentLoaded', async function() {
+        <script>
+          // Check all links on page load
+          document.addEventListener('DOMContentLoaded', async function() {
             const cards = document.querySelectorAll('.link-card');
             
             for (const card of cards) {
-                const status = card.querySelector('.status-indicator');
-                const verifyUrl = card.getAttribute('data-url');
-                const siteUrl = card.getAttribute('data-site');
+              const status = card.querySelector('.status-indicator');
+              const verifyUrl = card.getAttribute('data-url');
+              const siteUrl = card.getAttribute('data-site');
+              
+              try {
+                const response = await fetch(verifyUrl, {
+                  cache: 'no-store',
+                  headers: {
+                    'Cache-Control': 'no-cache'
+                  }
+                });
                 
-                try {
-                    const response = await fetch(verifyUrl, {
-                        cache: 'no-store',
-                        headers: {
-                            'Cache-Control': 'no-cache'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        const text = await response.text();
-                        const firstLine = text.split('\n')[0].trim();
-                        
-                        if (firstLine.includes('works')) {
-                            status.classList.add('online');
-                            card.style.borderLeft = '3px solid #0f0';
-                            
-                            // Make card clickable to open site
-                            card.addEventListener('click', () => {
-                                window.open(siteUrl, '_blank');
-                            });
-                        }
-                    }
-                } catch (error) {
-                    console.log(`Failed to verify ${siteUrl}:`, error);
-                }
-            }
-        });
-    </script>
-</div>
-
-    <style>
-        .link-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .link-card {
-            background: rgba(30, 30, 60, 0.4);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .link-card:hover {
-            background: rgba(40, 40, 80, 0.6);
-            transform: translateY(-3px);
-        }
-        
-        .status-indicator {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            margin: 0 auto 10px;
-            background: #555;
-            transition: all 0.3s ease;
-        }
-        
-        .status-indicator.online {
-            background: #0f0;
-            box-shadow: 0 0 10px #0f0;
-        }
-    </style>
-
-    <script>
-        // Check all links on page load
-        document.addEventListener('DOMContentLoaded', async function() {
-            const cards = document.querySelectorAll('.link-card');
-            
-            for (const card of cards) {
-                const status = card.querySelector('.status-indicator');
-                const verifyUrl = card.getAttribute('data-url');
-                
-                try {
-                    const response = await fetch(verifyUrl, {
-                        method: 'HEAD',
-                        mode: 'no-cors',
-                        cache: 'no-store'
-                    });
-                    
-                    // If we get here, the request didn't fail completely
+                if (response.ok) {
+                  const text = await response.text();
+                  const firstLine = text.split('\n')[0].trim();
+                  
+                  if (firstLine.includes('works')) {
                     status.classList.add('online');
+                    card.style.borderLeft = '3px solid #0f0';
                     
                     // Make card clickable to open site
                     card.addEventListener('click', () => {
-                        window.open(card.getAttribute('data-site'), '_blank');
+                      window.open(siteUrl, '_blank');
                     });
-                } catch (error) {
-                    // Request failed - site likely blocked
-                    status.classList.remove('online');
+                  }
                 }
+              } catch (error) {
+                console.log(`Failed to verify ${siteUrl}:`, error);
+              }
             }
+          });
+        </script>
+      </div>
+
+      <!-- Games Tab -->
+      <div id="games" class="tab-content">
+        <h1>Games</h1>
+        <h2>Yes, i know the games don't work. I will fix it this weekend.</h2>
+          <h2>fyrecraft still works tho but desktop will be fixed this weekend also </h2>
+        <input type="text" id="games-search" placeholder="Search games...">
+        <div id="recommended-games">
+          <h2>Recommended Games</h2>
+          <div class="games-grid" id="recommended-grid"></div>
+        </div>
+        <div id="all-games">
+          <h2>All Games</h2>
+          <div class="games-grid" id="all-games-grid"></div>
+        </div>
+      </div>
+
+      <!-- About Tab -->
+      <div id="about" class="tab-content">
+        <h1>About Fyrecraft</h1>
+        <p>More information about the game and its community.</p>
+          <h2>I don't want to.</h2>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Terms of Service handling
+    const tosAccepted = localStorage.getItem('tosAccepted') === 'true';
+    const tosModal = document.getElementById('tos-modal');
+    
+    if (!tosAccepted) {
+      tosModal.style.display = 'flex';
+      
+      document.getElementById('tos-accept').addEventListener('click', function() {
+        localStorage.setItem('tosAccepted', 'true');
+        tosModal.style.display = 'none';
+        startLoadingProcess();
+      });
+      
+      document.getElementById('tos-decline').addEventListener('click', function() {
+        alert('You must accept the Terms of Service to use Fyrecraft.');
+      });
+    } else {
+      tosModal.style.display = 'none';
+      startLoadingProcess();
+    }
+    
+    function startLoadingProcess() {
+      // Load Three.js from CDN and other assets
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = src;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
         });
-    </script>
-</div>
+      }
 
-    <script>
-        // Check if ToS was accepted
-        const tosAccepted = localStorage.getItem('tosAccepted') === 'true';
-        const tosModal = document.getElementById('tos-modal');
+      const assetsToLoad = [
+        { type: 'script', url: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js' }
+      ];
+
+      async function initializeLoader() {
+        const loadingBar = document.getElementById('loading-bar');
+        const loadingText = document.getElementById('loading-text');
+        const totalAssets = assetsToLoad.length;
+        let loadedAssets = 0;
+
+        function updateProgress(assetName) {
+          loadedAssets++;
+          const progress = Math.round((loadedAssets / totalAssets) * 100);
+          loadingBar.style.width = `${progress}%`;
+          loadingText.textContent = `Loading ${assetName}... (${progress}%)`;
+          
+          if (progress >= 100) {
+            loadingText.textContent = "Launching!";
+            setTimeout(completeLoading, 500);
+          }
+        }
+
+        for (const asset of assetsToLoad) {
+          try {
+            if (asset.type === 'script') {
+              await loadScript(asset.url);
+            }
+            updateProgress(asset.url.split('/').pop());
+          } catch (error) {
+            console.error(`Failed to load ${asset.url}:`, error);
+            updateProgress(asset.url.split('/').pop());
+          }
+        }
+
+        if (totalAssets === 0) {
+          updateProgress('complete');
+        }
+      }
+
+      function completeLoading() {
+        document.getElementById('loading-screen').style.opacity = '0';
+        document.getElementById('main-content').style.opacity = '1';
+        setTimeout(() => {
+          document.getElementById('loading-screen').style.display = 'none';
+          initializeApp();
+        }, 500);
+      }
+
+      initializeLoader();
+    }
+
+    function initializeApp() {
+      // Modified Three.js Background for a denser, more dynamic starfield
+      if (typeof THREE !== 'undefined') {
+        const canvas = document.getElementById('space-bg');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ 
+          canvas, 
+          antialias: true,
+          alpha: true
+        });
         
-        if (!tosAccepted) {
-            // Show ToS modal
-            tosModal.style.display = 'flex';
-            
-            // Handle accept button
-            document.getElementById('tos-accept').addEventListener('click', function() {
-                localStorage.setItem('tosAccepted', 'true');
-                tosModal.style.display = 'none';
-                startLoadingProcess();
-            });
-            
-            // Handle decline button
-            document.getElementById('tos-decline').addEventListener('click', function() {
-                alert('You must accept the Terms of Service to use Fyrecraft.');
-                // Optionally redirect away
-                // window.location.href = 'https://google.com';
-            });
-        } else {
-            // Hide ToS modal and start loading
-            tosModal.style.display = 'none';
-            startLoadingProcess();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        
+        // Create an enhanced starfield with increased density and varied sizes
+        const starsGeometry = new THREE.BufferGeometry();
+        const starCount = 15000;
+        const positions = new Float32Array(starCount * 3);
+        const sizes = new Float32Array(starCount);
+        const colors = new Float32Array(starCount * 3);
+        
+        for (let i = 0; i < starCount; i++) {
+          const i3 = i * 3;
+          positions[i3] = (Math.random() - 0.5) * 3000;
+          positions[i3 + 1] = (Math.random() - 0.5) * 3000;
+          positions[i3 + 2] = (Math.random() - 0.5) * 3000;
+          
+          sizes[i] = 0.05 + Math.random() * 0.3;
+          
+          colors[i3] = 0.7 + Math.random() * 0.3;
+          colors[i3 + 1] = 0.7 + Math.random() * 0.3;
+          colors[i3 + 2] = 0.8 + Math.random() * 0.2;
         }
         
-        function startLoadingProcess() {
-            // First, load Three.js from CDN
-            function loadScript(src) {
-                return new Promise((resolve, reject) => {
-                    const script = document.createElement('script');
-                    script.src = src;
-                    script.onload = resolve;
-                    script.onerror = reject;
-                    document.head.appendChild(script);
-                });
-            }
-
-            // Assets to preload
-            const assetsToLoad = [
-                { type: 'script', url: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js' },
-                // Add other assets here if needed
-            ];
-
-            // Real loading system
-            async function initializeLoader() {
-                const loadingBar = document.getElementById('loading-bar');
-                const loadingText = document.getElementById('loading-text');
-                const totalAssets = assetsToLoad.length;
-                let loadedAssets = 0;
-
-                // Update loading progress
-                function updateProgress(assetName) {
-                    loadedAssets++;
-                    const progress = Math.round((loadedAssets / totalAssets) * 100);
-                    loadingBar.style.width = `${progress}%`;
-                    loadingText.textContent = `Loading ${assetName}... (${progress}%)`;
-                    
-                    if (progress >= 100) {
-                        loadingText.textContent = "Launching!";
-                        setTimeout(completeLoading, 500);
-                    }
-                }
-
-                // Load all assets
-                for (const asset of assetsToLoad) {
-                    try {
-                        if (asset.type === 'script') {
-                            await loadScript(asset.url);
-                        } else if (asset.type === 'image') {
-                            await new Promise((resolve, reject) => {
-                                const img = new Image();
-                                img.src = asset.url;
-                                img.onload = resolve;
-                                img.onerror = reject;
-                            });
-                        }
-                        updateProgress(asset.url.split('/').pop());
-                    } catch (error) {
-                        console.error(`Failed to load ${asset.url}:`, error);
-                        updateProgress(asset.url.split('/').pop());
-                    }
-                }
-
-                if (totalAssets === 0) {
-                    updateProgress('complete');
-                }
-            }
-
-            function completeLoading() {
-                document.getElementById('loading-screen').style.opacity = '0';
-                document.getElementById('main-content').style.opacity = '1';
-                setTimeout(() => {
-                    document.getElementById('loading-screen').style.display = 'none';
-                    initializeApp();
-                }, 500);
-            }
-
-            function initializeApp() {
-                // Initialize Three.js starfield
-                if (typeof THREE !== 'undefined') {
-                    const canvas = document.getElementById('space-bg');
-                    const scene = new THREE.Scene();
-                    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                    const renderer = new THREE.WebGLRenderer({ 
-                        canvas, 
-                        antialias: true,
-                        alpha: true
-                    });
-                    
-                    renderer.setSize(window.innerWidth, window.innerHeight);
-                    renderer.setPixelRatio(window.devicePixelRatio);
-                    
-                    // Create enhanced starfield with different sizes
-                    const starsGeometry = new THREE.BufferGeometry();
-                    const starCount = 10000;
-                    const positions = new Float32Array(starCount * 3);
-                    const sizes = new Float32Array(starCount);
-                    const colors = new Float32Array(starCount * 3);
-                    
-                    for (let i = 0; i < starCount; i++) {
-                        // Positions
-                        const i3 = i * 3;
-                        positions[i3] = (Math.random() - 0.5) * 2000;
-                        positions[i3 + 1] = (Math.random() - 0.5) * 2000;
-                        positions[i3 + 2] = (Math.random() - 0.5) * 2000;
-                        
-                        // Sizes (random between 0.05 and 0.3)
-                        sizes[i] = 0.05 + Math.random() * 0.25;
-                        
-                        // Colors (white with occasional blue/purple tint)
-                        colors[i3] = 0.8 + Math.random() * 0.2; // R
-                        colors[i3 + 1] = 0.8 + Math.random() * 0.2; // G
-                        colors[i3 + 2] = 0.9 + Math.random() * 0.1; // B
-                        
-                        // Occasionally make some stars colored
-                        if (Math.random() > 0.9) {
-                            colors[i3] = 0.6 + Math.random() * 0.4; // More red/purple
-                            colors[i3 + 2] = 0.8 + Math.random() * 0.2; // More blue
-                        }
-                    }
-                    
-                    starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                    starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-                    starsGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-                    
-                    const starsMaterial = new THREE.PointsMaterial({
-                        size: 0.1,
-                        vertexColors: true,
-                        transparent: true,
-                        opacity: 0.9,
-                        sizeAttenuation: true
-                    });
-                    
-                    const starfield = new THREE.Points(starsGeometry, starsMaterial);
-                    scene.add(starfield);
-                    
-                    camera.position.z = 100;
-                    
-                    // Animation loop with subtle movement
-                    function animate() {
-                        requestAnimationFrame(animate);
-                        
-                        // Slow rotation for parallax effect
-                        starfield.rotation.x += 0.0001;
-                        starfield.rotation.y += 0.0002;
-                        
-                        // Twinkling effect
-                        const time = Date.now() * 0.0005;
-                        starsMaterial.opacity = 0.7 + Math.sin(time) * 0.2;
-                        
-                        renderer.render(scene, camera);
-                    }
-                    animate();
-                    
-                    window.addEventListener('resize', () => {
-                        camera.aspect = window.innerWidth / window.innerHeight;
-                        camera.updateProjectionMatrix();
-                        renderer.setSize(window.innerWidth, window.innerHeight);
-                    });
-                }
-
-                // Tab functionality
-                document.querySelectorAll('.tab-button').forEach(button => {
-                    button.addEventListener('click', () => {
-                        document.querySelectorAll('.tab-button, .tab-content').forEach(element => {
-                            element.classList.remove('active');
-                        });
-                        button.classList.add('active');
-                        document.getElementById(button.dataset.tab).classList.add('active');
-                    });
-                });
-
-                // Launch button with enhanced animation
-                const launchBtn = document.querySelector('.launch-button');
-                if (launchBtn) {
-                    launchBtn.addEventListener('click', function() {
-                        // Visual feedback
-                        this.style.transform = 'scale(1.05)';
-                        this.style.boxShadow = '0 15px 30px rgba(106, 0, 255, 0.5)';
-                        
-                        // Create particle explosion
-                        const particles = [];
-                        const particleCount = 1000;
-                        const containerRect = document.querySelector('.container').getBoundingClientRect();
-                        
-                        for (let i = 0; i < particleCount; i++) {
-                            const particle = document.createElement('div');
-                            particle.style.position = 'absolute';
-                            particle.style.width = `${4 + Math.random() * 8}px`;
-                            particle.style.height = particle.style.width;
-                            particle.style.backgroundColor = ['#6a00ff', '#ff00aa', '#ffffff'][Math.floor(Math.random() * 3)];
-                            particle.style.borderRadius = '50%';
-                            particle.style.left = `${launchBtn.offsetLeft + launchBtn.offsetWidth/2}px`;
-                            particle.style.top = `${launchBtn.offsetTop + launchBtn.offsetHeight/2}px`;
-                            particle.style.pointerEvents = 'none';
-                            particle.style.transform = 'translate(-50%, -50%)';
-                            particle.style.opacity = '1';
-                            particle.style.zIndex = '10';
-                            document.body.appendChild(particle);
-                            
-                            const angle = Math.random() * Math.PI * 2;
-                            const velocity = 1 + Math.random() * 4;
-                            const lifetime = 800 + Math.random() * 700;
-                            
-                            particles.push({
-                                element: particle,
-                                x: 0,
-                                y: 0,
-                                vx: Math.cos(angle) * velocity,
-                                vy: Math.sin(angle) * velocity,
-                                lifetime: lifetime,
-                                age: 0
-                            });
-                        }
-                        
-                        // Animate particles
-                        const particleInterval = setInterval(() => {
-                            particles.forEach(p => {
-                                p.x += p.vx;
-                                p.y += p.vy;
-                                p.vy += 0.1; // gravity
-                                p.age += 16;
-                                
-                                p.element.style.left = `${p.x + launchBtn.offsetLeft + launchBtn.offsetWidth/2}px`;
-                                p.element.style.top = `${p.y + launchBtn.offsetTop + launchBtn.offsetHeight/2}px`;
-                                p.element.style.opacity = 1 - (p.age / p.lifetime);
-                                
-                                if (p.age >= p.lifetime) {
-                                    p.element.remove();
-                                }
-                            });
-                            
-                            // Remove dead particles
-                            for (let i = particles.length - 1; i >= 0; i--) {
-                                if (particles[i].age >= particles[i].lifetime) {
-                                    particles.splice(i, 1);
-                                }
-                            }
-                            
-                            if (particles.length === 0) {
-                                clearInterval(particleInterval);
-                            }
-                        }, 16);
-                        
-                        setTimeout(() => {
-                            launchBtn.style.transform = 'scale(1)';
-                            launchBtn.style.boxShadow = '0 8px 20px rgba(106, 0, 255, 0.3)';
-                        }, 300);
-                        
-                        // Here you would add your actual launch functionality
-                        console.log('Launch sequence initiated!');
-                    });
-                }
-
-                // Download buttons functionality
-                document.querySelectorAll('.download-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        // Visual feedback
-                        this.style.transform = 'scale(0.95)';
-                        setTimeout(() => {
-                            this.style.transform = 'scale(1)';
-                        }, 200);
-                        
-                        // Here you would add actual download functionality
-                        console.log('Download initiated for:', this.parentElement.querySelector('h3').textContent);
-                    });
-                });
-            }
-
-            // Start the loading process
-            initializeLoader();
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        starsGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        
+        const starsMaterial = new THREE.PointsMaterial({
+          size: 0.15,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.9,
+          sizeAttenuation: true
+        });
+        
+        const starfield = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(starfield);
+        
+        camera.position.z = 150;
+        
+        // Animation loop with subtle rotation and twinkle effect
+        function animate() {
+          requestAnimationFrame(animate);
+          starfield.rotation.x += 0.0002;
+          starfield.rotation.y += 0.0003;
+          const time = Date.now() * 0.0005;
+          starsMaterial.opacity = 0.8 + Math.sin(time) * 0.2;
+          renderer.render(scene, camera);
         }
-    </script>
+        animate();
+        
+        window.addEventListener('resize', () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+      }
+
+      // Tab functionality
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('.tab-button, .tab-content').forEach(element => {
+            element.classList.remove('active');
+          });
+          button.classList.add('active');
+          document.getElementById(button.dataset.tab).classList.add('active');
+        });
+      });
+
+      // Launch button with enhanced animation
+      const launchBtn = document.querySelector('.launch-button');
+      if (launchBtn) {
+        launchBtn.addEventListener('click', function() {
+          this.style.transform = 'scale(1.05)';
+          this.style.boxShadow = '0 15px 30px rgba(106, 0, 255, 0.5)';
+          
+          const particles = [];
+          const particleCount = 1000;
+          const containerRect = document.querySelector('.container').getBoundingClientRect();
+          
+          for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.width = `${4 + Math.random() * 8}px`;
+            particle.style.height = particle.style.width;
+            particle.style.backgroundColor = ['#6a00ff', '#ff00aa', '#ffffff'][Math.floor(Math.random() * 3)];
+            particle.style.borderRadius = '50%';
+            particle.style.left = `${launchBtn.offsetLeft + launchBtn.offsetWidth/2}px`;
+            particle.style.top = `${launchBtn.offsetTop + launchBtn.offsetHeight/2}px`;
+            particle.style.pointerEvents = 'none';
+            particle.style.transform = 'translate(-50%, -50%)';
+            particle.style.opacity = '1';
+            particle.style.zIndex = '10';
+            document.body.appendChild(particle);
+            
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 1 + Math.random() * 4;
+            const lifetime = 800 + Math.random() * 700;
+            
+            particles.push({
+              element: particle,
+              x: 0,
+              y: 0,
+              vx: Math.cos(angle) * velocity,
+              vy: Math.sin(angle) * velocity,
+              lifetime: lifetime,
+              age: 0
+            });
+          }
+          
+          const particleInterval = setInterval(() => {
+            particles.forEach(p => {
+              p.x += p.vx;
+              p.y += p.vy;
+              p.vy += 0.1;
+              p.age += 16;
+              p.element.style.left = `${p.x + launchBtn.offsetLeft + launchBtn.offsetWidth/2}px`;
+              p.element.style.top = `${p.y + launchBtn.offsetTop + launchBtn.offsetHeight/2}px`;
+              p.element.style.opacity = 1 - (p.age / p.lifetime);
+              if (p.age >= p.lifetime) {
+                p.element.remove();
+              }
+            });
+            
+            for (let i = particles.length - 1; i >= 0; i--) {
+              if (particles[i].age >= particles[i].lifetime) {
+                particles.splice(i, 1);
+              }
+            }
+            
+            if (particles.length === 0) {
+              clearInterval(particleInterval);
+            }
+          }, 16);
+          
+          setTimeout(() => {
+            launchBtn.style.transform = 'scale(1)';
+            launchBtn.style.boxShadow = '0 8px 20px rgba(106, 0, 255, 0.3)';
+          }, 300);
+          
+          console.log('Launch sequence initiated!');
+        });
+      }
+
+      // Download buttons functionality
+      document.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => { this.style.transform = 'scale(1)'; }, 200);
+          console.log('Download initiated for:', this.parentElement.querySelector('h3').textContent);
+        });
+      });
+
+      // Games Tab: Load and render games from games.json
+      function loadGames() {
+        fetch('games.json')
+          .then(response => response.json())
+          .then(games => {
+            // Separate recommended games (recommended === "1") and others
+            const recommendedGames = games.filter(game => game.recommended === "1");
+            const otherGames = games.filter(game => game.recommended !== "1");
+
+            const recommendedGrid = document.getElementById('recommended-grid');
+            const allGamesGrid = document.getElementById('all-games-grid');
+
+            // Helper function to create a game card
+            function createGameCard(game) {
+              const card = document.createElement('div');
+              card.classList.add('game-card');
+              
+              const img = document.createElement('img');
+              img.src = game.image;
+              img.alt = game.name;
+              card.appendChild(img);
+              
+              const title = document.createElement('div');
+              title.textContent = game.name;
+              card.appendChild(title);
+              
+              // Clicking on the game card opens the game launcher page
+              card.addEventListener('click', () => {
+                window.location.href = game.directory + '/launcher.html';
+              });
+              return card;
+            }
+
+            function renderGames() {
+              // Clear current grids
+              recommendedGrid.innerHTML = '';
+              allGamesGrid.innerHTML = '';
+
+              // Get the search filter (if any)
+              const query = document.getElementById('games-search').value.toLowerCase();
+
+              // Render recommended games that match the search filter
+              recommendedGames
+                .filter(game => game.name.toLowerCase().includes(query))
+                .forEach(game => {
+                  recommendedGrid.appendChild(createGameCard(game));
+                });
+
+              // Render non-recommended games that match the search filter
+              otherGames
+                .filter(game => game.name.toLowerCase().includes(query))
+                .forEach(game => {
+                  allGamesGrid.appendChild(createGameCard(game));
+                });
+            }
+
+            // Initial render
+            renderGames();
+            
+            // Update render on search input
+            document.getElementById('games-search').addEventListener('input', renderGames);
+          })
+          .catch(error => {
+            console.error('Error loading games:', error);
+          });
+      }
+
+      // Load games after initializing the app
+      loadGames();
+    }
+  </script>
 </body>
 </html>
