@@ -7,6 +7,19 @@ const CACHE_URLS = [
   // Add other static files here, but NOT /index.html
 ];
 
+// check for updates button (resets cache)
+self.addEventListener('message', event => {
+  if (event.data === 'rebuild-cache') {
+    caches.keys().then(cacheNames => {
+      cacheNames.forEach(name => caches.delete(name));
+    }).then(() => {
+      // Optional: precache again
+      self.skipWaiting();
+    });
+  }
+});
+
+
 // Install event
 self.addEventListener('install', event => {
   event.waitUntil(
