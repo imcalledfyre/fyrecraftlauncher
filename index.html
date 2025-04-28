@@ -407,23 +407,23 @@
 
 <script>
 function myFunction() {
-    // replace this with whatever you actually want to load
-    const url = "index.html";
+    const url = "index.html"; // This file?? will it commit toaster bath??
 
-    // try opening a new about:blank tab
+    // Open a new about:blank window
     const win = window.open();
+
     if (!win) {
-        alert("Pop-ups blocked, dumbass. Unblock them in the url bar at the very right."); 
+        alert("Pop-ups blocked. Unblock them.");
         return;
     }
 
-    // build the full HTML document inside the new tab
+    // Build the full HTML content inside the new tab
     win.document.write(`
         <!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
-            <title>Google Classroom</title> <!-- fake it, till you make it -->
+            <title>Game Tab</title>
             <style>
                 html, body {
                     margin: 0;
@@ -439,15 +439,16 @@ function myFunction() {
             </style>
         </head>
         <body>
-            <iframe src="${url}"></iframe>
+            <iframe src="${window.location.href}/${url}"></iframe>
         </body>
         </html>
     `);
 
-    // you **must** close it so the browser actually renders
+    // You MUST close the document to render the content
     win.document.close();
 }
 </script>
+
 
       <button class="tab-button active" data-tab="home">Home</button>
       <button class="tab-button" data-tab="news">News</button>
