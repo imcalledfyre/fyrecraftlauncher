@@ -50,12 +50,6 @@
       font-size: 16px;
     }
     
-    .buttons {
-      background: linear-gradient(135deg, #6a00ff, #ff00aa);
-      color: white;
-      box-shadow: 0 4px 15px rgba(106, 0, 255, 0.4);
-    }
-    
     #tos-accept {
       background: linear-gradient(135deg, #6a00ff, #ff00aa);
       color: white;
@@ -403,53 +397,6 @@
 
   <div id="main-content">
     <nav class="navbar">
-<button class="buttons" onclick="myFunction()">About:Blank Cloak (hides from securly classroom)</button>
-
-<script>
-function myFunction() {
-    const url = "index.html"; // This file?? will it commit toaster bath??
-
-    // Open a new about:blank window
-    const win = window.open();
-
-    if (!win) {
-        alert("Pop-ups blocked. Unblock them.");
-        return;
-    }
-
-    // Build the full HTML content inside the new tab
-    win.document.write(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>Game Tab</title>
-            <style>
-                html, body {
-                    margin: 0;
-                    padding: 0;
-                    height: 100%;
-                    overflow: hidden;
-                }
-                iframe {
-                    border: none;
-                    width: 100%;
-                    height: 100%;
-                }
-            </style>
-        </head>
-        <body>
-            <iframe src="${window.location.href}/${url}"></iframe>
-        </body>
-        </html>
-    `);
-
-    // You MUST close the document to render the content
-    win.document.close();
-}
-</script>
-
-
       <button class="tab-button active" data-tab="home">Home</button>
       <button class="tab-button" data-tab="news">News</button>
       <button class="tab-button" data-tab="Play">Fyrecraft</button>
@@ -492,14 +439,6 @@ function myFunction() {
       </div>
 
       <!-- News Tab -->
-      <div id="news" class="tab-content">
-        <h1>FyreX News</h1>
-         <div class="news-item">
-          <h2>Version 1.2.1 Released</h2>
-          <p>We're thrilled to announce an update of FyreX Launcher!</p>
-          <p>• Added a awesome wallpaper you should use</p>
-          <p>• added about blank clocking</p>
-        </div>
       <div id="news" class="tab-content">
         <h1>FyreX News</h1>
          <div class="news-item">
