@@ -50,6 +50,12 @@
       font-size: 16px;
     }
     
+    .buttons {
+      background: linear-gradient(135deg, #6a00ff, #ff00aa);
+      color: white;
+      box-shadow: 0 4px 15px rgba(106, 0, 255, 0.4);
+    }
+    
     #tos-accept {
       background: linear-gradient(135deg, #6a00ff, #ff00aa);
       color: white;
@@ -397,6 +403,24 @@
 
   <div id="main-content">
     <nav class="navbar">
+      <button class="buttons" onclick="myFunction()">About:Blank Cloak (hides from securly classroom)</button>
+
+<script>
+function myFunction() {
+var win = window.open()
+//YOU CAN REPLACE THE LINK BELOW WITH ANYTHING YOU WANT! 
+var url = "index.html"
+if (url) {
+var iframe = document.createElement("iframe")
+iframe.style.border = "none";
+iframe.style.width = "100%";
+iframe.style.height = "100%"
+iframe.style.margin = "0";
+iframe.src = url;
+win.document.body.appendChild(iframe);
+}
+}
+</script>
       <button class="tab-button active" data-tab="home">Home</button>
       <button class="tab-button" data-tab="news">News</button>
       <button class="tab-button" data-tab="Play">Fyrecraft</button>
@@ -439,6 +463,14 @@
       </div>
 
       <!-- News Tab -->
+      <div id="news" class="tab-content">
+        <h1>FyreX News</h1>
+         <div class="news-item">
+          <h2>Version 1.2.1 Released</h2>
+          <p>We're thrilled to announce an update of FyreX Launcher!</p>
+          <p>• Added a awesome wallpaper you should use</p>
+          <p>• added about blank clocking</p>
+        </div>
       <div id="news" class="tab-content">
         <h1>FyreX News</h1>
          <div class="news-item">
