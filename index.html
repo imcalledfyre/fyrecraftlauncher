@@ -180,69 +180,13 @@
       width: 100%;
     }
 
+    /* REMOVED CONTAINER BACKGROUND */
     .container {
-      background: rgba(20, 20, 40, 0.6);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
       padding: 30px;
       margin: 10px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-      min-height: 60vh;
     }
 
-    .launch-button {
-      background: linear-gradient(135deg, #6a00ff, #ff00aa);
-      border: none;
-      padding: 18px 36px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 18px;
-      font-weight: bold;
-      color: white;
-      box-shadow: 0 8px 20px rgba(106, 0, 255, 0.3);
-      transition: all 0.3s ease;
-      margin: 20px 0;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .buttons {
-      background: linear-gradient(135deg, #6a00ff, #ff00aa);
-      border: none;
-      padding: 18px 36px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 18px;
-      font-weight: bold;
-      color: white;
-      box-shadow: 0 8px 20px rgba(106, 0, 255, 0.3);
-      transition: all 0.3s ease;
-      margin: 20px 0;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .launch-button::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-      transform: scale(0);
-      transition: transform 0.5s ease;
-    }
-
-    .launch-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 25px rgba(106, 0, 255, 0.4);
-    }
-
-    .launch-button:hover::after {
-      transform: scale(1);
-    }
-
+    /* REMOVED TAB-CONTENT BACKGROUND */
     .tab-content {
       display: none;
       padding: 20px;
@@ -362,6 +306,30 @@
       object-fit: cover;
       margin-bottom: 8px;
     }
+
+    /* Fix for TickCounter widgets */
+    .tickcounter {
+      display: block !important;
+      width: 100% !important;
+      height: auto !important;
+      margin-bottom: 20px !important;
+      position: relative !important;
+    }
+    /* Countdown Styling */
+.countdown-box {
+  margin-bottom: 30px;
+  background: rgba(30, 30, 60, 0.4);
+  padding: 15px;
+  border-radius: 10px;
+  border-left: 3px solid #6a00ff;
+}
+
+.tickcounter {
+  display: block;
+  width: 100%;
+  height: 100px !important;
+  margin: 10px 0;
+}
   </style>
 </head>
 <body>
@@ -413,9 +381,6 @@
 
   <div id="main-content">
     <nav class="navbar">
-
-
-
       <button class="tab-button active" data-tab="home">Home</button>
       <button class="tab-button" data-tab="news">News</button>
       <button class="tab-button" data-tab="Play">Fyrecraft</button>
@@ -431,8 +396,8 @@
         <p>Embark on an interstellar journey with FyreX - the ultimate Eagler platform that takes your experience beyond the stars.</p>
         <div class="feature-grid">
           <a href="wallpaper.png" download>
-  <h1>DOWNLOAD OUR NEW WALLPAPER</h1>
-</a>
+            <h1>DOWNLOAD OUR NEW WALLPAPER</h1>
+          </a>
           <h2>Please set it as your wallpaper so we can win our war against securly classroom!! ^-^</h2>
           <div class="feature-card">
             <h3>Cross-Platform</h3>
@@ -513,107 +478,67 @@
         </div>
       </div>
 
-      <!-- Link Tester Tab -->
-      <div id="support" class="tab-content">
-        <h1>Countdowns</h1>
-       <script>(function(d, s, id) { var js, pjs = d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js = d.createElement(s); js.id = id; js.src = "//www.tickcounter.com/static/js/loader.js"; pjs.parentNode.insertBefore(js, pjs); }(document, "script", "tickcounter-sdk"));</script><a data-type="countdown" data-id="7209553" class="tickcounter" style="display:block; left:0; width:100%; height:0; position:relative; padding-bottom:25%; margin:0 auto;" title="SCHOOL IS OVER" href="//www.tickcounter.com/">SCHOOL IS OVER</a>
-        <script>(function(d, s, id) { var js, pjs = d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js = d.createElement(s); js.id = id; js.src = "//www.tickcounter.com/static/js/loader.js"; pjs.parentNode.insertBefore(js, pjs); }(document, "script", "tickcounter-sdk"));</script><a data-type="countdown" data-id="7209556" class="tickcounter" style="display:block; left:0; width:100%; height:0; position:relative; padding-bottom:25%; margin:0 auto;" title="memorial day weekend" href="//www.tickcounter.com/">memorial day weekend</a>
-        <script>(function(d, s, id) { var js, pjs = d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js = d.createElement(s); js.id = id; js.src = "//www.tickcounter.com/static/js/loader.js"; pjs.parentNode.insertBefore(js, pjs); }(document, "script", "tickcounter-sdk"));</script><a data-type="countdown" data-id="7209576" class="tickcounter" style="display:block; left:0; width:100%; height:0; position:relative; padding-bottom:25%; margin:0 auto;" title="best holiday" href="//www.tickcounter.com/">best holiday</a>
-        </div>
+<!-- Countdowns Tab -->
+<div id="support" class="tab-content">
+  <h1>Countdowns</h1>
 
-        <style>
-          .link-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-          }
-          
-          .link-card {
-            background: rgba(30, 30, 60, 0.4);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-          }
-          
-          .link-card:hover {
-            background: rgba(40, 40, 80, 0.6);
-            transform: translateY(-3px);
-          }
-          
-          .status-indicator {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            margin: 0 auto 10px;
-            background: #555;
-            transition: all 0.3s ease;
-          }
-          
-          .status-indicator.online {
-            background: #0f0;
-            box-shadow: 0 0 10px #0f0;
-          }
-        </style>
+  <!-- SCHOOL IS OVER (Link preserved) -->
+  <div class="countdown-box">
+    <script>
+      (function(d, s, id) { 
+        var js, pjs = d.getElementsByTagName(s)[0]; 
+        if (d.getElementById(id)) return; 
+        js = d.createElement(s); js.id = id; 
+        js.src = "//www.tickcounter.com/static/js/loader.js"; 
+        pjs.parentNode.insertBefore(js, pjs); 
+      }(document, "script", "tickcounter-sdk"));
+    </script>
+    <a data-type="countdown" data-id="7209553" class="tickcounter" 
+       style="display: block; width: 100%; height: 100px; position: relative; margin: 15px 0;" 
+       title="SCHOOL IS OVER" 
+       href="//www.tickcounter.com/countdown/7209553/school-is-over">
+       SCHOOL IS OVER
+    </a>
+  </div>
 
-        <script>
-          // Check all links on page load
-          document.addEventListener('DOMContentLoaded', async function() {
-            const cards = document.querySelectorAll('.link-card');
-            
-            for (const card of cards) {
-              const status = card.querySelector('.status-indicator');
-              const verifyUrl = card.getAttribute('data-url');
-              const siteUrl = card.getAttribute('data-site');
-              
-              try {
-                const response = await fetch(verifyUrl, {
-                  cache: 'no-store',
-                  headers: {
-                    'Cache-Control': 'no-cache'
-                  }
-                });
-                
-                if (response.ok) {
-                  const text = await response.text();
-                  const firstLine = text.split('\n')[0].trim();
-                  
-                  if (firstLine.includes('works')) {
-                    status.classList.add('online');
-                    card.style.borderLeft = '3px solid #0f0';
-                    
-                    // Make card clickable to open site
-                    card.addEventListener('click', () => {
-                      window.open(siteUrl, '_blank');
-                    });
-                  }
-                }
-              } catch (error) {
-                console.log(`Failed to verify ${siteUrl}:`, error);
-              }
-            }
-          });
+  <!-- MEMORIAL DAY WEEKEND (Link preserved) -->
+  <div class="countdown-box">
+    <script>
+      (function(d, s, id) { 
+        var js, pjs = d.getElementsByTagName(s)[0]; 
+        if (d.getElementById(id)) return; 
+        js = d.createElement(s); js.id = id; 
+        js.src = "//www.tickcounter.com/static/js/loader.js"; 
+        pjs.parentNode.insertBefore(js, pjs); 
+      }(document, "script", "tickcounter-sdk"));
+    </script>
+    <a data-type="countdown" data-id="7209556" class="tickcounter" 
+       style="display: block; width: 100%; height: 100px; position: relative; margin: 15px 0;" 
+       title="memorial day weekend" 
+       href="//www.tickcounter.com/countdown/7209556/memorial-day-weekend">
+       memorial day weekend
+    </a>
+  </div>
 
-          if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => console.log('Service Worker registered:', reg.scope))
-      .catch(err => console.error('Service Worker registration failed:', err));
-  });
-          }
-    document.getElementById('rebuildCacheBtn').addEventListener('click', () => {
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage('rebuild-cache');
-    alert('Cache will be rebuilt. Refresh the page to load new data.');
-  } else {
-    alert('Update is automatic, you are not using offline loading.');
-  }
-});
-        </script>
-      </div>
-
+  <!-- BEST HOLIDAY (Link preserved) -->
+  <div class="countdown-box">
+    <script>
+      (function(d, s, id) { 
+        var js, pjs = d.getElementsByTagName(s)[0]; 
+        if (d.getElementById(id)) return; 
+        js = d.createElement(s); js.id = id; 
+        js.src = "//www.tickcounter.com/static/js/loader.js"; 
+        pjs.parentNode.insertBefore(js, pjs); 
+      }(document, "script", "tickcounter-sdk"));
+    </script>
+    <a data-type="countdown" data-id="7209576" class="tickcounter" 
+       style="display: block; width: 100%; height: 100px; position: relative; margin: 15px 0;" 
+       title="best holiday" 
+       href="//www.tickcounter.com/countdown/7209576/best-holiday">
+       best holiday
+    </a>
+  </div>
+</div>
       <!-- Games Tab -->
       <div id="games" class="tab-content">
         <h1>Games</h1>
@@ -641,6 +566,7 @@
     </div>
   </div>
 
+  <!-- Rest of your JavaScript remains unchanged -->
   <script>
     // Terms of Service handling
     const tosAccepted = localStorage.getItem('tosAccepted') === 'true';
