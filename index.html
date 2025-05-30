@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -23,14 +23,14 @@
     }
     
     #tos-content {
-      background: rgba(20, 20, 40, 0.9);
+      background: rgba(255, 255, 255, 0.95);
       max-width: 800px;
       max-height: 80vh;
       padding: 30px;
       border-radius: 15px;
       overflow-y: auto;
-      border: 1px solid #6a00ff;
-      box-shadow: 0 0 30px rgba(106, 0, 255, 0.5);
+      color: #333;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
     }
     
     #tos-actions {
@@ -57,9 +57,9 @@
     }
     
     #tos-decline {
-      background: rgba(255, 255, 255, 0.1);
-      color: #aaa;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.1);
+      color: #333;
+      border: 1px solid rgba(0, 0, 0, 0.2);
     }
     
     .tos-btn:hover {
@@ -67,7 +67,7 @@
     }
     
     #tos-decline:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.2);
     }
     
     #tos-accept:hover {
@@ -83,8 +83,8 @@
 
     body {
       font-family: 'Arial', sans-serif;
-      background-color: #0a0a1a;
-      color: #e0e0e0;
+      background-color: #ffffff;
+      color: #333333;
       min-height: 100vh;
       overflow-x: hidden;
     }
@@ -95,7 +95,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: #0a0a1a;
+      background: #ffffff;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -107,7 +107,7 @@
     #loading-bar-container {
       width: 300px;
       height: 4px;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.1);
       border-radius: 2px;
       margin-top: 20px;
       overflow: hidden;
@@ -123,7 +123,7 @@
     #loading-text {
       margin-top: 10px;
       font-size: 14px;
-      color: #aaa;
+      color: #666;
     }
 
     #main-content {
@@ -133,12 +133,12 @@
     }
 
     .navbar {
-      background: rgba(20, 20, 40, 0.8);
+      background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(10px);
       border-radius: 12px;
       padding: 10px;
       margin: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       display: flex;
       justify-content: center;
     }
@@ -152,7 +152,7 @@
       cursor: pointer;
       transition: all 0.3s ease;
       font-weight: 600;
-      color: #aaa;
+      color: #666;
       position: relative;
       overflow: hidden;
     }
@@ -169,11 +169,11 @@
     }
 
     .tab-button:hover {
-      color: #fff;
+      color: #000;
     }
 
     .tab-button.active {
-      color: #fff;
+      color: #000;
     }
 
     .tab-button.active::before {
@@ -203,22 +203,14 @@
     }
 
     h1, h2, h3 {
-      color: #fff;
+      color: #000;
       margin-bottom: 20px;
     }
 
     p {
       line-height: 1.6;
       margin-bottom: 15px;
-    }
-
-    #space-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
+      color: #444;
     }
 
     .feature-grid {
@@ -229,28 +221,43 @@
     }
 
     .feature-card {
-      background: rgba(30, 30, 60, 0.4);
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
       padding: 20px;
       border-left: 3px solid #6a00ff;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     }
 
     .news-item {
-      background: rgba(30, 30, 60, 0.4);
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
       padding: 20px;
       margin-bottom: 20px;
       border-left: 3px solid #ff00aa;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .news-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     }
 
     .download-option {
-      background: rgba(30, 30, 60, 0.4);
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
       padding: 15px;
       margin-bottom: 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     }
 
     .download-btn {
@@ -262,10 +269,52 @@
       cursor: pointer;
       font-weight: bold;
       transition: transform 0.2s;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .download-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        rgba(255, 0, 170, 0.8),
+        rgba(106, 0, 255, 0.8),
+        rgba(0, 255, 255, 0.8),
+        rgba(106, 0, 255, 0.8),
+        rgba(255, 0, 170, 0.8)
+      );
+      background-size: 400% 400%;
+      z-index: -1;
+      animation: rgbAnimation 4s linear infinite;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .download-btn:hover::before {
+      opacity: 1;
     }
 
     .download-btn:hover {
       transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(106, 0, 255, 0.5);
+    }
+
+    @keyframes rgbAnimation {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
     }
 
     /* Styles for the Games tab */
@@ -273,11 +322,11 @@
       width: 100%;
       padding: 10px;
       font-size: 16px;
-      border: 1px solid #555;
+      border: 1px solid #ddd;
       border-radius: 8px;
       margin-bottom: 20px;
-      background: #1a1a2e;
-      color: #e0e0e0;
+      background: #fff;
+      color: #333;
     }
 
     .games-grid {
@@ -287,17 +336,18 @@
     }
 
     .game-card {
-      background: rgba(30, 30, 60, 0.4);
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
       padding: 10px;
       text-align: center;
       cursor: pointer;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     }
 
     .game-card:hover {
-      transform: translateY(-3px);
-      background: rgba(40, 40, 80, 0.6);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
 
     .game-card img {
@@ -305,6 +355,7 @@
       height: 128px;
       object-fit: cover;
       margin-bottom: 8px;
+      border-radius: 6px;
     }
 
     /* Fix for TickCounter widgets */
@@ -315,21 +366,184 @@
       margin-bottom: 20px !important;
       position: relative !important;
     }
+    
     /* Countdown Styling */
-.countdown-box {
-  margin-bottom: 30px;
-  background: rgba(30, 30, 60, 0.4);
-  padding: 15px;
-  border-radius: 10px;
-  border-left: 3px solid #6a00ff;
-}
+    .countdown-box {
+      margin-bottom: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 10px;
+      border-left: 3px solid #6a00ff;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
 
-.tickcounter {
-  display: block;
-  width: 100%;
-  height: 100px !important;
-  margin: 10px 0;
-}
+    .tickcounter {
+      display: block;
+      width: 100%;
+      height: 100px !important;
+      margin: 10px 0;
+    }
+    
+    /* RGB Animation for active elements */
+    .rgb-animate {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .rgb-animate::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(
+        45deg,
+        #ff0000,
+        #ff9900,
+        #33cc33,
+        #0099ff,
+        #6633cc,
+        #ff0066,
+        #ff0000
+      );
+      background-size: 400% 400%;
+      z-index: -1;
+      animation: rgbBorderAnimation 8s linear infinite;
+      border-radius: inherit;
+      opacity: 0.7;
+      filter: blur(5px);
+    }
+    
+    @keyframes rgbBorderAnimation {
+      0% {
+        background-position: 0% 50%;
+      }
+      100% {
+        background-position: 400% 50%;
+      }
+    }
+    
+    /* Selected elements with RGB effect */
+    .selected-rgb {
+      position: relative;
+    }
+    
+    .selected-rgb::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(
+        45deg,
+        #ff0000,
+        #ff9900,
+        #33cc33,
+        #0099ff,
+        #6633cc,
+        #ff0066,
+        #ff0000
+      );
+      background-size: 400% 400%;
+      z-index: -1;
+      animation: rgbBorderAnimation 8s linear infinite;
+      border-radius: inherit;
+      filter: blur(3px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .selected-rgb:hover::after,
+    .selected-rgb:focus::after,
+    .selected-rgb.active::after {
+      opacity: 0.7;
+    }
+    
+    /* Bloom effect for buttons */
+    .bloom-effect {
+      position: relative;
+    }
+    
+    .bloom-effect::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: inherit;
+      border-radius: inherit;
+      z-index: -1;
+      filter: blur(10px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .bloom-effect:hover::after,
+    .bloom-effect:focus::after,
+    .bloom-effect.active::after {
+      opacity: 0.5;
+    }
+    
+    /* Apply RGB and bloom to buttons */
+    .tab-button, .download-btn, .game-card {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .tab-button::after, .download-btn::after, .game-card::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(
+        45deg,
+        #ff0000,
+        #ff9900,
+        #33cc33,
+        #0099ff,
+        #6633cc,
+        #ff0066,
+        #ff0000
+      );
+      background-size: 400% 400%;
+      z-index: -1;
+      animation: rgbBorderAnimation 8s linear infinite;
+      border-radius: inherit;
+      filter: blur(3px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .tab-button:hover::after, 
+    .download-btn:hover::after, 
+    .game-card:hover::after,
+    .tab-button.active::after {
+      opacity: 0.5;
+    }
+    
+    /* Add bloom to feature cards on hover */
+    .feature-card:hover, .news-item:hover {
+      position: relative;
+    }
+    
+    .feature-card:hover::after, .news-item:hover::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #6a00ff, #ff00aa);
+      border-radius: inherit;
+      z-index: -1;
+      filter: blur(15px);
+      opacity: 0.3;
+    }
   </style>
 </head>
 <body>
@@ -429,8 +643,15 @@
       <!-- News Tab -->
       <div id="news" class="tab-content">
         <h1>FyreX News</h1>
+
+                 <div class="news-item">
+          <h2>Version 1.3 "The Theme Update" Released</h2>
+          <p>We're thrilled to announce the newest update of FyreX Launcher!</p>
+          <p>• I just made it light themed. Nothing else.</p>
+        </div>
+        
          <div class="news-item">
-          <h2>Version 1.3 "The WHAT THE FUCK HAPPENED TO THE SERVERS" Released</h2>
+          <h2>Version 1.2.1 "The WHAT THE FUCK HAPPENED TO THE SERVERS" Released</h2>
           <p>We're thrilled to announce the newest update of FyreX Launcher!</p>
           <p>• so it wont let me add the old links back to the servers</p>
           <p>• and were gonna lose all our users :(</p>
