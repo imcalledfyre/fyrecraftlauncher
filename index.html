@@ -21,7 +21,7 @@
       padding: 20px;
       text-align: center;
     }
-    
+
     #tos-content {
       background: rgba(20, 20, 40, 0.9);
       max-width: 800px;
@@ -32,14 +32,14 @@
       border: 1px solid #6a00ff;
       box-shadow: 0 0 30px rgba(106, 0, 255, 0.5);
     }
-    
+
     #tos-actions {
       margin-top: 20px;
       display: flex;
       gap: 20px;
       justify-content: center;
     }
-    
+
     .tos-btn {
       padding: 12px 24px;
       border-radius: 8px;
@@ -49,27 +49,27 @@
       transition: all 0.3s ease;
       font-size: 16px;
     }
-    
+
     #tos-accept {
       background: linear-gradient(135deg, #6a00ff, #ff00aa);
       color: white;
       box-shadow: 0 4px 15px rgba(106, 0, 255, 0.4);
     }
-    
+
     #tos-decline {
       background: rgba(255, 255, 255, 0.1);
       color: #aaa;
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    
+
     .tos-btn:hover {
       transform: translateY(-2px);
     }
-    
+
     #tos-decline:hover {
       background: rgba(255, 255, 255, 0.2);
     }
-    
+
     #tos-accept:hover {
       box-shadow: 0 6px 20px rgba(106, 0, 255, 0.6);
     }
@@ -344,19 +344,19 @@
       <h3>TEACHERS + STUDENT NOTICE</h3>
       <p>You agree that if you are using this site in school you are done with all work, and if you break this rule,<b>YOU</b> are responsible for any grade reductions or punishments</p>
       <p>This site is designed to be used outside of school, and is very expensive to make new links, so PLEASE do not block us ^-^</p>
-      
+
       <h3>1. Acceptable Use</h3>
       <p>You agree not to use FyreX for any illegal activities or to connect to unauthorized servers. Magecraft users connecting to FyreX will be banned.</p>
-      
+
       <h3>2. Chromebook Edition</h3>
       <p>The Chromebook edition is not supported on MMS Windows desktop devices. Using it will cause game crashes.</p>
-      
+
       <h3>3. Account Responsibility</h3>
       <p>You are responsible for all activities that occur under your account.</p>
-      
+
       <h3>4. Modifications</h3>
       <p>FyreX may update these terms at any time. Continued use is accepted.</p>
-      
+
       <h3>5. Limitation of Liability</h3>
       <p>FyreX is not responsible for any damages resulting from use of the game.</p>
 
@@ -385,6 +385,7 @@
       <button class="tab-button active" data-tab="home">Home</button>
       <button class="tab-button" data-tab="news">News</button>
       <button class="tab-button" data-tab="Play">Fyrecraft</button>
+      <button class="tab-button" data-tab="chat">Chat</button>
       <button class="tab-button" data-tab="support">Countdowns</button>
       <button class="tab-button" data-tab="games">ALL GAMES</button>
       <button class="tab-button" data-tab="about">About</button>
@@ -434,14 +435,14 @@
           <p>• so it wont let me add the old links back to the servers</p>
           <p>• and were gonna lose all our users :(</p>
         </div>
-        
-         <div class="news-item">
+
+        <div class="news-item">
           <h2>Version 1.2 "The Rebranding" Released</h2>
           <p>We're thrilled to announce the rebrand of Fyrecraft Launcher!</p>
           <p>• Renamed to FyreX Launcher</p>
           <p>• uhhh</p>
         </div>
-               
+
         <div class="news-item">
           <h2>Version 1.1 "The Games Update" Released</h2>
           <p>We're thrilled to announce the launch of our new website! The "The Games Update" update brings:</p>
@@ -488,53 +489,60 @@
         </div>
       </div>
 
-<!-- Countdowns Tab -->
-<div id="support" class="tab-content">
-  <h1>Countdowns</h1>
+      <!-- Chat Tab -->
+      <div id="chat" class="tab-content">
+        <h1>Chat</h1>
+        <button class="download-btn" onclick="window.open('https://chatserver.imcalledfyre.com', '_blank')">Open Chat</button>
+      </div>
 
-  <!-- SCHOOL IS OVER (Link preserved) -->
-  <div class="countdown-box">
-    <script>
-      (function(d, s, id) { 
-        var js, pjs = d.getElementsByTagName(s)[0]; 
-        if (d.getElementById(id)) return; 
-        js = d.createElement(s); js.id = id; 
-        js.src = "//www.tickcounter.com/static/js/loader.js"; 
-        pjs.parentNode.insertBefore(js, pjs); 
-      }(document, "script", "tickcounter-sdk"));
-    </script>
-    <a data-type="countdown" data-id="7209553" class="tickcounter" 
-       style="display: block; width: 100%; height: 100px; position: relative; margin: 15px 0;" 
-       title="SCHOOL IS OVER" 
-       href="//www.tickcounter.com/countdown/7209553/school-is-over">
-       SCHOOL IS OVER
-    </a>
-  </div>
+      <!-- Countdowns Tab -->
+      <div id="support" class="tab-content">
+        <h1>Countdowns</h1>
 
-  <!-- MEMORIAL DAY WEEKEND (Link preserved) -->
-  <div class="countdown-box">
-    <script>
-      (function(d, s, id) { 
-        var js, pjs = d.getElementsByTagName(s)[0]; 
-        if (d.getElementById(id)) return; 
-        js = d.createElement(s); js.id = id; 
-        js.src = "//www.tickcounter.com/static/js/loader.js"; 
-        pjs.parentNode.insertBefore(js, pjs); 
-      }(document, "script", "tickcounter-sdk"));
-    </script>
-    <a data-type="countdown" data-id="7209556" class="tickcounter" 
-       style="display: block; width: 100%; height: 100px; position: relative; margin: 15px 0;" 
-       title="memorial day weekend" 
-       href="//www.tickcounter.com/countdown/7209556/memorial-day-weekend">
-       memorial day weekend
-    </a>
-  </div>
+        <!-- SCHOOL IS OVER (Link preserved) -->
+        <div class="countdown-box">
+          <script>
+            (function(d, s, id) {
+              var js, pjs = d.getElementsByTagName(s)[0];
+              if (d.getElementById(id)) return;
+              js = d.createElement(s); js.id = id;
+              js.src = "//www.tickcounter.com/static/js/loader.js";
+              pjs.parentNode.insertBefore(js, pjs);
+            }(document, "script", "tickcounter-sdk"));
+          </script>
+          <a data-type="countdown" data-id="7209553" class="tickcounter"
+             style="display: block; width: 100%; height: 100px; position: relative; margin: 15px 0;"
+             title="SCHOOL IS OVER"
+             href="//www.tickcounter.com/countdown/7209553/school-is-over">
+             SCHOOL IS OVER
+          </a>
+        </div>
 
-  <!-- BEST HOLIDAY (Link preserved) -->
-  <div class="countdown-box">
-<script>(function(d, s, id) { var js, pjs = d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js = d.createElement(s); js.id = id; js.src = "//www.tickcounter.com/static/js/loader.js"; pjs.parentNode.insertBefore(js, pjs); }(document, "script", "tickcounter-sdk"));</script><a data-type="countdown" data-id="7342673" class="tickcounter" style="display:block; left:0; width:100%; height:0; position:relative; padding-bottom:25%; margin:0 auto;" title="GTA 6" href="//www.tickcounter.com/">GTA 6</a>
-  </div>
-</div>
+        <!-- MEMORIAL DAY WEEKEND (Link preserved) -->
+        <div class="countdown-box">
+          <script>
+            (function(d, s, id) {
+              var js, pjs = d.getElementsByTagName(s)[0];
+              if (d.getElementById(id)) return;
+              js = d.createElement(s); js.id = id;
+              js.src = "//www.tickcounter.com/static/js/loader.js";
+              pjs.parentNode.insertBefore(js, pjs);
+            }(document, "script", "tickcounter-sdk"));
+          </script>
+          <a data-type="countdown" data-id="7209556" class="tickcounter"
+             style="display: block; width: 100%; height: 100px; position: relative; margin: 15px 0;"
+             title="memorial day weekend"
+             href="//www.tickcounter.com/countdown/7209556/memorial-day-weekend">
+             memorial day weekend
+          </a>
+        </div>
+
+        <!-- BEST HOLIDAY (Link preserved) -->
+        <div class="countdown-box">
+          <script>(function(d, s, id) { var js, pjs = d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js = d.createElement(s); js.id = id; js.src = "//www.tickcounter.com/static/js/loader.js"; pjs.parentNode.insertBefore(js, pjs); }(document, "script", "tickcounter-sdk"));</script><a data-type="countdown" data-id="7342673" class="tickcounter" style="display:block; left:0; width:100%; height:0; position:relative; padding-bottom:25%; margin:0 auto;" title="GTA 6" href="//www.tickcounter.com/">GTA 6</a>
+        </div>
+      </div>
+
       <!-- Games Tab -->
       <div id="games" class="tab-content">
         <h1>Games</h1>
@@ -555,7 +563,7 @@
       <div id="about" class="tab-content">
         <h1>About FyreX</h1>
         <p>More information about the game and its community.</p>
-          <h2>FyreX game launcher is a game site that is designed to replace the old site, known as fyre games (im the biggest bird)</h2>
+        <h2>FyreX game launcher is a game site that is designed to replace the old site, known as fyre games (im the biggest bird)</h2>
         <h2>This site was originally a placeholder site, while I was working on this site, then someone known as RONAN leaked the site to the football kids and it got 11K users.</h2>
         <h2>so were back now i guess</h2>
       </div>
@@ -567,16 +575,16 @@
     // Terms of Service handling
     const tosAccepted = localStorage.getItem('tosAccepted') === 'true';
     const tosModal = document.getElementById('tos-modal');
-    
+
     if (!tosAccepted) {
       tosModal.style.display = 'flex';
-      
+
       document.getElementById('tos-accept').addEventListener('click', function() {
         localStorage.setItem('tosAccepted', 'true');
         tosModal.style.display = 'none';
         startLoadingProcess();
       });
-      
+
       document.getElementById('tos-decline').addEventListener('click', function() {
         alert('You must accept the Terms of Service to use FyreX Launcher.');
       });
@@ -584,7 +592,7 @@
       tosModal.style.display = 'none';
       startLoadingProcess();
     }
-    
+
     function startLoadingProcess() {
       // Load Three.js from CDN and other assets
       function loadScript(src) {
@@ -612,7 +620,7 @@
           const progress = Math.round((loadedAssets / totalAssets) * 100);
           loadingBar.style.width = `${progress}%`;
           loadingText.textContent = `Loading ${assetName}... (${progress}%)`;
-          
+
           if (progress >= 100) {
             loadingText.textContent = "Launching!";
             setTimeout(completeLoading, 500);
@@ -654,39 +662,39 @@
         const canvas = document.getElementById('space-bg');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ 
-          canvas, 
+        const renderer = new THREE.WebGLRenderer({
+          canvas,
           antialias: true,
           alpha: true
         });
-        
+
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
-        
+
         // Create an enhanced starfield with increased density and varied sizes
         const starsGeometry = new THREE.BufferGeometry();
         const starCount = 15000;
         const positions = new Float32Array(starCount * 3);
         const sizes = new Float32Array(starCount);
         const colors = new Float32Array(starCount * 3);
-        
+
         for (let i = 0; i < starCount; i++) {
           const i3 = i * 3;
           positions[i3] = (Math.random() - 0.5) * 3000;
           positions[i3 + 1] = (Math.random() - 0.5) * 3000;
           positions[i3 + 2] = (Math.random() - 0.5) * 3000;
-          
+
           sizes[i] = 0.05 + Math.random() * 0.3;
-          
+
           colors[i3] = 0.7 + Math.random() * 0.3;
           colors[i3 + 1] = 0.7 + Math.random() * 0.3;
           colors[i3 + 2] = 0.8 + Math.random() * 0.2;
         }
-        
+
         starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         starsGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-        
+
         const starsMaterial = new THREE.PointsMaterial({
           size: 0.15,
           vertexColors: true,
@@ -694,12 +702,12 @@
           opacity: 0.9,
           sizeAttenuation: true
         });
-        
+
         const starfield = new THREE.Points(starsGeometry, starsMaterial);
         scene.add(starfield);
-        
+
         camera.position.z = 150;
-        
+
         // Animation loop with subtle rotation and twinkle effect
         function animate() {
           requestAnimationFrame(animate);
@@ -710,7 +718,7 @@
           renderer.render(scene, camera);
         }
         animate();
-        
+
         window.addEventListener('resize', () => {
           camera.aspect = window.innerWidth / window.innerHeight;
           camera.updateProjectionMatrix();
@@ -735,11 +743,11 @@
         launchBtn.addEventListener('click', function() {
           this.style.transform = 'scale(1.05)';
           this.style.boxShadow = '0 15px 30px rgba(106, 0, 255, 0.5)';
-          
+
           const particles = [];
           const particleCount = 1000;
           const containerRect = document.querySelector('.container').getBoundingClientRect();
-          
+
           for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
             particle.style.position = 'absolute';
@@ -754,11 +762,11 @@
             particle.style.opacity = '1';
             particle.style.zIndex = '10';
             document.body.appendChild(particle);
-            
+
             const angle = Math.random() * Math.PI * 2;
             const velocity = 1 + Math.random() * 4;
             const lifetime = 800 + Math.random() * 700;
-            
+
             particles.push({
               element: particle,
               x: 0,
@@ -769,7 +777,7 @@
               age: 0
             });
           }
-          
+
           const particleInterval = setInterval(() => {
             particles.forEach(p => {
               p.x += p.vx;
@@ -783,23 +791,23 @@
                 p.element.remove();
               }
             });
-            
+
             for (let i = particles.length - 1; i >= 0; i--) {
               if (particles[i].age >= particles[i].lifetime) {
                 particles.splice(i, 1);
               }
             }
-            
+
             if (particles.length === 0) {
               clearInterval(particleInterval);
             }
           }, 16);
-          
+
           setTimeout(() => {
             launchBtn.style.transform = 'scale(1)';
             launchBtn.style.boxShadow = '0 8px 20px rgba(106, 0, 255, 0.3)';
           }, 300);
-          
+
           console.log('Launch sequence initiated!');
         });
       }
@@ -836,11 +844,10 @@
               img.height = 128;
               card.appendChild(img);
 
-const title = document.createElement('div');
-title.textContent = game.name;
-card.appendChild(title);
+              const title = document.createElement('div');
+              title.textContent = game.name;
+              card.appendChild(title);
 
-              
               // Clicking on the game card opens the game launcher page
               card.addEventListener('click', () => {
                 window.location.href = game.directory + '/index.html';
@@ -873,7 +880,7 @@ card.appendChild(title);
 
             // Initial render
             renderGames();
-            
+
             // Update render on search input
             document.getElementById('games-search').addEventListener('input', renderGames);
           })
