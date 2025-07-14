@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>YouTube Unbl*cked - Search & Manual</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <style>
+    body {
+      background: #121212;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .tabs {
+      margin-bottom: 20px;
+    }
+
+    button.tab-btn {
+      padding: 10px 20px;
+      background: #222;
+      border: none;
+      color: white;
+      cursor: pointer;
+      margin-right: 5px;
+      border-radius: 5px 5px 0 0;
+      outline: none;
+      font-weight: 600;
+    }
+
+    button.tab-btn.active {
+      background: #444;
+    }
+
+    .tab-content {
+      background: #222;
+      padding: 20px;
+      border-radius: 0 5px 5px 5px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: none;
+      width: 80%;
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    button.search-btn {
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+    }
+
+    iframe {
+      margin: 15px auto;
+      display: block;
+      border-radius: 8px;
+    }
+
+    #results iframe {
+      width: 100%;
+      max-width: 560px;
+      height: 315px;
+    }
+
+    #manual-video iframe {
+      width: 100%;
+      max-width: 560px;
+      height: 315px;
+      margin-top: 20px;
+    }
+
+    p.message {
+      margin-top: 10px;
+      font-style: italic;
+      color: #aaa;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>YouTube Unbl*cked - Search & Manual Link</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="searchTabBtn">Search</button>
+    <button class="tab-btn" id="manualTabBtn">Manual Link</button>
+  </div>
+
+  <div id="searchTab" class="tab-content">
+    <input type="text" id="searchBox" placeholder="Search YouTube videos" />
+    <button class="search-btn" onclick="searchVideos()">Search</button>
+    <div id="results"></div>
+  </div>
+
+  <div id="manualTab" class="tab-content" style="display:none;">
+    <input type="text" id="manualUrl" placeholder="Paste YouTube video link here" />
+    <button class="search-btn" onclick="loadManualVideo()">Watch</button>
+    <div id="manual-video"></div>
+  </div>
+
+  <script>
+    const base = "https://www.youtube-nocookie.com/embed/";
+    const end = "?rel=0&modestbranding=1&iv_load_policy=3";
+
+    const searchTabBtn = document.getElementById("searchTabBtn");
+    const manualTabBtn = document.getElementById("manualTabBtn");
+    const searchTab = document.getElementById("searchTab");
+    const manualTab = document.getElementById("manualTab");
+
+    searchTabBtn.onclick = () => {
+      searchTabBtn.classList.add("active");
+      manualTabBtn.classList.remove("active");
+      searchTab.style.display = "block";
+      manualTab.style.display = "none";
+    };
+
+    manualTabBtn.onclick = () => {
+      manualTabBtn.classList.add("active");
+      searchTabBtn.classList.remove("active");
+      manualTab.style.display = "block";
+      searchTab.style.display = "none";
+    };
+
+    function searchVideos() {
+      const query = document.getElementById("searchBox").value.trim();
+      const resultsDiv = document.getElementById("results");
+      if (!query) {
+        resultsDiv.innerHTML = "<p class='message'>Type something to search.</p>";
+        return;
+      }
+      resultsDiv.innerHTML = "<p class='message'>Searching...</p>";
+
+      // CORS proxy + Bing search for YouTube videos
+      const url = `https://api.allorigins.win/get?url=${encodeURIComponent(
+        "https://www.bing.com/search?q=site:youtube.com+" + query + "+videos"
+      )}`;
+
+      fetch(url)
+        .then((res) => res.json())
+        .then((data) => {
+          const html = data.contents;
+          const links = [
+            ...html.matchAll(/https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/g),
+          ].map((m) => m[1]);
+
+          const uniqueIds = [...new Set(links)].slice(0, 5);
+
+          resultsDiv.innerHTML = "";
+          if (uniqueIds.length === 0) {
+            resultsDiv.innerHTML = "<p class='message'>No videos found.</p>";
+            return;
+          }
+
+          uniqueIds.forEach((id) => {
+            const iframe = document.createElement("iframe");
+            iframe.src = base + id + end;
+            iframe.allowFullscreen = true;
+            iframe.frameBorder = 0;
+            resultsDiv.appendChild(iframe);
+          });
+        })
+        .catch((err) => {
+          resultsDiv.innerHTML =
+            "<p class='message'> Search failed. Use manual mode.   How to get a YouTube video link:<br>
+  1. Search YouTube or Google for a video.<br>
+  2. Right-click the video’s title or link (the blue text).<br>
+  3. Click “Copy link address” (NOT “Copy link” or anything else).<br>
+  4. Paste it here and hit Watch.
+</p>";
+          console.error(err);
+        });
+    }
+
+    function loadManualVideo() {
+      const input = document.getElementById("manualUrl").value.trim();
+      const manualDiv = document.getElementById("manual-video");
+      manualDiv.innerHTML = "";
+
+      if (!input) {
+        manualDiv.innerHTML = "<p class='message'>Paste a YouTube video link first.</p>";
+        return;
+      }
+
+      // Extract video ID from common YouTube URL formats
+      const idMatch = input.match(
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+      );
+      if (!idMatch) {
+        manualDiv.innerHTML = "<p class='message'>Invalid YouTube link.</p>";
+        return;
+      }
+
+      const videoId = idMatch[1];
+      const iframe = document.createElement("iframe");
+      iframe.src = base + videoId + end;
+      iframe.allowFullscreen = true;
+      iframe.frameBorder = 0;
+      manualDiv.appendChild(iframe);
+    }
+  </script>
+</body>
+
+</html>
