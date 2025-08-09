@@ -1,130 +1,337 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FyreX Launcher</title>
-<style>
-  :root {
-    --bg: #071024;
-    --panel: #0f1724aa;
-    --text: #eef2ff;
-    --accent1: #6a00ff;
-    --accent2: #ff00aa;
-    --radius: 12px;
-  }
-  * {
-    box-sizing: border-box;
-    margin: 0; padding: 0;
-  }
-  body {
-    font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  header {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 12px;
-  }
-  main {
-    flex-grow: 1;
-  }
-  #games {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 16px;
-  }
-  .game-card {
-    background: var(--panel);
-    border-radius: var(--radius);
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .game-card img {
-    width: 140px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    background: #031018;
-  }
-  .game-title {
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .btn-play {
-    margin-top: auto;
-    background: linear-gradient(90deg, var(--accent1), var(--accent2));
-    border: none;
-    border-radius: 10px;
-    padding: 10px 0;
-    width: 100%;
-    color: var(--text);
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  .btn-play:disabled {
-    background: #555;
-    cursor: default;
-  }
-  #loader {
-    position: fixed;
-    inset: 0;
-    background: rgba(7, 16, 36, 0.85);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  #loader.active {
-    visibility: visible;
-    opacity: 1;
-  }
-  #loader-text {
-    color: var(--text);
-    font-weight: 700;
-    margin-bottom: 12px;
-    font-size: 18px;
-  }
-  #loader-bar-container {
-    width: 320px;
-    height: 16px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  #loader-bar {
-    width: 0;
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent1), var(--accent2));
-    transition: width 0.2s linear;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FyreX Launcher</title>
+  <style>
+    :root {
+      --bg: #071024;
+      --panel: #0f1724cc;
+      --text: #eef2ff;
+      --accent1: #6a00ff;
+      --accent2: #ff00aa;
+      --radius: 12px;
+      --sidebar-width: 240px;
+      --transition: 0.3s ease;
+      --shadow: rgba(0,0,0,0.8);
+      --hover-bg: #3b0f63;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    nav.sidebar {
+      width: var(--sidebar-width);
+      background: var(--panel);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 0;
+      box-shadow: 4px 0 12px var(--shadow);
+      user-select: none;
+    }
+    nav.sidebar header {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--accent1);
+      padding-left: 24px;
+      margin-bottom: 32px;
+      letter-spacing: 2px;
+      cursor: default;
+    }
+    nav.sidebar .menu {
+      flex-grow: 1;
+    }
+    nav.sidebar button.menu-item {
+      width: 100%;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 600;
+      color: var(--text);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: background var(--transition);
+      font-size: 17px;
+    }
+    nav.sidebar button.menu-item:hover, nav.sidebar button.menu-item.active {
+      background: var(--hover-bg);
+      color: var(--accent2);
+    }
+    nav.sidebar button.menu-item svg {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      fill: currentColor;
+    }
+    nav.sidebar footer {
+      padding: 20px 24px;
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+    }
+
+    /* Main Content */
+    main.content {
+      flex-grow: 1;
+      background: var(--bg);
+      padding: 32px;
+      overflow-y: auto;
+      position: relative;
+    }
+    main.content h1 {
+      margin-bottom: 24px;
+      font-weight: 900;
+      font-size: 32px;
+      letter-spacing: 1.5px;
+    }
+
+    /* Games Grid */
+    #games {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 18px;
+    }
+    .game-card {
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 0 14px #3b0f63aa;
+      user-select: none;
+      transition: transform 0.2s ease;
+    }
+    .game-card:hover {
+      transform: scale(1.04);
+    }
+    .game-card img {
+      width: 160px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: #031018;
+      box-shadow: 0 0 10px #6a00ffaa;
+    }
+    .game-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+      font-size: 16px;
+      min-height: 44px;
+    }
+    .btn-play {
+      margin-top: auto;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      border: none;
+      border-radius: 10px;
+      padding: 10px 0;
+      width: 100%;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      user-select: none;
+    }
+    .btn-play:disabled {
+      background: #555;
+      cursor: default;
+    }
+
+    /* Loader Overlay */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 16, 36, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      user-select: none;
+    }
+    #loader.active {
+      visibility: visible;
+      opacity: 1;
+    }
+    #loader-text {
+      color: var(--text);
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 18px;
+      letter-spacing: 0.5px;
+    }
+    #loader-bar-container {
+      width: 320px;
+      height: 16px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 12px var(--accent1);
+    }
+    #loader-bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.2s linear;
+    }
+
+    /* Fake Initial Loading Screen */
+    #initial-loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: var(--accent1);
+      font-weight: 900;
+      font-size: 32px;
+      letter-spacing: 3px;
+      z-index: 10000;
+      user-select: none;
+    }
+    #initial-progress {
+      margin-top: 24px;
+      width: 320px;
+      height: 16px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 12px var(--accent1);
+    }
+    #initial-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      width: 0;
+      transition: width 0.15s linear;
+    }
+
+    /* Settings Panel */
+    #settings-panel {
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      max-width: 400px;
+      color: var(--text);
+      font-size: 14px;
+      user-select: none;
+      box-shadow: 0 0 20px #6a00ffcc;
+    }
+    #settings-panel h2 {
+      font-weight: 900;
+      margin-bottom: 16px;
+      font-size: 20px;
+      letter-spacing: 1.2px;
+      color: var(--accent2);
+    }
+    #settings-panel label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      cursor: pointer;
+    }
+    #settings-panel input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+    #settings-panel select {
+      margin-left: 6px;
+      background: #222;
+      border: none;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-<header>FyreX Launcher</header>
-<main>
-  <div id="games" aria-live="polite"></div>
+
+<nav class="sidebar" aria-label="Main menu">
+  <header>FyreX</header>
+  <div class="menu">
+    <button class="menu-item active" id="menu-home" aria-controls="content-home" aria-selected="true" role="tab" tabindex="0">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l9-9 9 9h-3v9h-12v-9h-3z"/></svg>
+      Home
+    </button>
+    <button class="menu-item" id="menu-settings" aria-controls="content-settings" aria-selected="false" role="tab" tabindex="-1">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.31.07-.63.07-.94s-.03-.63-.07-.94l2.03-1.58a.5.5 0 00.11-.65l-1.91-3.3a.5.5 0 00-.61-.22l-2.39.96a7.13 7.13 0 00-1.63-.95l-.36-2.54a.5.5 0 00-.5-.42h-3.82a.5.5 0 00-.5.42l-.36 2.54a7.15 7.15 0 00-1.63.95l-2.39-.96a.5.5 0 00-.6.22l-1.92 3.3a.5.5 0 00.1.65l2.03 1.58c-.04.31-.07.63-.07.94s.03.63.07.94l-2.03 1.58a.5.5 0 00-.11.65l1.91 3.3a.5.5 0 00.61.22l2.39-.96c.5.38 1.04.68 1.63.95l.36 2.54a.5.5 0 00.5.42h3.82a.5.5 0 00.5-.42l.36-2.54c.6-.27 1.13-.57 1.63-.95l2.39.96a.5.5 0 00.6-.22l1.92-3.3a.5.5 0 00-.1-.65l-2.03-1.58zM12 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z"/></svg>
+      Settings
+    </button>
+  </div>
+  <footer>© 2025 FyreX</footer>
+</nav>
+
+<main class="content">
+  <section id="content-home" role="tabpanel" tabindex="0" aria-labelledby="menu-home">
+    <h1>Available Games</h1>
+    <div id="games" aria-live="polite"></div>
+  </section>
+
+  <section id="content-settings" role="tabpanel" tabindex="0" aria-labelledby="menu-settings" hidden>
+    <div id="settings-panel">
+      <h2>Settings</h2>
+      <label>
+        <input type="checkbox" id="setting-preload" checked />
+        Preload game images on load
+      </label>
+      <label>
+        <input type="checkbox" id="setting-fakeLoading" checked />
+        Show initial fake loading screen (5 seconds)
+      </label>
+      <label>
+        <input type="checkbox" id="setting-caching" checked />
+        Enable caching for assets
+      </label>
+      <label>
+        <input type="checkbox" id="setting-randomLoadingTime" checked />
+        Random loading time on Play (1–10s)
+      </label>
+      <label>
+        Redirect URL base:
+        <select id="setting-urlBase">
+          <option value="">Same folder</option>
+          <option value="games/">/games/ folder</option>
+        </select>
+      </label>
+    </div>
+  </section>
 </main>
 
 <div id="loader" role="alert" aria-live="assertive" aria-label="Loading game">
   <div id="loader-text">Loading...</div>
   <div id="loader-bar-container">
     <div id="loader-bar"></div>
+  </div>
+</div>
+
+<div id="initial-loader" aria-label="Initial loading screen" role="alert" aria-live="assertive" style="display:none;">
+  FyreX Loading
+  <div id="initial-progress">
+    <div id="initial-bar"></div>
   </div>
 </div>
 
@@ -135,13 +342,56 @@
   const loader = document.getElementById('loader');
   const loaderBar = document.getElementById('loader-bar');
   const loaderText = document.getElementById('loader-text');
+  const initialLoader = document.getElementById('initial-loader');
+  const initialBar = document.getElementById('initial-bar');
+
+  const menuHome = document.getElementById('menu-home');
+  const menuSettings = document.getElementById('menu-settings');
+  const contentHome = document.getElementById('content-home');
+  const contentSettings = document.getElementById('content-settings');
+
+  const settingPreload = document.getElementById('setting-preload');
+  const settingFakeLoading = document.getElementById('setting-fakeLoading');
+  const settingCaching = document.getElementById('setting-caching');
+  const settingRandomLoadingTime = document.getElementById('setting-randomLoadingTime');
+  const settingUrlBase = document.getElementById('setting-urlBase');
+
+  let gamesList = [];
+
+  // Sidebar tab switching
+  function switchTab(newTab) {
+    if (newTab === 'home') {
+      menuHome.classList.add('active');
+      menuHome.setAttribute('aria-selected', 'true');
+      menuHome.tabIndex = 0;
+      contentHome.hidden = false;
+
+      menuSettings.classList.remove('active');
+      menuSettings.setAttribute('aria-selected', 'false');
+      menuSettings.tabIndex = -1;
+      contentSettings.hidden = true;
+    } else {
+      menuSettings.classList.add('active');
+      menuSettings.setAttribute('aria-selected', 'true');
+      menuSettings.tabIndex = 0;
+      contentSettings.hidden = false;
+
+      menuHome.classList.remove('active');
+      menuHome.setAttribute('aria-selected', 'false');
+      menuHome.tabIndex = -1;
+      contentHome.hidden = true;
+    }
+  }
+  menuHome.addEventListener('click', () => switchTab('home'));
+  menuSettings.addEventListener('click', () => switchTab('settings'));
 
   async function loadGames() {
     try {
-      const res = await fetch(gamesJsonUrl, {cache: 'no-store'});
+      const res = await fetch(gamesJsonUrl, {cache: settingCaching.checked ? 'default' : 'no-store'});
       if (!res.ok) throw new Error('Failed to load games.json');
-      const games = await res.json();
-      renderGames(games);
+      gamesList = await res.json();
+      renderGames(gamesList);
+      if (settingPreload.checked) preloadImages(gamesList);
     } catch {
       gamesContainer.innerHTML = '<p style="color:#bbb">Failed to load games.json</p>';
     }
@@ -157,7 +407,7 @@
       const card = document.createElement('div');
       card.className = 'game-card';
       card.innerHTML = `
-        <img src="${game.directory}/${game.image || 'cover.png'}" alt="${game.name}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22140%22 height=%22100%22><rect width=%22140%22 height=%22100%22 fill=%23031a18%22/><text x=%2270%22 y=%2250%22 fill=%22%23ccc%22 font-size=%2212%22 font-family=%22Arial%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22>No Cover</text></svg>'" />
+        <img src="${game.directory}/${game.image || 'cover.png'}" alt="${game.name}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22100%22><rect width=%22160%22 height=%22100%22 fill=%23031a18%22/><text x=%2280%22 y=%2250%22 fill=%22%23ccc%22 font-size=%2214%22 font-family=%22Arial%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22>No Cover</text></svg>'" />
         <div class="game-title">${game.name}</div>
         <button class="btn-play" type="button">Play</button>
       `;
@@ -167,13 +417,25 @@
     });
   }
 
+  function preloadImages(games) {
+    games.forEach(game => {
+      const img = new Image();
+      img.src = `${game.directory}/${game.image || 'cover.png'}`;
+    });
+  }
+
   function onPlayClick(game, button) {
     button.disabled = true;
     loader.classList.add('active');
     loaderText.textContent = `Loading ${game.name}...`;
     loaderBar.style.width = '0%';
 
-    const duration = Math.floor(Math.random() * 10000) + 1000;
+    // Random time or fixed 3 seconds
+    let duration = 3000;
+    if (settingRandomLoadingTime.checked) {
+      duration = Math.floor(Math.random() * 9000) + 1000;
+    }
+
     const start = performance.now();
 
     function animate(time) {
@@ -183,14 +445,47 @@
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        window.location.href = `${game.directory}/index.html`;
+        // Redirect with optional base path
+        const basePath = settingUrlBase.value || '';
+        window.location.href = `${basePath}${game.directory}/index.html`;
       }
     }
-
     requestAnimationFrame(animate);
   }
 
-  loadGames();
+  // Initial fake loading screen
+  async function initialLoad() {
+    if (!settingFakeLoading.checked) return;
+
+    initialLoader.style.display = 'flex';
+    let width = 0;
+    const duration = 5000; // 5 seconds
+    const start = performance.now();
+
+    return new Promise(resolve => {
+      function progress(t) {
+        const elapsed = t - start;
+        const pct = Math.min(elapsed / duration, 1);
+        initialBar.style.width = (pct * 100) + '%';
+        if (pct < 1) {
+          requestAnimationFrame(progress);
+        } else {
+          initialLoader.style.display = 'none';
+          resolve();
+        }
+      }
+      requestAnimationFrame(progress);
+    });
+  }
+
+  async function startApp() {
+    await initialLoad();
+    await loadGames();
+  }
+
+  // Init
+  startApp();
+
 </script>
 </body>
 </html>
