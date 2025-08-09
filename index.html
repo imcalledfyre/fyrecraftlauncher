@@ -1,902 +1,609 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>FyreX Launcher — Remastered</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <style>
-    :root{
-      --bg:#070712;
-      --panel: rgba(18,18,32,0.7);
-      --muted:#9aa0b4;
-      --accent1:#6a00ff;
-      --accent2:#ff00aa;
-      --glass: rgba(255,255,255,0.03);
-      --radius:14px;
-      --shadow: 0 8px 30px rgba(10,8,20,0.6);
-      --glass-strong: rgba(255,255,255,0.04);
-      --success: #28c76f;
-      --danger: #ff6b6b;
-      --text: #e6e9f2;
-      --jank-size: 14px; /* for your janky preferences */
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FyreX Launcher</title>
+<style>
+  :root{
+    --bg:#071024; --panel:#0f1724aa; --muted:#96a0b8;
+    --accent1:#6a00ff; --accent2:#ff00aa; --radius:12px;
+    --text:#eef2ff; --success:#2bd67a; --danger:#ff6b6b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+    background: linear-gradient(180deg,#06101a 0%,#071024 100%);
+    color:var(--text); -webkit-font-smoothing:antialiased;
+    padding:18px; display:flex; gap:18px; align-items:stretch;
+  }
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-      background: radial-gradient(ellipse at 10% 10%, rgba(106,0,255,0.06), transparent 10%),
-                  radial-gradient(ellipse at 90% 90%, rgba(255,0,170,0.04), transparent 10%),
-                  var(--bg);
-      color:var(--text);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      overflow:hidden;
-    }
+  /* Layout */
+  .wrap{width:100%;display:grid;grid-template-columns:260px 1fr;gap:18px;min-height:80vh}
+  aside{background:var(--panel);padding:14px;border-radius:var(--radius);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+  main{background:transparent;padding:14px;border-radius:var(--radius);}
 
-    /* layout */
-    #app {
-      display:grid;
-      grid-template-columns: 260px 1fr;
-      gap:18px;
-      height:100vh;
-      padding:20px;
-    }
+  .brand{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+  .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(90deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:900}
+  h1{font-size:18px}
+  .muted{color:var(--muted);font-size:13px}
 
-    /* sidebar */
-    aside.sidebar{
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:var(--radius);
-      padding:18px;
-      box-shadow:var(--shadow);
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      min-width:220px;
-    }
+  nav{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  button.btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:10px;color:var(--text);cursor:pointer;text-align:left}
+  button.btn.primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));box-shadow:0 8px 28px rgba(106,0,255,0.12);font-weight:700}
 
-    .brand {
-      display:flex;
-      gap:12px;
-      align-items:center;
-    }
-    .logo {
-      width:48px;height:48px;border-radius:10px;
-      background:linear-gradient(135deg,var(--accent1),var(--accent2));
-      display:flex;align-items:center;justify-content:center;font-weight:900;color:white;
-      box-shadow: 0 6px 18px rgba(106,0,255,0.18), inset 0 -6px 20px rgba(0,0,0,0.2);
-      font-family:monospace;
-    }
-    .brand h1{font-size:18px}
-    .brand p{font-size:12px;color:var(--muted);margin-top:2px}
+  /* Progress / loading overlay */
+  #loaderOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,12,0.7);z-index:9999;backdrop-filter: blur(2px)}
+  #loaderCard{width:min(720px,92%);background:rgba(10,12,20,0.95);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+  .progressWrap{background:rgba(255,255,255,0.04);height:14px;border-radius:999px;overflow:hidden;margin-top:10px}
+  .progressBar{height:100%;width:0;background:linear-gradient(90deg,var(--accent1),var(--accent2));transition:width .2s linear}
 
-    nav.nav {
-      display:flex;flex-direction:column;gap:6px;margin-top:8px;
-    }
-    .nav-btn {
-      display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;
-      border:none;background:transparent;color:var(--muted);cursor:pointer;font-weight:600;
-      transition:all .18s ease;
-    }
-    .nav-btn:hover{background:var(--glass);color:var(--text);transform:translateY(-2px)}
-    .nav-btn.active{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;box-shadow:0 8px 30px rgba(106,0,255,0.12)}
+  /* Grid of games */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-top:12px}
+  .card{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .cover{width:140px;height:100px;background:#031018;border-radius:8px;object-fit:cover}
+  .gameTitle{font-weight:700;font-size:14px;text-align:center}
+  .gameMeta{font-size:12px;color:var(--muted);text-align:center}
 
-    .footer-controls { margin-top:auto; display:flex; gap:8px; align-items:center; flex-direction:column;}
-    .small {font-size:12px;color:var(--muted)}
-    .settings-btn { padding:8px 12px;border-radius:8px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);cursor:pointer;color:var(--text);}
+  .small{font-size:12px;color:var(--muted)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .toast{position:fixed;right:18px;bottom:18px;background:#071022;padding:10px;border-radius:8px;border-left:4px solid var(--accent1);box-shadow:0 10px 30px rgba(0,0,0,0.6);}
 
-    /* main area */
-    main.shell {
-      padding:20px;
-      height:100%;
-      overflow:auto;
-    }
+  /* settings */
+  .setting{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);margin-top:8px}
+  input[type=range]{width:140px}
+  label{font-size:13px;color:var(--muted)}
+  .toggle{width:44px;height:26px;border-radius:20px;background:#122;position:relative;cursor:pointer}
+  .knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .14s ease}
 
-    .top-row {
-      display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px;
-    }
-
-    .search {
-      flex:1;display:flex;gap:10px;align-items:center;
-    }
-    .search input{
-      width:100%;padding:12px 14px;border-radius:10px;border:none;background:var(--panel);color:var(--text);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,0.02);
-    }
-    .actions {display:flex;gap:10px;align-items:center}
-
-    .card {
-      background:var(--panel);border-radius:12px;padding:16px;box-shadow:var(--shadow);margin-bottom:12px;
-    }
-
-    .grid {
-      display:grid;
-      grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
-      gap:14px;
-    }
-
-    .game-card {
-      padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
-      display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.02);
-    }
-    .game-card img {width:120px;height:120px;object-fit:cover;border-radius:8px;background:#111}
-    .game-card h4{font-size:14px;margin-top:6px}
-    .game-card p{font-size:12px;color:var(--muted)}
-
-    /* big hero */
-    .hero {
-      display:flex;gap:18px;align-items:center;
-    }
-    .hero-left {flex:1}
-    .hero-right {width:260px}
-
-    .big-launch {
-      display:inline-flex;gap:12px;align-items:center;padding:12px 18px;border-radius:12px;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;border:none;font-weight:800;cursor:pointer;
-      box-shadow: 0 12px 40px rgba(106,0,255,0.18);
-    }
-
-    /* loading screen (overlay) */
-    #loading-overlay {
-      position:fixed;inset:0;background:linear-gradient(0deg, rgba(5,5,10,0.96), rgba(5,5,10,0.9));display:flex;align-items:center;justify-content:center;z-index:4000;
-      transition:opacity .4s ease;backdrop-filter: blur(6px);
-    }
-    #loading-card { width:520px; padding:22px;border-radius:14px;background:var(--panel);text-align:center;box-shadow:var(--shadow)}
-    .progress-bar { height:8px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;margin-top:14px}
-    .progress { height:100%;width:0;background:linear-gradient(90deg,var(--accent1),var(--accent2));transition:width .3s ease}
-
-    /* TOS modal */
-    #tos-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:5000}
-    #tos-card{width:min(900px,95%);border-radius:12px;padding:22px;background:linear-gradient(180deg,rgba(20,20,36,0.95),rgba(12,12,20,0.95));color:var(--text);box-shadow:var(--shadow);max-height:85vh;overflow:auto}
-    .tos-actions{display:flex;gap:10px;justify-content:center;margin-top:14px}
-    .btn {padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-    .btn.accept {background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white}
-    .btn.decline {background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-
-    /* toasts */
-    #toasts {position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:6000}
-    .toast {background:#0f1724;padding:10px 14px;border-radius:10px;color:var(--text);box-shadow:var(--shadow);border-left:4px solid var(--accent1);font-weight:600}
-
-    /* settings modal */
-    .modal {position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:5500}
-    .modal .modal-card{width:640px;background:var(--panel);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
-    label{display:block;font-size:13px;margin-top:10px;color:var(--muted)}
-    .row{display:flex;gap:10px;align-items:center}
-    .switch{position:relative;width:48px;height:26px;background:#1b1b2b;border-radius:20px;cursor:pointer}
-    .switch .knob{position:absolute;width:22px;height:22px;background:white;border-radius:50%;top:2px;left:2px;transition:all .18s ease}
-    .switch.on{background:linear-gradient(90deg,var(--accent1),var(--accent2))}
-    .kbd{background:#0b0b10;padding:4px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);font-family:monospace;font-size:12px}
-
-    /* responsive */
-    @media (max-width:900px){
-      #app { grid-template-columns: 1fr; padding:12px; }
-      aside.sidebar { flex-direction:row;overflow:auto;padding:8px;gap:10px;border-radius:10px }
-      .hero-right{display:none}
-      .grid{ grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); }
-    }
-  </style>
+  /* accessibility */
+  @media (max-width:900px){.wrap{grid-template-columns:1fr;}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
 <body>
-  <!-- lightweight starfield canvas (2D) -->
-  <canvas id="starfield" style="position:fixed;inset:0;z-index:-1"></canvas>
-
-  <!-- Loading overlay (fake-but-pretty) -->
-  <div id="loading-overlay" aria-hidden="false">
-    <div id="loading-card">
-      <h2 style="margin-bottom:6px">FyreX Launcher</h2>
-      <div style="color:var(--muted);font-size:13px">Loading assets & preparing your glorious chaos...</div>
-      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-        <div class="progress" id="bootstrap-progress"></div>
-      </div>
-      <div style="margin-top:10px;color:var(--muted);font-size:13px" id="bootstrap-text">Starting...</div>
-      <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
-        <button class="btn decline" id="loading-cancel">Cancel</button>
-        <button class="btn accept" id="loading-skip">Skip</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Terms of Service modal -->
-  <div id="tos-modal" style="display:none">
-    <div id="tos-card">
-      <h1>FyreX — Terms of Service</h1>
-      <p style="color:var(--muted)">Scroll, read if you want, or skim because you love living dangerously.</p>
-      <hr style="margin:12px 0;border:none;height:1px;background:rgba(255,255,255,0.03)" />
-      <div style="max-height:50vh;overflow:auto;padding-right:8px">
-        <!-- trimmed for brevity but keep your original content here or append dynamically -->
-        <h3>Acceptable Use</h3>
-        <p>Don't be a criminal. Don't break other people's stuff. If you connect weird clients you might get banned.</p>
-        <h3>Account Responsibility</h3>
-        <p>You responsibly manage your accounts, passwords, and poor decisions.</p>
-        <h3>Modifications & Liability</h3>
-        <p>We update this whenever. Use at your own risk. We also recommend not paying sketchy people for "launcher keys".</p>
-      </div>
-
-      <div style="display:flex;gap:8px;justify-content:center;margin-top:14px" class="tos-actions">
-        <button class="btn decline" id="tos-decline">Decline</button>
-        <button class="btn accept" id="tos-accept">I Accept</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Settings modal -->
-  <div id="settings-modal" class="modal" aria-hidden="true">
-    <div class="modal-card">
-      <h3>Settings</h3>
-      <label>Theme</label>
-      <div class="row">
-        <button id="theme-toggle" class="settings-btn">Toggle Dark</button>
-        <div style="margin-left:auto" class="small">Saved ✔</div>
-      </div>
-
-      <label>Compact UI</label>
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <div class="switch" id="compact-switch"><div class="knob"></div></div>
-        <div class="small" style="color:var(--muted)">Smaller cards & denser layout</div>
-      </div>
-
-      <label>Fake Loading Delay</label>
-      <div class="row">
-        <input id="fake-load-input" type="range" min="0" max="8000" step="500" style="flex:1" />
-        <div class="kbd" id="fake-load-value">1200ms</div>
-      </div>
-
-      <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
-        <button class="btn decline" id="settings-close">Close</button>
-        <button class="btn accept" id="settings-save">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast container -->
-  <div id="toasts" aria-live="polite"></div>
-
-  <div id="app">
-    <aside class="sidebar">
+  <div class="wrap">
+    <aside>
       <div class="brand">
         <div class="logo">FX</div>
         <div>
-          <h1>FyreX</h1>
-          <p class="small">Launcher • v1.3 (remix)</p>
+          <h1>FyreX Launcher</h1>
+          <div class="muted">Cache-first, Chromebook friendly</div>
         </div>
       </div>
 
-      <nav class="nav" role="navigation" aria-label="Main">
-        <button class="nav-btn active" data-tab="home">🏠 Home <span class="small" style="margin-left:auto">Alt+1</span></button>
-        <button class="nav-btn" data-tab="news">📰 News <span class="small" style="margin-left:auto">Alt+2</span></button>
-        <button class="nav-btn" data-tab="play">▶ Play <span class="small" style="margin-left:auto">Alt+3</span></button>
-        <button class="nav-btn" data-tab="chat">💬 Chat <span class="small" style="margin-left:auto">Alt+4</span></button>
-        <button class="nav-btn" data-tab="timers">⏱ Countdowns <span class="small" style="margin-left:auto">Alt+5</span></button>
-        <button class="nav-btn" data-tab="games">🎮 Games <span class="small" style="margin-left:auto">Alt+6</span></button>
-        <button class="nav-btn" data-tab="about">ℹ️ About <span class="small" style="margin-left:auto">Alt+7</span></button>
+      <div class="muted" style="margin-top:8px">Quick actions</div>
+      <nav>
+        <button class="btn primary" id="btn-reload-covers">Preload Covers</button>
+        <button class="btn" id="btn-clear-cache">Clear Game Cache</button>
+        <button class="btn" id="btn-open-settings">Settings</button>
       </nav>
 
-      <div class="footer-controls">
-        <button class="settings-btn" id="open-settings">Settings</button>
-        <div class="small">Visitor: <strong id="visitor-count">0</strong></div>
-        <div style="display:flex;gap:6px;width:100%">
-          <button class="settings-btn" id="rebuildCacheBtnSidebar">Check Updates</button>
-          <button class="settings-btn" id="clear-cache">Clear</button>
+      <div style="margin-top:12px" class="muted">Settings</div>
+      <div class="setting">
+        <div>
+          <div style="font-weight:700">Auto preload</div>
+          <div class="small">Preload covers on startup</div>
         </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center">Pro tip: press <span class="kbd">Alt+1..7</span> to jump tabs</div>
+        <div id="auto-preload-toggle" class="toggle" role="switch" aria-checked="false"><div class="knob"></div></div>
       </div>
+
+      <div class="setting">
+        <div>
+          <div style="font-weight:700">Max concurrency</div>
+          <div class="small">Limit simultaneous downloads</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input id="concurrency-range" type="range" min="2" max="8" value="4" />
+          <div class="small" id="concurrency-val">4</div>
+        </div>
+      </div>
+
+      <div class="setting">
+        <div>
+          <div style="font-weight:700">Reduced motion</div>
+          <div class="small">Respect user preference</div>
+        </div>
+        <div id="reduced-motion-toggle" class="toggle"><div class="knob"></div></div>
+      </div>
+
+      <div style="margin-top:14px" class="muted">Cache stats</div>
+      <div class="small" id="cache-stats">Loading stats…</div>
     </aside>
 
-    <main class="shell" id="main-content" tabindex="0">
-      <div class="top-row">
-        <div class="hero">
-          <div class="hero-left">
-            <h2>Welcome back, <span id="username-display">Traveler</span>.</h2>
-            <div style="color:var(--muted);margin-top:6px">Pick something to launch or waste time browsing the news like a normal chaos agent.</div>
-            <div style="margin-top:12px">
-              <button class="big-launch" id="global-launch">Launch last game ▶</button>
-              <button class="settings-btn" id="open-chat" style="margin-left:10px">Open Chat</button>
-            </div>
-          </div>
-          <div class="hero-right card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <div style="font-size:12px;color:var(--muted)">Server Status</div>
-                <div id="server-status" style="font-weight:800;margin-top:6px">Checking...</div>
-              </div>
-              <div style="text-align:right">
-                <div class="small" id="last-up">Last check: --</div>
-                <button class="settings-btn" id="force-check" style="margin-top:6px">Re-check</button>
-              </div>
-            </div>
-          </div>
+    <main>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h2>Games</h2>
+          <div class="small">Tap a game to download its assets, then launch. First visit caches resources.</div>
+        </div>
+        <div>
+          <button class="btn" id="btn-open-tos">TOS</button>
         </div>
       </div>
 
-      <!-- Tabs content -->
-      <section id="home" class="card tab active">
-        <h3>Home</h3>
-        <p style="color:var(--muted)">Latest news, featured games, and quick actions.</p>
+      <div style="margin-top:12px" id="progress-area" aria-hidden="true">
+        <div style="font-weight:700">Preload progress</div>
+        <div class="progressWrap"><div class="progressBar" id="preload-progress"></div></div>
+        <div class="small" id="preload-text">Idle</div>
+      </div>
 
-        <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
-          <div class="card" style="flex:1;min-width:280px">
-            <h4>Featured</h4>
-            <div style="display:flex;gap:10px;align-items:center">
-              <img src="https://picsum.photos/seed/fx1/160/160" alt="featured" style="width:110px;height:110px;object-fit:cover;border-radius:10px">
-              <div>
-                <div style="font-weight:800">Fyrecraft — Alpha</div>
-                <div style="color:var(--muted);font-size:13px;margin-top:6px">Hotfixes, shards, and the occasional meltdown. Click Play to suffer joyfully.</div>
-                <div style="margin-top:8px"><button class="settings-btn" id="play-feature">Play</button></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" style="width:320px">
-            <h4>Quick Actions</h4>
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <button class="settings-btn" id="open-settings-quick">Settings</button>
-              <button class="settings-btn" id="open-tos">TOS</button>
-              <button class="settings-btn" id="visit-discord">Discord</button>
-            </div>
-            <div style="margin-top:10px;color:var(--muted);font-size:13px">
-              <strong>Tip:</strong> rebuild cache when new games vanish into the void.
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top:18px">
-          <h4>Recommended</h4>
-          <div class="grid" id="recommended-grid"></div>
-        </div>
-      </section>
-
-      <section id="news" class="card tab" style="display:none">
-        <h3>News</h3>
-        <div id="news-list" style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
-          <!-- dynamic -->
-        </div>
-      </section>
-
-      <section id="play" class="card tab" style="display:none">
-        <h3>Play</h3>
-        <p style="color:var(--muted)">Game editions & launchers</p>
-
-        <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
-          <div style="flex:1;min-width:260px" class="card">
-            <h4>Desktop edition</h4>
-            <p style="color:var(--muted)">20MB browser game | Version 4.0</p>
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <button class="big-launch" id="play-desktop">Play Desktop</button>
-              <button class="settings-btn" id="report-issue-desk">Report</button>
-            </div>
-            <div style="margin-top:8px;color:var(--danger);font-weight:800">KNOWN ISSUE: Sometimes doesn't launch. We'll fix it. Maybe.</div>
-          </div>
-
-          <div style="flex:1;min-width:260px" class="card">
-            <h4>Chromebook edition</h4>
-            <p style="color:var(--muted)">WASM loader | Version 4.0</p>
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <button class="big-launch" id="play-chrome">Play Chromebook</button>
-              <button class="settings-btn" id="report-issue-chrome">Report</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="chat" class="card tab" style="display:none">
-        <h3>Chat</h3>
-        <p style="color:var(--muted)">Open the chat client in a new tab (or another sad window).</p>
-        <div style="margin-top:8px"><button class="settings-btn" id="open-chat-2">Open Chat</button></div>
-      </section>
-
-      <section id="timers" class="card tab" style="display:none">
-        <h3>Countdowns</h3>
-        <p style="color:var(--muted)">Preserved your tickcounters. Because nostalgia is cheating.</p>
-        <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
-          <!-- preserved tickcounter placeholders -->
-          <div class="card" style="flex:1;min-width:220px">SCHOOL IS OVER<br><small style="color:var(--muted)">Countdown widget preserved</small></div>
-          <div class="card" style="flex:1;min-width:220px">MEMORIAL DAY WEEKEND<br><small style="color:var(--muted)">Countdown widget preserved</small></div>
-        </div>
-      </section>
-
-      <section id="games" class="card tab" style="display:none">
-        <h3>All Games</h3>
-        <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
-          <input id="games-search" placeholder="Search games..." style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--panel);color:var(--text)" />
-          <button class="settings-btn" id="rebuildCacheBtn">Check for Updates</button>
-        </div>
-        <div style="margin-top:12px" id="all-games">
-          <div class="grid" id="all-games-grid"></div>
-        </div>
-      </section>
-
-      <section id="about" class="card tab" style="display:none">
-        <h3>About</h3>
-        <p style="color:var(--muted)">This is the remastered FyreX launcher. If you paid anyone for keys or launcher support, go revoke your life choices.</p>
-        <h4>History</h4>
-        <p style="color:var(--muted)">Originally leaked to the kids, exploded to 11k users, chaos ensued. You're here now. Sorry/not sorry.</p>
-      </section>
-
+      <div id="games-grid" class="grid" aria-live="polite" style="margin-top:14px">
+        <!-- game cards injected here -->
+      </div>
     </main>
   </div>
 
-  <script>
-    /* -------------------------
-       Tiny Utilities & state
-       ------------------------- */
-    const STORAGE = {
-      settings: 'fyrex_settings_v2',
-      tos: 'fyrex_tos_v2',
-      lastGame: 'fyrex_lastgame_v2'
-    };
+  <!-- Loader overlay -->
+  <div id="loaderOverlay" style="display:none">
+    <div id="loaderCard">
+      <div style="font-weight:800">Preparing assets…</div>
+      <div class="small" id="loader-sub">Starting</div>
+      <div class="progressWrap"><div class="progressBar" id="loader-bar"></div></div>
+      <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end">
+        <button class="btn" id="loader-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
 
-    // default settings
-    const defaultSettings = {
-      compact: false,
-      fakeLoadMs: 1200,
-      theme: 'dark'
-    };
+  <div id="toasts" aria-live="polite" style="position:fixed;right:18px;bottom:18px;z-index:9999"></div>
 
-    // apply settings
-    function loadSettings(){
-      try {
-        const s = JSON.parse(localStorage.getItem(STORAGE.settings) || '{}');
-        return Object.assign({}, defaultSettings, s);
-      } catch(e){ return {...defaultSettings} }
-    }
-    let settings = loadSettings();
+<script>
+/* =========================
+   Configuration & helpers
+   ========================= */
+const CACHE_COVERS = 'fyrex-covers-v1';
+const CACHE_ASSETS = 'fyrex-assets-v1';
+const GAMES_JSON = 'games.json'; // must be at root or change path
+const DEFAULT_CONCURRENCY = 4;
 
-    function saveSettings(){
-      localStorage.setItem(STORAGE.settings, JSON.stringify(settings));
-      showToast('Settings saved ✔');
-    }
+const ui = {
+  grid: document.getElementById('games-grid'),
+  preloadProgress: document.getElementById('preload-progress'),
+  preloadText: document.getElementById('preload-text'),
+  loaderOverlay: document.getElementById('loaderOverlay'),
+  loaderBar: document.getElementById('loader-bar'),
+  loaderSub: document.getElementById('loader-sub'),
+  toasts: document.getElementById('toasts'),
+  cacheStats: document.getElementById('cache-stats'),
+  progressArea: document.getElementById('progress-area')
+};
 
-    // small toasts
-    function showToast(msg, ms=3000){
-      const container = document.getElementById('toasts');
-      const t = document.createElement('div');
-      t.className = 'toast'; t.textContent = msg;
-      container.appendChild(t);
-      setTimeout(()=> { t.style.opacity = '0'; t.style.transform='translateX(8px)'; }, ms-600);
-      setTimeout(()=> { t.remove() }, ms);
-    }
+let settings = loadSettings();
+let games = [];
 
-    /* -------------------------
-       Starfield (2D canvas)
-       ------------------------- */
-    const starCanvas = document.getElementById('starfield');
-    const sctx = starCanvas.getContext('2d');
-    let w=0,h=0,stars=[];
-    function resizeStars(){
-      w = starCanvas.width = innerWidth * devicePixelRatio;
-      h = starCanvas.height = innerHeight * devicePixelRatio;
-      starCanvas.style.width = innerWidth+'px';
-      starCanvas.style.height = innerHeight+'px';
-      // re-generate if empty or on resize
-      const count = Math.min(2000, Math.floor((innerWidth*innerHeight)/3000));
-      stars.length = 0;
-      for(let i=0;i<count;i++){
-        stars.push({
-          x: Math.random()*w,
-          y: Math.random()*h,
-          z: 0.2+Math.random()*1.4,
-          s: Math.random()*1.6,
-          a: 0.5+Math.random()*0.6
-        });
-      }
-    }
-    addEventListener('resize', () => { resizeStars() });
+/* tiny toast */
+function toast(msg, t=3000){
+  const el = document.createElement('div'); el.className='toast'; el.textContent=msg;
+  ui.toasts.appendChild(el);
+  setTimeout(()=> el.style.opacity='0', t-500);
+  setTimeout(()=> el.remove(), t);
+}
 
-    let starTick = 0;
-    function stepStars(){
-      sctx.clearRect(0,0,w,h);
-      starTick += 0.01;
-      for(const s of stars){
-        s.x -= 0.25 * s.z;
-        if(s.x < 0) s.x = w + Math.random()*200;
-        const r = s.s * (1 + 0.3*Math.sin(starTick + s.x*0.0001));
-        sctx.globalAlpha = s.a;
-        sctx.fillStyle = `rgba(255,255,255,${s.a})`;
-        sctx.beginPath();
-        sctx.ellipse(s.x, s.y, r, r, 0, 0, Math.PI*2);
-        sctx.fill();
-      }
-      requestAnimationFrame(stepStars);
-    }
-    resizeStars();
-    requestAnimationFrame(stepStars);
+/* settings persistence */
+function loadSettings(){
+  try{
+    const raw = localStorage.getItem('fyrex_settings_v1');
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {autoPreload:true, concurrency: DEFAULT_CONCURRENCY, reducedMotion: false};
+}
+function saveSettings(){
+  localStorage.setItem('fyrex_settings_v1', JSON.stringify(settings));
+}
 
-    /* -------------------------
-       Bootstrap fake loader
-       ------------------------- */
-    const overlay = document.getElementById('loading-overlay');
-    const progressEl = document.getElementById('bootstrap-progress');
-    const textEl = document.getElementById('bootstrap-text');
-    let _bootCancelled=false;
+/* toggle UI helpers */
+function setToggle(el, on){
+  el.setAttribute('aria-checked', !!on);
+  const k = el.querySelector('.knob');
+  k.style.left = on ? '20px' : '3px';
+  el.style.background = on ? 'linear-gradient(90deg,var(--accent1),var(--accent2))' : '';
+}
 
-    function fakeLoadSequence(ms = settings.fakeLoadMs){
-      overlay.style.display = 'flex';
-      overlay.style.opacity = '1';
-      progressEl.style.width = '0%';
-      textEl.textContent = 'Starting...';
-      _bootCancelled=false;
-      // simulated phases
-      const phases = [
-        {t:0.25, text:'Connecting to servers'},
-        {t:0.5, text:'Verifying assets'},
-        {t:0.85, text:'Preparing UI'},
-        {t:1.0, text:'Launching!'}
-      ];
-      const start=performance.now();
-      return new Promise((resolve, reject) => {
-        function tick(){
-          if(_bootCancelled){ overlay.style.display='none'; textEl.textContent='Aborted'; reject('cancel'); return; }
-          const p = Math.min(1, (performance.now()-start)/ms);
-          progressEl.style.width = Math.floor(p*100)+'%';
-          for(const ph of phases){
-            if(p <= ph.t){
-              textEl.textContent = ph.text + ' ('+Math.floor(p*100)+'%)';
-              break;
+/* =========================
+   Service Worker (dynamic register)
+   ========================= */
+async function registerSW(){
+  if('serviceWorker' in navigator){
+    try{
+      // create blob service worker script (so single-file deploy works)
+      const swSource = `
+        const CACHE_ASSETS = '${CACHE_ASSETS}';
+        const CACHE_COVERS = '${CACHE_COVERS}';
+        self.addEventListener('install', e => { self.skipWaiting(); });
+        self.addEventListener('activate', e => { e.waitUntil(clients.claim()); });
+        // default fetch: try cache first for assets + covers
+        self.addEventListener('fetch', event => {
+          const url = new URL(event.request.url);
+          // only handle GETs
+          if(event.request.method !== 'GET') return;
+          // simple heuristic: if in cache, serve; else fetch and optionally cache for assets/covers
+          event.respondWith((async function(){
+            const cacheKeys = [CACHE_ASSETS, CACHE_COVERS];
+            for(const key of cacheKeys){
+              const c = await caches.open(key);
+              const match = await c.match(event.request);
+              if(match) return match;
             }
-          }
-          if(p < 1) requestAnimationFrame(tick); else {
-            setTimeout(()=> {
-              overlay.style.opacity = '0';
-              overlay.style.display = 'none';
-              resolve();
-            }, 350);
-          }
-        }
-        tick();
-      });
+            try {
+              const res = await fetch(event.request);
+              // optionally cache images (covers) or game assets by path heuristics
+              // caution: avoid caching everything to not bloat
+              const pathname = url.pathname || '';
+              if(pathname.match(/\\.png$|\\.jpg$|\\.jpeg$|\\.webp$|\\.gif$/i)) {
+                const c = await caches.open(CACHE_COVERS);
+                c.put(event.request, res.clone()).catch(()=>{});
+              } else if(pathname.includes('/assets/') || pathname.endsWith('.json') || pathname.endsWith('.wasm') ){
+                const c = await caches.open(CACHE_ASSETS);
+                c.put(event.request, res.clone()).catch(()=>{});
+              }
+              return res;
+            } catch(err){
+              // fallback: try any cache
+              for(const key of cacheKeys){
+                const c = await caches.open(key);
+                const match = await c.match('/offline.png');
+                if(match) return match;
+              }
+              return new Response('', {status: 408, statusText:'Network error'});
+            }
+          })());
+        });
+      `;
+      const blob = new Blob([swSource], {type: 'application/javascript'});
+      const swUrl = URL.createObjectURL(blob);
+      await navigator.serviceWorker.register(swUrl);
+      console.log('Service worker registered (blob)');
+    }catch(e){
+      console.warn('SW register failed', e);
     }
+  }
+}
 
-    document.getElementById('loading-cancel').addEventListener('click', ()=> {
-      _bootCancelled = true;
-      showToast('Loading cancelled');
-    });
-    document.getElementById('loading-skip').addEventListener('click', ()=> {
-      _bootCancelled = false;
-      progressEl.style.width = '100%';
-      textEl.textContent = 'Skipped — launching';
-      setTimeout(()=> { overlay.style.display='none' }, 250);
-      showToast('Skipping load, hope you like missing assets');
-    });
-
-    /* -------------------------
-       TOS handling
-       ------------------------- */
-    const tosKey = STORAGE.tos;
-    function checkTOS(){
-      if(localStorage.getItem(tosKey) === 'true'){
-        document.getElementById('tos-modal').style.display = 'none';
-        return Promise.resolve();
-      } else {
-        document.getElementById('tos-modal').style.display = 'flex';
-        return new Promise((res,rej) => {
-          document.getElementById('tos-accept').onclick = () => {
-            localStorage.setItem(tosKey, 'true');
-            document.getElementById('tos-modal').style.display = 'none';
-            res();
-          };
-          document.getElementById('tos-decline').onclick = () => {
-            alert('You must accept to use FyreX Launcher.');
-            // remain on modal
-          };
+/* =========================
+   Fetch helpers (concurrency-limited)
+   ========================= */
+function limitedFetchAll(urls, concurrency=4, onProgress){
+  return new Promise((resolve)=>{
+    const results = [];
+    let idx=0, active=0, done=0;
+    function next(){
+      if(done === urls.length) return resolve(results);
+      while(active < concurrency && idx < urls.length){
+        const curIdx = idx++;
+        const url = urls[curIdx];
+        active++;
+        fetch(url, {cache:'no-cache'}).then(r=>{
+          results[curIdx] = r;
+        }).catch(e=>{
+          results[curIdx] = null;
+        }).finally(()=>{
+          active--; done++;
+          if(onProgress) onProgress(done, urls.length, url);
+          next();
         });
       }
     }
+    next();
+  });
+}
 
-    /* -------------------------
-       Navigation & keyboard
-       ------------------------- */
-    const tabs = document.querySelectorAll('.nav-btn');
-    function switchTo(tabId){
-      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(x=> x.style.display = 'none');
-      const btn = [...tabs].find(b=> b.dataset.tab === tabId);
-      if(btn) btn.classList.add('active');
-      const section = document.getElementById(tabId);
-      if(section) section.style.display = '';
-      localStorage.setItem('fyrex_active_tab', tabId);
-    }
-    tabs.forEach(b=>{
-      b.addEventListener('click', ()=> switchTo(b.dataset.tab));
-    });
-    // keyboard Alt+1..7
-    addEventListener('keydown', (e)=>{
-      if(e.altKey && !e.shiftKey && !e.ctrlKey){
-        if(e.key >= '1' && e.key <= '7'){
-          const idx = Number(e.key) - 1;
-          const t = [...tabs][idx];
-          if(t) t.click();
-        }
+/* =========================
+   Preload covers (on startup or button)
+   ========================= */
+async function preloadCovers(){
+  if(!('caches' in window)) {
+    toast('Cache API not supported — preloading skipped');
+    return;
+  }
+  ui.progressArea.style.display = '';
+  ui.preloadProgress.style.width = '0%';
+  ui.preloadText.textContent = 'Preparing...';
+  const coverUrls = games.map(g => g.directory + '/' + (g.image || 'cover.png')).filter(Boolean);
+  // de-dupe
+  const urls = [...new Set(coverUrls)];
+  if(urls.length === 0){
+    ui.preloadText.textContent = 'No covers to preload';
+    setTimeout(()=> ui.progressArea.style.display='none', 1200);
+    return;
+  }
+
+  const concurrency = settings.concurrency || DEFAULT_CONCURRENCY;
+  let done = 0;
+  const progressCallback = (d, total, latest) => {
+    const p = Math.round((d/total)*100);
+    ui.preloadProgress.style.width = p + '%';
+    ui.preloadText.textContent = `Preloading covers ${d}/${total} (${p}%)`;
+  };
+
+  // fetch and cache individually with concurrency control (so devices don't freak)
+  const cache = await caches.open(CACHE_COVERS);
+  const toFetch = [];
+  for(const url of urls){
+    try{
+      const req = new Request(url, {mode:'no-cors'});
+      const match = await cache.match(req);
+      if(!match) toFetch.push(url);
+      else {
+        done++;
+        progressCallback(done, urls.length, url);
       }
-    });
+    }catch(e){ toFetch.push(url); }
+  }
+  if(toFetch.length === 0){
+    ui.preloadText.textContent = 'All covers cached';
+    setTimeout(()=> ui.progressArea.style.display='none', 800);
+    return;
+  }
 
-    // restore last tab
-    const lastTab = localStorage.getItem('fyrex_active_tab');
-    if(lastTab) { setTimeout(()=> switchTo(lastTab), 0) }
-
-    /* -------------------------
-       Settings modal wiring
-       ------------------------- */
-    const settingsModal = document.getElementById('settings-modal');
-    document.getElementById('open-settings').addEventListener('click', ()=> {
-      document.getElementById('fake-load-input').value = settings.fakeLoadMs;
-      document.getElementById('fake-load-value').textContent = settings.fakeLoadMs + 'ms';
-      settingsModal.style.display = 'flex';
-      settingsModal.setAttribute('aria-hidden','false');
-    });
-    document.getElementById('settings-close').addEventListener('click', ()=> { settingsModal.style.display='none'; settingsModal.setAttribute('aria-hidden','true')});
-    document.getElementById('open-settings-quick').addEventListener('click', ()=> document.getElementById('open-settings').click());
-
-    // theme & compact toggles
-    document.getElementById('theme-toggle').addEventListener('click', ()=> {
-      settings.theme = settings.theme === 'dark' ? 'light' : 'dark';
-      applyTheme();
-      showToast('Theme toggled');
-    });
-
-    const compactSwitch = document.getElementById('compact-switch');
-    compactSwitch.addEventListener('click', ()=> {
-      settings.compact = !settings.compact;
-      compactSwitch.classList.toggle('on', settings.compact);
-      compactSwitch.querySelector('.knob').style.left = settings.compact ? '24px' : '2px';
-      applyCompact();
-    });
-
-    document.getElementById('fake-load-input').addEventListener('input', (e)=> {
-      document.getElementById('fake-load-value').textContent = e.target.value + 'ms';
-    });
-
-    document.getElementById('settings-save').addEventListener('click', ()=> {
-      settings.fakeLoadMs = Number(document.getElementById('fake-load-input').value) || 1200;
-      saveSettings();
-      settingsModal.style.display = 'none';
-      settingsModal.setAttribute('aria-hidden','true');
-    });
-
-    function applyTheme(){
-      if(settings.theme === 'light'){
-        document.documentElement.style.setProperty('--bg','#f4f6fb');
-        document.documentElement.style.setProperty('--text','#111827');
-        document.documentElement.style.setProperty('--muted','#4b5563');
-      } else {
-        document.documentElement.style.setProperty('--bg','#070712');
-        document.documentElement.style.setProperty('--text','#e6e9f2');
-        document.documentElement.style.setProperty('--muted','#9aa0b4');
+  // use limitedFetchAll but also put each into cache as they arrive
+  let idx=0, active=0;
+  await new Promise(resolve => {
+    function next(){
+      if(idx >= toFetch.length && active === 0) { resolve(); return; }
+      while(active < concurrency && idx < toFetch.length){
+        const url = toFetch[idx++];
+        active++;
+        fetch(url).then(async res => {
+          if(res && res.ok) await cache.put(new Request(url), res.clone()).catch(()=>{});
+        }).catch(()=>{}).finally(()=> {
+          active--;
+          done++;
+          progressCallback(done, urls.length, url);
+          next();
+        });
       }
     }
-    function applyCompact(){
-      if(settings.compact){
-        document.documentElement.style.setProperty('--radius','8px');
-        document.querySelectorAll('.card').forEach(c=> c.style.padding='10px');
-        document.querySelectorAll('.game-card img').forEach(i=> i.style.width='100px');
-      } else {
-        document.documentElement.style.setProperty('--radius','14px');
-        document.querySelectorAll('.card').forEach(c=> c.style.padding='16px');
-        document.querySelectorAll('.game-card img').forEach(i=> i.style.width='120px');
+    next();
+  });
+
+  ui.preloadText.textContent = 'Preload complete';
+  setTimeout(()=> ui.progressArea.style.display='none', 900);
+  updateCacheStats();
+  toast('Covers preloaded ✔', 2200);
+}
+
+/* =========================
+   Load games.json & render
+   ========================= */
+async function fetchGamesJson(){
+  try{
+    const res = await fetch(GAMES_JSON, {cache:'no-store'});
+    if(!res.ok) { throw new Error('games.json not found'); }
+    const json = await res.json();
+    return Array.isArray(json) ? json : [];
+  }catch(e){
+    console.warn('games.json error', e);
+    toast('games.json missing or invalid', 4000);
+    return [];
+  }
+}
+
+function renderGamesList(list){
+  ui.grid.innerHTML = '';
+  if(list.length === 0){
+    ui.grid.innerHTML = '<div class="muted">No games found. Place a games.json file at root.</div>';
+    return;
+  }
+  for(const g of list){
+    const card = document.createElement('div'); card.className='card';
+    const img = document.createElement('img'); img.className='cover';
+    img.alt = g.name || 'game';
+    // try to load from cache implicitly; use simple src path
+    img.src = g.directory + '/' + (g.image || 'cover.png');
+    // show fallback if fails
+    img.onerror = ()=> { img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200"><rect width="100%" height="100%" fill="%23051a26"/><text x="50%" y="50%" fill="%23aaa" font-size="18" font-family="Arial" text-anchor="middle" dy=".3em">No Cover</text></svg>'; }
+    const title = document.createElement('div'); title.className='gameTitle'; title.textContent = g.name || 'Untitled';
+    const meta = document.createElement('div'); meta.className='gameMeta'; meta.textContent = g.version ? ('v' + g.version) : '';
+    const actions = document.createElement('div'); actions.style.display='flex'; actions.style.gap='6px';
+
+    const playBtn = document.createElement('button'); playBtn.className='btn primary'; playBtn.textContent='Play';
+    playBtn.addEventListener('click', ()=> onPlayClick(g, playBtn));
+    actions.appendChild(playBtn);
+
+    // optional "pre-cache assets" small button
+    const cacheBtn = document.createElement('button'); cacheBtn.className='btn'; cacheBtn.textContent='Cache';
+    cacheBtn.addEventListener('click', (e)=> { e.stopPropagation(); cacheGameAssets(g).then(()=> toast('Cached '+(g.name||'game'))).catch(()=> toast('Cache failed'))});
+    actions.appendChild(cacheBtn);
+
+    card.appendChild(img);
+    card.appendChild(title);
+    card.appendChild(meta);
+    card.appendChild(actions);
+
+    ui.grid.appendChild(card);
+  }
+}
+
+/* =========================
+   Cache stats & utilities
+   ========================= */
+async function updateCacheStats(){
+  if(!('caches' in window)) { ui.cacheStats.textContent = 'Cache API not available'; return; }
+  const keys = await caches.keys();
+  let cov = 0, assets = 0;
+  try{
+    const c1 = await caches.open(CACHE_COVERS);
+    const c2 = await caches.open(CACHE_ASSETS);
+    cov = (await c1.keys()).length;
+    assets = (await c2.keys()).length;
+  }catch(e){}
+  ui.cacheStats.textContent = `${cov} cover(s), ${assets} asset(s) cached`;
+}
+
+/* =========================
+   Game asset caching on click
+   ========================= */
+async function cacheGameAssets(game){
+  // returns true if cached (or already cached). Will fetch assets.json if exists.
+  if(!('caches' in window)) throw new Error('Cache API unsupported');
+  const assetsCache = await caches.open(CACHE_ASSETS);
+  // define a marker URL for this game's cached state
+  const markerUrl = new URL('/__game_cached__' + (game.directory || '/unknown'), location.origin).toString();
+  // If marker exists, consider cached
+  const marker = await assetsCache.match(markerUrl);
+  if(marker) return true;
+
+  // Attempt to fetch assets.json in game directory; fallback to index.html + cover
+  let assetList = [];
+  try{
+    const assetsJsonUrl = game.directory + '/assets.json';
+    const r = await fetch(assetsJsonUrl, {cache:'no-cache'});
+    if(r.ok){
+      const j = await r.json();
+      if(Array.isArray(j.assets)) assetList = j.assets.map(p => game.directory + '/' + p);
+    }
+  }catch(e){}
+  // always ensure index.html and cover are included
+  assetList.push(game.directory + '/index.html');
+  assetList.push(game.directory + '/' + (game.image || 'cover.png'));
+
+  // unique
+  assetList = [...new Set(assetList)];
+
+  // show loader overlay
+  ui.loaderOverlay.style.display = 'flex';
+  ui.loaderBar.style.width = '0%';
+  ui.loaderSub.textContent = `Downloading ${game.name || 'game'}...`;
+
+  const concurrency = Math.max(2, settings.concurrency || DEFAULT_CONCURRENCY);
+  let completed = 0;
+
+  // download and cache with limited concurrency
+  await new Promise((resolve) => {
+    let i=0, active=0;
+    function next(){
+      if(i >= assetList.length && active === 0) { resolve(); return; }
+      while(active < concurrency && i < assetList.length){
+        const url = assetList[i++];
+        active++;
+        fetch(url).then(async res=>{
+          if(res && res.ok){
+            try{ await assetsCache.put(new Request(url), res.clone()); }catch(e){}
+          }
+        }).catch(()=>{}).finally(()=>{
+          active--; completed++;
+          const p = Math.round((completed/assetList.length)*100);
+          ui.loaderBar.style.width = p + '%';
+          ui.loaderSub.textContent = `Downloading ${game.name || 'game'} — ${completed}/${assetList.length}`;
+          next();
+        });
       }
     }
-    applyTheme(); applyCompact();
+    next();
+  });
 
-    /* -------------------------
-       Games loading & UI
-       ------------------------- */
-    async function loadGamesData(){
-      try {
-        const res = await fetch('games.json', {cache: 'no-store'});
-        if(!res.ok) throw new Error('games.json not found');
-        return await res.json();
-      } catch(e){
-        console.error(e);
-        showToast('Failed to load games.json', 3500);
-        return [];
-      }
-    }
+  // create marker
+  const blob = new Blob([JSON.stringify({cachedAt:Date.now(), game: game.name||''})], {type:'application/json'});
+  await (await caches.open(CACHE_ASSETS)).put(markerUrl, new Response(blob));
+  ui.loaderOverlay.style.display = 'none';
+  updateCacheStats();
+  return true;
+}
 
-    function createGameCard(game){
-      const card = document.createElement('div');
-      card.className = 'game-card';
-      card.tabIndex = 0;
-      const img = document.createElement('img');
-      img.loading = 'lazy';
-      img.src = `${game.directory}/${game.image}`;
-      img.alt = game.name;
-      card.appendChild(img);
-      const title = document.createElement('h4'); title.textContent = game.name; card.appendChild(title);
-      const desc = document.createElement('p'); desc.textContent = game.description || ('v'+(game.version||'?')); card.appendChild(desc);
-
-      card.addEventListener('click', ()=> {
-        // store last game
-        localStorage.setItem(STORAGE.lastGame, JSON.stringify(game));
-        showToast(`${game.name} launching...`);
-        // simulate launch: open directory
-        setTimeout(()=> {
-          window.location.href = game.directory + '/index.html';
-        }, 420);
-      });
-      return card;
-    }
-
-    async function renderGames(){
-      const games = await loadGamesData();
-      const recommended = games.filter(g=> g.recommended === "1" || g.recommended === 1);
-      const others = games.filter(g=> !(g.recommended === "1" || g.recommended === 1));
-      const recGrid = document.getElementById('recommended-grid');
-      const allGrid = document.getElementById('all-games-grid');
-      recGrid.innerHTML = ''; allGrid.innerHTML = '';
-      recommended.forEach(g => recGrid.appendChild(createGameCard(g)));
-      others.forEach(g => allGrid.appendChild(createGameCard(g)));
-    }
-    // search hook
-    document.getElementById('games-search').addEventListener('input', async (e)=>{
-      const q = e.target.value.toLowerCase();
-      const games = await loadGamesData();
-      const filtered = games.filter(g=> g.name.toLowerCase().includes(q));
-      const grid = document.getElementById('all-games-grid');
-      grid.innerHTML = '';
-      filtered.forEach(g => grid.appendChild(createGameCard(g)));
-    });
-
-    // rebuild cache (simulate)
-    async function rebuildCache(button){
-      button.disabled = true;
-      const orig = button.textContent;
-      button.textContent = 'Checking...';
-      showToast('Checking for updates...');
-      // simulate progress
-      let i=0;
-      const id = setInterval(()=> {
-        button.textContent = 'Checking' + '.'.repeat(i%4);
-        i++;
-      }, 400);
-      await new Promise(r=> setTimeout(r, 1500 + Math.random()*1500));
-      clearInterval(id);
-      button.textContent = 'Done';
-      setTimeout(()=> { button.textContent = orig; button.disabled=false; showToast('Cache rebuilt') }, 800);
-      // re-render
-      await renderGames();
-    }
-
-    // hook sidebar & main button
-    document.getElementById('rebuildCacheBtn').addEventListener('click', ()=> rebuildCache(document.getElementById('rebuildCacheBtn')));
-    document.getElementById('rebuildCacheBtnSidebar').addEventListener('click', ()=> rebuildCache(document.getElementById('rebuildCacheBtnSidebar')));
-    document.getElementById('clear-cache').addEventListener('click', ()=> {
-      localStorage.removeItem(STORAGE.lastGame);
-      showToast('Cache cleared');
-    });
-
-    /* -------------------------
-       News population (converted from your HTML)
-       ------------------------- */
-    const newsItems = [
-      {title: 'Version 1.3 "WHAT THE FUCK HAPPENED TO THE SERVERS"', body: "We hit some server regressions and reverted links. Trying to bring everyone back."},
-      {title: 'Version 1.2 "The Rebranding"', body: "Rebrand to FyreX Launcher."},
-      {title: 'Version 1.1 "The Games Update"', body: "Added games, search, and P2P-ish loading (kinda broken)."},
-      {title: 'Version 1.0 "NebulaFC"', body: "Dark cosmic theme, unbl0cked URL, performance improvements."}
-    ];
-    function renderNews(){
-      const container = document.getElementById('news-list');
-      container.innerHTML = '';
-      newsItems.forEach(n => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `<strong>${n.title}</strong><div style="color:var(--muted);margin-top:8px">${n.body}</div>`;
-        container.appendChild(div);
-      });
-    }
-
-    /* -------------------------
-       Server status & visitor faux
-       ------------------------- */
-    function updateServerStatus(){
-      const el = document.getElementById('server-status');
-      const lastup = document.getElementById('last-up');
-      // fake ping
-      const ok = Math.random() > 0.18;
-      el.textContent = ok ? 'Online' : 'Slow / Degraded';
-      el.style.color = ok ? 'var(--success)' : 'var(--danger)';
-      lastup.textContent = 'Last check: ' + new Date().toLocaleTimeString();
-    }
-    document.getElementById('force-check').addEventListener('click', ()=> { updateServerStatus(); showToast('Re-checked server') });
-
-    // visitor counter simulation (keeps number small and increments slowly)
-    function startVisitorCounter(){
-      const el = document.getElementById('visitor-count');
-      let v = Number(localStorage.getItem('fyrex_vis')) || 1201;
-      el.textContent = v;
-      setInterval(()=> {
-        if(Math.random() > 0.6) { v += Math.floor(Math.random()*3); el.textContent = v; localStorage.setItem('fyrex_vis', v) }
-      }, 8000);
-    }
-
-    /* -------------------------
-       Launch & click handlers
-       ------------------------- */
-    document.getElementById('global-launch').addEventListener('click', ()=> {
-      const last = JSON.parse(localStorage.getItem(STORAGE.lastGame) || 'null');
-      if(last){
-        showToast('Launching ' + last.name);
-        setTimeout(()=> window.location.href = last.directory + '/index.html', 420);
-      } else {
-        showToast('No last game stored — pick one from Games tab', 2500);
-        switchTo('games');
-      }
-    });
-
-    document.getElementById('play-desktop').addEventListener('click', ()=> window.location.href = 'desktop/index.html');
-    document.getElementById('play-chrome').addEventListener('click', ()=> window.location.href = 'chromebook/launcher.html');
-    document.getElementById('open-chat').addEventListener('click', ()=> window.open('https://chatserver.imcalledfyre.com', '_blank'));
-    document.getElementById('open-chat-2').addEventListener('click', ()=> document.getElementById('open-chat').click());
-    document.getElementById('visit-discord').addEventListener('click', ()=> window.open('https://discord.com', '_blank'));
-
-    /* -------------------------
-       Initial boot sequence
-       ------------------------- */
-    async function bootApp(){
-      try {
-        // show TOS if needed
-        await checkTOS();
-      } catch(e){
-        console.warn('TOS aborted', e);
-      }
-
-      // fake load
-      await fakeLoadSequence(settings.fakeLoadMs || 1200).catch(()=>{ console.log('boot canceled') });
-
-      // now render UI internals
-      renderNews();
-      renderGames();
-      updateServerStatus();
-      startVisitorCounter();
-
-      // remove overlay if any
-      document.getElementById('loading-overlay').style.display = 'none';
-      showToast('Welcome back, traveler', 2000);
-    }
-
-    // Do not wait — start boot
-    bootApp();
-
-    /* -------------------------
-       Small UX niceties: open TOS, settings shortcuts
-       ------------------------- */
-    document.getElementById('open-tos').addEventListener('click', ()=> { document.getElementById('tos-modal').style.display='flex'; });
-    document.getElementById('open-settings').addEventListener('dblclick', ()=> saveSettings());
-
-    // show settings modal with ESC to close
-    document.addEventListener('keydown', (e)=> {
-      if(e.key === 'Escape'){
-        settingsModal.style.display = 'none';
-        document.getElementById('tos-modal').style.display = 'none';
-      }
-    });
-
-    // visitor name cheeky personalization from localStorage
-    const name = localStorage.getItem('fyrex_name') || 'Traveler';
-    document.getElementById('username-display').textContent = name;
-
-    // initial state of compact switch UI
-    if(settings.compact) {
-      compactSwitch.classList.add('on');
-      compactSwitch.querySelector('.knob').style.left = '24px';
+/* =========================
+   Play click flow
+   ========================= */
+async function onPlayClick(game, btn){
+  btn.disabled = true;
+  try{
+    // if already cached, skip caching phase
+    const assetsCache = await caches.open(CACHE_ASSETS);
+    const markerUrl = new URL('/__game_cached__' + (game.directory || '/unknown'), location.origin).toString();
+    const already = await assetsCache.match(markerUrl);
+    if(!already){
+      await cacheGameAssets(game);
     } else {
-      compactSwitch.classList.remove('on');
-      compactSwitch.querySelector('.knob').style.left = '2px';
+      toast('Loaded from cache ✔');
     }
+    // finally redirect to game's index (safe short delay for UX)
+    setTimeout(()=> {
+      // try to open in same tab
+      window.location.href = (game.directory || '.') + '/index.html';
+    }, 180);
+  }catch(e){
+    console.error(e);
+    toast('Failed to cache assets — launching anyway', 3000);
+    setTimeout(()=> window.location.href = (game.directory || '.') + '/index.html', 300);
+  }finally{
+    btn.disabled = false;
+  }
+}
 
-    // Example: Visitor count increment coolness
-    (function minorPulses(){
-      setInterval(()=> {
-        document.querySelectorAll('.nav-btn')[Math.floor(Math.random()*document.querySelectorAll('.nav-btn').length)]?.classList.add('pulse');
-        setTimeout(()=> document.querySelectorAll('.nav-btn').forEach(n=> n.classList.remove('pulse')), 600);
-      }, 7000);
-    })();
+/* =========================
+   Clear caches
+   ========================= */
+async function clearCaches(){
+  if(!('caches' in window)) { toast('Cache API not available'); return; }
+  try{
+    await caches.delete(CACHE_COVERS);
+    await caches.delete(CACHE_ASSETS);
+    await registerSW(); // re-register to fresh blob
+    updateCacheStats();
+    toast('Caches cleared');
+  }catch(e){
+    console.warn(e);
+    toast('Clear failed');
+  }
+}
 
-    // expose some test API on window for debugging since you're janky
-    window._fyrex = {
-      reloadGames: renderGames,
-      settings,
-      saveSettings,
-      showToast
-    };
+/* =========================
+   UI wiring & startup
+   ========================= */
+document.getElementById('btn-reload-covers').addEventListener('click', () => preloadCovers());
+document.getElementById('btn-clear-cache').addEventListener('click', () => clearCaches());
+document.getElementById('btn-open-settings').addEventListener('click', () => toggleSettingsPane());
+document.getElementById('btn-open-tos').addEventListener('click', () => alert('TOS: Use responsibly. No cheating.'));
 
-  </script>
+document.getElementById('loader-cancel').addEventListener('click', ()=> {
+  ui.loaderOverlay.style.display = 'none';
+  toast('Download canceled');
+});
+
+/* toggles */
+const autoToggle = document.getElementById('auto-preload-toggle');
+const reducedToggle = document.getElementById('reduced-motion-toggle');
+const concurrencyRange = document.getElementById('concurrency-range');
+const concVal = document.getElementById('concurrency-val');
+
+setToggle(autoToggle, settings.autoPreload);
+setToggle(reducedToggle, settings.reducedMotion);
+concurrencyRange.value = settings.concurrency || DEFAULT_CONCURRENCY;
+concVal.textContent = concurrencyRange.value;
+
+autoToggle.addEventListener('click', () => { settings.autoPreload = !settings.autoPreload; setToggle(autoToggle, settings.autoPreload); saveSettings(); });
+reducedToggle.addEventListener('click', () => { settings.reducedMotion = !settings.reducedMotion; setToggle(reducedToggle, settings.reducedMotion); saveSettings(); });
+concurrencyRange.addEventListener('input', (e)=> { settings.concurrency = Number(e.target.value); concVal.textContent = e.target.value; saveSettings(); });
+
+function toggleSettingsPane(){ alert('Settings are in the left sidebar. Changes save automatically.'); }
+
+/* =========================
+   Boot flow
+   ========================= */
+async function boot(){
+  // register service worker (blob)
+  await registerSW();
+
+  // fetch and render games
+  games = await fetchGamesJson();
+  renderGamesList(games);
+  updateCacheStats();
+
+  // auto-preload covers if setting true
+  if(settings.autoPreload){
+    // start preload but don't block UI (for slow networks)
+    setTimeout(()=> preloadCovers(), 300);
+  }
+}
+boot();
+
+/* =========================
+   Expose debug API (useful for testing)
+   ========================= */
+window._fyrex = {
+  preloadCovers, cacheGameAssets, clearCaches, updateCacheStats
+};
+</script>
 </body>
 </html>
