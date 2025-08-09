@@ -1,609 +1,196 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>FyreX Launcher</title>
 <style>
-  :root{
-    --bg:#071024; --panel:#0f1724aa; --muted:#96a0b8;
-    --accent1:#6a00ff; --accent2:#ff00aa; --radius:12px;
-    --text:#eef2ff; --success:#2bd67a; --danger:#ff6b6b;
+  :root {
+    --bg: #071024;
+    --panel: #0f1724aa;
+    --text: #eef2ff;
+    --accent1: #6a00ff;
+    --accent2: #ff00aa;
+    --radius: 12px;
   }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
-    background: linear-gradient(180deg,#06101a 0%,#071024 100%);
-    color:var(--text); -webkit-font-smoothing:antialiased;
-    padding:18px; display:flex; gap:18px; align-items:stretch;
+  * {
+    box-sizing: border-box;
+    margin: 0; padding: 0;
   }
-
-  /* Layout */
-  .wrap{width:100%;display:grid;grid-template-columns:260px 1fr;gap:18px;min-height:80vh}
-  aside{background:var(--panel);padding:14px;border-radius:var(--radius);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
-  main{background:transparent;padding:14px;border-radius:var(--radius);}
-
-  .brand{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-  .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(90deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:900}
-  h1{font-size:18px}
-  .muted{color:var(--muted);font-size:13px}
-
-  nav{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-  button.btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:10px;color:var(--text);cursor:pointer;text-align:left}
-  button.btn.primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));box-shadow:0 8px 28px rgba(106,0,255,0.12);font-weight:700}
-
-  /* Progress / loading overlay */
-  #loaderOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,12,0.7);z-index:9999;backdrop-filter: blur(2px)}
-  #loaderCard{width:min(720px,92%);background:rgba(10,12,20,0.95);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-  .progressWrap{background:rgba(255,255,255,0.04);height:14px;border-radius:999px;overflow:hidden;margin-top:10px}
-  .progressBar{height:100%;width:0;background:linear-gradient(90deg,var(--accent1),var(--accent2));transition:width .2s linear}
-
-  /* Grid of games */
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-top:12px}
-  .card{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;display:flex;flex-direction:column;gap:8px;align-items:center}
-  .cover{width:140px;height:100px;background:#031018;border-radius:8px;object-fit:cover}
-  .gameTitle{font-weight:700;font-size:14px;text-align:center}
-  .gameMeta{font-size:12px;color:var(--muted);text-align:center}
-
-  .small{font-size:12px;color:var(--muted)}
-  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-  .toast{position:fixed;right:18px;bottom:18px;background:#071022;padding:10px;border-radius:8px;border-left:4px solid var(--accent1);box-shadow:0 10px 30px rgba(0,0,0,0.6);}
-
-  /* settings */
-  .setting{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);margin-top:8px}
-  input[type=range]{width:140px}
-  label{font-size:13px;color:var(--muted)}
-  .toggle{width:44px;height:26px;border-radius:20px;background:#122;position:relative;cursor:pointer}
-  .knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .14s ease}
-
-  /* accessibility */
-  @media (max-width:900px){.wrap{grid-template-columns:1fr;}}
-  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  body {
+    font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  header {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  main {
+    flex-grow: 1;
+  }
+  #games {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 16px;
+  }
+  .game-card {
+    background: var(--panel);
+    border-radius: var(--radius);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .game-card img {
+    width: 140px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: #031018;
+  }
+  .game-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .btn-play {
+    margin-top: auto;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    border: none;
+    border-radius: 10px;
+    padding: 10px 0;
+    width: 100%;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .btn-play:disabled {
+    background: #555;
+    cursor: default;
+  }
+  #loader {
+    position: fixed;
+    inset: 0;
+    background: rgba(7, 16, 36, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  #loader.active {
+    visibility: visible;
+    opacity: 1;
+  }
+  #loader-text {
+    color: var(--text);
+    font-weight: 700;
+    margin-bottom: 12px;
+    font-size: 18px;
+  }
+  #loader-bar-container {
+    width: 320px;
+    height: 16px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  #loader-bar {
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    transition: width 0.2s linear;
+  }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <aside>
-      <div class="brand">
-        <div class="logo">FX</div>
-        <div>
-          <h1>FyreX Launcher</h1>
-          <div class="muted">Cache-first, Chromebook friendly</div>
-        </div>
-      </div>
+<header>FyreX Launcher</header>
+<main>
+  <div id="games" aria-live="polite"></div>
+</main>
 
-      <div class="muted" style="margin-top:8px">Quick actions</div>
-      <nav>
-        <button class="btn primary" id="btn-reload-covers">Preload Covers</button>
-        <button class="btn" id="btn-clear-cache">Clear Game Cache</button>
-        <button class="btn" id="btn-open-settings">Settings</button>
-      </nav>
-
-      <div style="margin-top:12px" class="muted">Settings</div>
-      <div class="setting">
-        <div>
-          <div style="font-weight:700">Auto preload</div>
-          <div class="small">Preload covers on startup</div>
-        </div>
-        <div id="auto-preload-toggle" class="toggle" role="switch" aria-checked="false"><div class="knob"></div></div>
-      </div>
-
-      <div class="setting">
-        <div>
-          <div style="font-weight:700">Max concurrency</div>
-          <div class="small">Limit simultaneous downloads</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <input id="concurrency-range" type="range" min="2" max="8" value="4" />
-          <div class="small" id="concurrency-val">4</div>
-        </div>
-      </div>
-
-      <div class="setting">
-        <div>
-          <div style="font-weight:700">Reduced motion</div>
-          <div class="small">Respect user preference</div>
-        </div>
-        <div id="reduced-motion-toggle" class="toggle"><div class="knob"></div></div>
-      </div>
-
-      <div style="margin-top:14px" class="muted">Cache stats</div>
-      <div class="small" id="cache-stats">Loading stats…</div>
-    </aside>
-
-    <main>
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <h2>Games</h2>
-          <div class="small">Tap a game to download its assets, then launch. First visit caches resources.</div>
-        </div>
-        <div>
-          <button class="btn" id="btn-open-tos">TOS</button>
-        </div>
-      </div>
-
-      <div style="margin-top:12px" id="progress-area" aria-hidden="true">
-        <div style="font-weight:700">Preload progress</div>
-        <div class="progressWrap"><div class="progressBar" id="preload-progress"></div></div>
-        <div class="small" id="preload-text">Idle</div>
-      </div>
-
-      <div id="games-grid" class="grid" aria-live="polite" style="margin-top:14px">
-        <!-- game cards injected here -->
-      </div>
-    </main>
+<div id="loader" role="alert" aria-live="assertive" aria-label="Loading game">
+  <div id="loader-text">Loading...</div>
+  <div id="loader-bar-container">
+    <div id="loader-bar"></div>
   </div>
-
-  <!-- Loader overlay -->
-  <div id="loaderOverlay" style="display:none">
-    <div id="loaderCard">
-      <div style="font-weight:800">Preparing assets…</div>
-      <div class="small" id="loader-sub">Starting</div>
-      <div class="progressWrap"><div class="progressBar" id="loader-bar"></div></div>
-      <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end">
-        <button class="btn" id="loader-cancel">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="toasts" aria-live="polite" style="position:fixed;right:18px;bottom:18px;z-index:9999"></div>
+</div>
 
 <script>
-/* =========================
-   Configuration & helpers
-   ========================= */
-const CACHE_COVERS = 'fyrex-covers-v1';
-const CACHE_ASSETS = 'fyrex-assets-v1';
-const GAMES_JSON = 'games.json'; // must be at root or change path
-const DEFAULT_CONCURRENCY = 4;
+  const gamesJsonUrl = 'games.json';
 
-const ui = {
-  grid: document.getElementById('games-grid'),
-  preloadProgress: document.getElementById('preload-progress'),
-  preloadText: document.getElementById('preload-text'),
-  loaderOverlay: document.getElementById('loaderOverlay'),
-  loaderBar: document.getElementById('loader-bar'),
-  loaderSub: document.getElementById('loader-sub'),
-  toasts: document.getElementById('toasts'),
-  cacheStats: document.getElementById('cache-stats'),
-  progressArea: document.getElementById('progress-area')
-};
+  const gamesContainer = document.getElementById('games');
+  const loader = document.getElementById('loader');
+  const loaderBar = document.getElementById('loader-bar');
+  const loaderText = document.getElementById('loader-text');
 
-let settings = loadSettings();
-let games = [];
+  async function loadGames() {
+    try {
+      const res = await fetch(gamesJsonUrl, {cache: 'no-store'});
+      if (!res.ok) throw new Error('Failed to load games.json');
+      const games = await res.json();
+      renderGames(games);
+    } catch {
+      gamesContainer.innerHTML = '<p style="color:#bbb">Failed to load games.json</p>';
+    }
+  }
 
-/* tiny toast */
-function toast(msg, t=3000){
-  const el = document.createElement('div'); el.className='toast'; el.textContent=msg;
-  ui.toasts.appendChild(el);
-  setTimeout(()=> el.style.opacity='0', t-500);
-  setTimeout(()=> el.remove(), t);
-}
-
-/* settings persistence */
-function loadSettings(){
-  try{
-    const raw = localStorage.getItem('fyrex_settings_v1');
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  return {autoPreload:true, concurrency: DEFAULT_CONCURRENCY, reducedMotion: false};
-}
-function saveSettings(){
-  localStorage.setItem('fyrex_settings_v1', JSON.stringify(settings));
-}
-
-/* toggle UI helpers */
-function setToggle(el, on){
-  el.setAttribute('aria-checked', !!on);
-  const k = el.querySelector('.knob');
-  k.style.left = on ? '20px' : '3px';
-  el.style.background = on ? 'linear-gradient(90deg,var(--accent1),var(--accent2))' : '';
-}
-
-/* =========================
-   Service Worker (dynamic register)
-   ========================= */
-async function registerSW(){
-  if('serviceWorker' in navigator){
-    try{
-      // create blob service worker script (so single-file deploy works)
-      const swSource = `
-        const CACHE_ASSETS = '${CACHE_ASSETS}';
-        const CACHE_COVERS = '${CACHE_COVERS}';
-        self.addEventListener('install', e => { self.skipWaiting(); });
-        self.addEventListener('activate', e => { e.waitUntil(clients.claim()); });
-        // default fetch: try cache first for assets + covers
-        self.addEventListener('fetch', event => {
-          const url = new URL(event.request.url);
-          // only handle GETs
-          if(event.request.method !== 'GET') return;
-          // simple heuristic: if in cache, serve; else fetch and optionally cache for assets/covers
-          event.respondWith((async function(){
-            const cacheKeys = [CACHE_ASSETS, CACHE_COVERS];
-            for(const key of cacheKeys){
-              const c = await caches.open(key);
-              const match = await c.match(event.request);
-              if(match) return match;
-            }
-            try {
-              const res = await fetch(event.request);
-              // optionally cache images (covers) or game assets by path heuristics
-              // caution: avoid caching everything to not bloat
-              const pathname = url.pathname || '';
-              if(pathname.match(/\\.png$|\\.jpg$|\\.jpeg$|\\.webp$|\\.gif$/i)) {
-                const c = await caches.open(CACHE_COVERS);
-                c.put(event.request, res.clone()).catch(()=>{});
-              } else if(pathname.includes('/assets/') || pathname.endsWith('.json') || pathname.endsWith('.wasm') ){
-                const c = await caches.open(CACHE_ASSETS);
-                c.put(event.request, res.clone()).catch(()=>{});
-              }
-              return res;
-            } catch(err){
-              // fallback: try any cache
-              for(const key of cacheKeys){
-                const c = await caches.open(key);
-                const match = await c.match('/offline.png');
-                if(match) return match;
-              }
-              return new Response('', {status: 408, statusText:'Network error'});
-            }
-          })());
-        });
+  function renderGames(games) {
+    if (!Array.isArray(games) || games.length === 0) {
+      gamesContainer.innerHTML = '<p style="color:#bbb">No games available</p>';
+      return;
+    }
+    gamesContainer.innerHTML = '';
+    games.forEach(game => {
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.innerHTML = `
+        <img src="${game.directory}/${game.image || 'cover.png'}" alt="${game.name}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22140%22 height=%22100%22><rect width=%22140%22 height=%22100%22 fill=%23031a18%22/><text x=%2270%22 y=%2250%22 fill=%22%23ccc%22 font-size=%2212%22 font-family=%22Arial%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22>No Cover</text></svg>'" />
+        <div class="game-title">${game.name}</div>
+        <button class="btn-play" type="button">Play</button>
       `;
-      const blob = new Blob([swSource], {type: 'application/javascript'});
-      const swUrl = URL.createObjectURL(blob);
-      await navigator.serviceWorker.register(swUrl);
-      console.log('Service worker registered (blob)');
-    }catch(e){
-      console.warn('SW register failed', e);
-    }
+      const btn = card.querySelector('.btn-play');
+      btn.addEventListener('click', () => onPlayClick(game, btn));
+      gamesContainer.appendChild(card);
+    });
   }
-}
 
-/* =========================
-   Fetch helpers (concurrency-limited)
-   ========================= */
-function limitedFetchAll(urls, concurrency=4, onProgress){
-  return new Promise((resolve)=>{
-    const results = [];
-    let idx=0, active=0, done=0;
-    function next(){
-      if(done === urls.length) return resolve(results);
-      while(active < concurrency && idx < urls.length){
-        const curIdx = idx++;
-        const url = urls[curIdx];
-        active++;
-        fetch(url, {cache:'no-cache'}).then(r=>{
-          results[curIdx] = r;
-        }).catch(e=>{
-          results[curIdx] = null;
-        }).finally(()=>{
-          active--; done++;
-          if(onProgress) onProgress(done, urls.length, url);
-          next();
-        });
+  function onPlayClick(game, button) {
+    button.disabled = true;
+    loader.classList.add('active');
+    loaderText.textContent = `Loading ${game.name}...`;
+    loaderBar.style.width = '0%';
+
+    const duration = Math.floor(Math.random() * 10000) + 1000;
+    const start = performance.now();
+
+    function animate(time) {
+      const elapsed = time - start;
+      const progress = Math.min(elapsed / duration, 1);
+      loaderBar.style.width = (progress * 100) + '%';
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        window.location.href = `${game.directory}/index.html`;
       }
     }
-    next();
-  });
-}
 
-/* =========================
-   Preload covers (on startup or button)
-   ========================= */
-async function preloadCovers(){
-  if(!('caches' in window)) {
-    toast('Cache API not supported — preloading skipped');
-    return;
-  }
-  ui.progressArea.style.display = '';
-  ui.preloadProgress.style.width = '0%';
-  ui.preloadText.textContent = 'Preparing...';
-  const coverUrls = games.map(g => g.directory + '/' + (g.image || 'cover.png')).filter(Boolean);
-  // de-dupe
-  const urls = [...new Set(coverUrls)];
-  if(urls.length === 0){
-    ui.preloadText.textContent = 'No covers to preload';
-    setTimeout(()=> ui.progressArea.style.display='none', 1200);
-    return;
+    requestAnimationFrame(animate);
   }
 
-  const concurrency = settings.concurrency || DEFAULT_CONCURRENCY;
-  let done = 0;
-  const progressCallback = (d, total, latest) => {
-    const p = Math.round((d/total)*100);
-    ui.preloadProgress.style.width = p + '%';
-    ui.preloadText.textContent = `Preloading covers ${d}/${total} (${p}%)`;
-  };
-
-  // fetch and cache individually with concurrency control (so devices don't freak)
-  const cache = await caches.open(CACHE_COVERS);
-  const toFetch = [];
-  for(const url of urls){
-    try{
-      const req = new Request(url, {mode:'no-cors'});
-      const match = await cache.match(req);
-      if(!match) toFetch.push(url);
-      else {
-        done++;
-        progressCallback(done, urls.length, url);
-      }
-    }catch(e){ toFetch.push(url); }
-  }
-  if(toFetch.length === 0){
-    ui.preloadText.textContent = 'All covers cached';
-    setTimeout(()=> ui.progressArea.style.display='none', 800);
-    return;
-  }
-
-  // use limitedFetchAll but also put each into cache as they arrive
-  let idx=0, active=0;
-  await new Promise(resolve => {
-    function next(){
-      if(idx >= toFetch.length && active === 0) { resolve(); return; }
-      while(active < concurrency && idx < toFetch.length){
-        const url = toFetch[idx++];
-        active++;
-        fetch(url).then(async res => {
-          if(res && res.ok) await cache.put(new Request(url), res.clone()).catch(()=>{});
-        }).catch(()=>{}).finally(()=> {
-          active--;
-          done++;
-          progressCallback(done, urls.length, url);
-          next();
-        });
-      }
-    }
-    next();
-  });
-
-  ui.preloadText.textContent = 'Preload complete';
-  setTimeout(()=> ui.progressArea.style.display='none', 900);
-  updateCacheStats();
-  toast('Covers preloaded ✔', 2200);
-}
-
-/* =========================
-   Load games.json & render
-   ========================= */
-async function fetchGamesJson(){
-  try{
-    const res = await fetch(GAMES_JSON, {cache:'no-store'});
-    if(!res.ok) { throw new Error('games.json not found'); }
-    const json = await res.json();
-    return Array.isArray(json) ? json : [];
-  }catch(e){
-    console.warn('games.json error', e);
-    toast('games.json missing or invalid', 4000);
-    return [];
-  }
-}
-
-function renderGamesList(list){
-  ui.grid.innerHTML = '';
-  if(list.length === 0){
-    ui.grid.innerHTML = '<div class="muted">No games found. Place a games.json file at root.</div>';
-    return;
-  }
-  for(const g of list){
-    const card = document.createElement('div'); card.className='card';
-    const img = document.createElement('img'); img.className='cover';
-    img.alt = g.name || 'game';
-    // try to load from cache implicitly; use simple src path
-    img.src = g.directory + '/' + (g.image || 'cover.png');
-    // show fallback if fails
-    img.onerror = ()=> { img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200"><rect width="100%" height="100%" fill="%23051a26"/><text x="50%" y="50%" fill="%23aaa" font-size="18" font-family="Arial" text-anchor="middle" dy=".3em">No Cover</text></svg>'; }
-    const title = document.createElement('div'); title.className='gameTitle'; title.textContent = g.name || 'Untitled';
-    const meta = document.createElement('div'); meta.className='gameMeta'; meta.textContent = g.version ? ('v' + g.version) : '';
-    const actions = document.createElement('div'); actions.style.display='flex'; actions.style.gap='6px';
-
-    const playBtn = document.createElement('button'); playBtn.className='btn primary'; playBtn.textContent='Play';
-    playBtn.addEventListener('click', ()=> onPlayClick(g, playBtn));
-    actions.appendChild(playBtn);
-
-    // optional "pre-cache assets" small button
-    const cacheBtn = document.createElement('button'); cacheBtn.className='btn'; cacheBtn.textContent='Cache';
-    cacheBtn.addEventListener('click', (e)=> { e.stopPropagation(); cacheGameAssets(g).then(()=> toast('Cached '+(g.name||'game'))).catch(()=> toast('Cache failed'))});
-    actions.appendChild(cacheBtn);
-
-    card.appendChild(img);
-    card.appendChild(title);
-    card.appendChild(meta);
-    card.appendChild(actions);
-
-    ui.grid.appendChild(card);
-  }
-}
-
-/* =========================
-   Cache stats & utilities
-   ========================= */
-async function updateCacheStats(){
-  if(!('caches' in window)) { ui.cacheStats.textContent = 'Cache API not available'; return; }
-  const keys = await caches.keys();
-  let cov = 0, assets = 0;
-  try{
-    const c1 = await caches.open(CACHE_COVERS);
-    const c2 = await caches.open(CACHE_ASSETS);
-    cov = (await c1.keys()).length;
-    assets = (await c2.keys()).length;
-  }catch(e){}
-  ui.cacheStats.textContent = `${cov} cover(s), ${assets} asset(s) cached`;
-}
-
-/* =========================
-   Game asset caching on click
-   ========================= */
-async function cacheGameAssets(game){
-  // returns true if cached (or already cached). Will fetch assets.json if exists.
-  if(!('caches' in window)) throw new Error('Cache API unsupported');
-  const assetsCache = await caches.open(CACHE_ASSETS);
-  // define a marker URL for this game's cached state
-  const markerUrl = new URL('/__game_cached__' + (game.directory || '/unknown'), location.origin).toString();
-  // If marker exists, consider cached
-  const marker = await assetsCache.match(markerUrl);
-  if(marker) return true;
-
-  // Attempt to fetch assets.json in game directory; fallback to index.html + cover
-  let assetList = [];
-  try{
-    const assetsJsonUrl = game.directory + '/assets.json';
-    const r = await fetch(assetsJsonUrl, {cache:'no-cache'});
-    if(r.ok){
-      const j = await r.json();
-      if(Array.isArray(j.assets)) assetList = j.assets.map(p => game.directory + '/' + p);
-    }
-  }catch(e){}
-  // always ensure index.html and cover are included
-  assetList.push(game.directory + '/index.html');
-  assetList.push(game.directory + '/' + (game.image || 'cover.png'));
-
-  // unique
-  assetList = [...new Set(assetList)];
-
-  // show loader overlay
-  ui.loaderOverlay.style.display = 'flex';
-  ui.loaderBar.style.width = '0%';
-  ui.loaderSub.textContent = `Downloading ${game.name || 'game'}...`;
-
-  const concurrency = Math.max(2, settings.concurrency || DEFAULT_CONCURRENCY);
-  let completed = 0;
-
-  // download and cache with limited concurrency
-  await new Promise((resolve) => {
-    let i=0, active=0;
-    function next(){
-      if(i >= assetList.length && active === 0) { resolve(); return; }
-      while(active < concurrency && i < assetList.length){
-        const url = assetList[i++];
-        active++;
-        fetch(url).then(async res=>{
-          if(res && res.ok){
-            try{ await assetsCache.put(new Request(url), res.clone()); }catch(e){}
-          }
-        }).catch(()=>{}).finally(()=>{
-          active--; completed++;
-          const p = Math.round((completed/assetList.length)*100);
-          ui.loaderBar.style.width = p + '%';
-          ui.loaderSub.textContent = `Downloading ${game.name || 'game'} — ${completed}/${assetList.length}`;
-          next();
-        });
-      }
-    }
-    next();
-  });
-
-  // create marker
-  const blob = new Blob([JSON.stringify({cachedAt:Date.now(), game: game.name||''})], {type:'application/json'});
-  await (await caches.open(CACHE_ASSETS)).put(markerUrl, new Response(blob));
-  ui.loaderOverlay.style.display = 'none';
-  updateCacheStats();
-  return true;
-}
-
-/* =========================
-   Play click flow
-   ========================= */
-async function onPlayClick(game, btn){
-  btn.disabled = true;
-  try{
-    // if already cached, skip caching phase
-    const assetsCache = await caches.open(CACHE_ASSETS);
-    const markerUrl = new URL('/__game_cached__' + (game.directory || '/unknown'), location.origin).toString();
-    const already = await assetsCache.match(markerUrl);
-    if(!already){
-      await cacheGameAssets(game);
-    } else {
-      toast('Loaded from cache ✔');
-    }
-    // finally redirect to game's index (safe short delay for UX)
-    setTimeout(()=> {
-      // try to open in same tab
-      window.location.href = (game.directory || '.') + '/index.html';
-    }, 180);
-  }catch(e){
-    console.error(e);
-    toast('Failed to cache assets — launching anyway', 3000);
-    setTimeout(()=> window.location.href = (game.directory || '.') + '/index.html', 300);
-  }finally{
-    btn.disabled = false;
-  }
-}
-
-/* =========================
-   Clear caches
-   ========================= */
-async function clearCaches(){
-  if(!('caches' in window)) { toast('Cache API not available'); return; }
-  try{
-    await caches.delete(CACHE_COVERS);
-    await caches.delete(CACHE_ASSETS);
-    await registerSW(); // re-register to fresh blob
-    updateCacheStats();
-    toast('Caches cleared');
-  }catch(e){
-    console.warn(e);
-    toast('Clear failed');
-  }
-}
-
-/* =========================
-   UI wiring & startup
-   ========================= */
-document.getElementById('btn-reload-covers').addEventListener('click', () => preloadCovers());
-document.getElementById('btn-clear-cache').addEventListener('click', () => clearCaches());
-document.getElementById('btn-open-settings').addEventListener('click', () => toggleSettingsPane());
-document.getElementById('btn-open-tos').addEventListener('click', () => alert('TOS: Use responsibly. No cheating.'));
-
-document.getElementById('loader-cancel').addEventListener('click', ()=> {
-  ui.loaderOverlay.style.display = 'none';
-  toast('Download canceled');
-});
-
-/* toggles */
-const autoToggle = document.getElementById('auto-preload-toggle');
-const reducedToggle = document.getElementById('reduced-motion-toggle');
-const concurrencyRange = document.getElementById('concurrency-range');
-const concVal = document.getElementById('concurrency-val');
-
-setToggle(autoToggle, settings.autoPreload);
-setToggle(reducedToggle, settings.reducedMotion);
-concurrencyRange.value = settings.concurrency || DEFAULT_CONCURRENCY;
-concVal.textContent = concurrencyRange.value;
-
-autoToggle.addEventListener('click', () => { settings.autoPreload = !settings.autoPreload; setToggle(autoToggle, settings.autoPreload); saveSettings(); });
-reducedToggle.addEventListener('click', () => { settings.reducedMotion = !settings.reducedMotion; setToggle(reducedToggle, settings.reducedMotion); saveSettings(); });
-concurrencyRange.addEventListener('input', (e)=> { settings.concurrency = Number(e.target.value); concVal.textContent = e.target.value; saveSettings(); });
-
-function toggleSettingsPane(){ alert('Settings are in the left sidebar. Changes save automatically.'); }
-
-/* =========================
-   Boot flow
-   ========================= */
-async function boot(){
-  // register service worker (blob)
-  await registerSW();
-
-  // fetch and render games
-  games = await fetchGamesJson();
-  renderGamesList(games);
-  updateCacheStats();
-
-  // auto-preload covers if setting true
-  if(settings.autoPreload){
-    // start preload but don't block UI (for slow networks)
-    setTimeout(()=> preloadCovers(), 300);
-  }
-}
-boot();
-
-/* =========================
-   Expose debug API (useful for testing)
-   ========================= */
-window._fyrex = {
-  preloadCovers, cacheGameAssets, clearCaches, updateCacheStats
-};
+  loadGames();
 </script>
 </body>
 </html>
