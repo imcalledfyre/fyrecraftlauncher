@@ -1,491 +1,898 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
   <title>FyreX Launcher</title>
   <style>
-    :root {
-      --bg: #071024;
-      --panel: #0f1724cc;
-      --text: #eef2ff;
-      --accent1: #6a00ff;
-      --accent2: #ff00aa;
-      --radius: 12px;
-      --sidebar-width: 240px;
-      --transition: 0.3s ease;
-      --shadow: rgba(0,0,0,0.8);
-      --hover-bg: #3b0f63;
+    /* Terms of Service Modal Styles */
+    #tos-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      color: white;
+      padding: 20px;
+      text-align: center;
     }
-    *, *::before, *::after {
+    
+    #tos-content {
+      background: rgba(20, 20, 40, 0.9);
+      max-width: 800px;
+      max-height: 80vh;
+      padding: 30px;
+      border-radius: 15px;
+      overflow-y: auto;
+      border: 1px solid #6a00ff;
+      box-shadow: 0 0 30px rgba(106, 0, 255, 0.5);
+    }
+    
+    #tos-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+    
+    .tos-btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      font-size: 16px;
+    }
+    
+    #tos-accept {
+      background: linear-gradient(135deg, #6a00ff, #ff00aa);
+      color: white;
+      box-shadow: 0 4px 15px rgba(106, 0, 255, 0.4);
+    }
+    
+    #tos-decline {
+      background: rgba(255, 255, 255, 0.1);
+      color: #aaa;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .tos-btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    #tos-decline:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    #tos-accept:hover {
+      box-shadow: 0 6px 20px rgba(106, 0, 255, 0.6);
+    }
+
+    /* Existing Styles */
+    * {
+      margin: 0;
+      padding: 0;
       box-sizing: border-box;
     }
+
     body {
-      margin: 0; padding: 0;
-      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
+      font-family: 'Arial', sans-serif;
+      background-color: #0a0a1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
       height: 100vh;
+      background: #0a0a1a;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 0.5s;
+    }
+
+    #loading-bar-container {
+      width: 300px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      margin-top: 20px;
       overflow: hidden;
     }
 
-    /* Sidebar */
-    nav.sidebar {
-      width: var(--sidebar-width);
-      background: var(--panel);
+    #loading-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #6a00ff, #ff00aa);
+      transition: width 0.3s ease;
+    }
+
+    #loading-text {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #aaa;
+    }
+
+    #main-content {
+      opacity: 0;
+      transition: opacity 0.5s;
+      margin: 10px;
+    }
+
+    .navbar {
+      background: rgba(20, 20, 40, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 10px;
+      margin: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       display: flex;
-      flex-direction: column;
-      padding: 24px 0;
-      box-shadow: 4px 0 12px var(--shadow);
-      user-select: none;
+      justify-content: center;
     }
-    nav.sidebar header {
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--accent1);
-      padding-left: 24px;
-      margin-bottom: 32px;
-      letter-spacing: 2px;
-      cursor: default;
-    }
-    nav.sidebar .menu {
-      flex-grow: 1;
-    }
-    nav.sidebar button.menu-item {
-      width: 100%;
-      padding: 14px 24px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      font-weight: 600;
-      color: var(--text);
+
+    .tab-button {
       background: none;
       border: none;
+      padding: 12px 25px;
+      margin: 0 5px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background var(--transition);
-      font-size: 17px;
-    }
-    nav.sidebar button.menu-item:hover, nav.sidebar button.menu-item.active {
-      background: var(--hover-bg);
-      color: var(--accent2);
-    }
-    nav.sidebar button.menu-item svg {
-      width: 22px;
-      height: 22px;
-      flex-shrink: 0;
-      fill: currentColor;
-    }
-    nav.sidebar footer {
-      padding: 20px 24px;
-      font-size: 12px;
-      color: #888;
-      text-align: center;
-    }
-
-    /* Main Content */
-    main.content {
-      flex-grow: 1;
-      background: var(--bg);
-      padding: 32px;
-      overflow-y: auto;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      color: #aaa;
       position: relative;
-    }
-    main.content h1 {
-      margin-bottom: 24px;
-      font-weight: 900;
-      font-size: 32px;
-      letter-spacing: 1.5px;
+      overflow: hidden;
     }
 
-    /* Games Grid */
-    #games {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 18px;
+    .tab-button::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #6a00ff, #ff00aa);
+      transition: width 0.3s ease;
     }
-    .game-card {
-      background: var(--panel);
-      border-radius: var(--radius);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      box-shadow: 0 0 14px #3b0f63aa;
-      user-select: none;
-      transition: transform 0.2s ease;
+
+    .tab-button:hover {
+      color: #fff;
     }
-    .game-card:hover {
-      transform: scale(1.04);
+
+    .tab-button.active {
+      color: #fff;
     }
-    .game-card img {
-      width: 160px;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      background: #031018;
-      box-shadow: 0 0 10px #6a00ffaa;
-    }
-    .game-title {
-      font-weight: 700;
-      margin-bottom: 10px;
-      font-size: 16px;
-      min-height: 44px;
-    }
-    .btn-play {
-      margin-top: auto;
-      background: linear-gradient(90deg, var(--accent1), var(--accent2));
-      border: none;
-      border-radius: 10px;
-      padding: 10px 0;
+
+    .tab-button.active::before {
       width: 100%;
-      color: var(--text);
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-      user-select: none;
-    }
-    .btn-play:disabled {
-      background: #555;
-      cursor: default;
     }
 
-    /* Loader Overlay */
-    #loader {
+    /* REMOVED CONTAINER BACKGROUND */
+    .container {
+      padding: 30px;
+      margin: 10px;
+    }
+
+    /* REMOVED TAB-CONTENT BACKGROUND */
+    .tab-content {
+      display: none;
+      padding: 20px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1, h2, h3 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    p {
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    #space-bg {
       position: fixed;
-      inset: 0;
-      background: rgba(7, 16, 36, 0.85);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      user-select: none;
-    }
-    #loader.active {
-      visibility: visible;
-      opacity: 1;
-    }
-    #loader-text {
-      color: var(--text);
-      font-weight: 700;
-      margin-bottom: 12px;
-      font-size: 18px;
-      letter-spacing: 0.5px;
-    }
-    #loader-bar-container {
-      width: 320px;
-      height: 16px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 0 12px var(--accent1);
-    }
-    #loader-bar {
-      width: 0;
+      top: 0;
+      left: 0;
+      width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, var(--accent1), var(--accent2));
-      transition: width 0.2s linear;
+      z-index: -1;
     }
 
-    /* Fake Initial Loading Screen */
-    #initial-loader {
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      color: var(--accent1);
-      font-weight: 900;
-      font-size: 32px;
-      letter-spacing: 3px;
-      z-index: 10000;
-      user-select: none;
-    }
-    #initial-progress {
-      margin-top: 24px;
-      width: 320px;
-      height: 16px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 0 12px var(--accent1);
-    }
-    #initial-bar {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent1), var(--accent2));
-      width: 0;
-      transition: width 0.15s linear;
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
     }
 
-    /* Settings Panel */
-    #settings-panel {
-      background: var(--panel);
-      border-radius: var(--radius);
-      padding: 18px 20px;
-      max-width: 400px;
-      color: var(--text);
-      font-size: 14px;
-      user-select: none;
-      box-shadow: 0 0 20px #6a00ffcc;
+    .feature-card {
+      background: rgba(30, 30, 60, 0.4);
+      border-radius: 10px;
+      padding: 20px;
+      border-left: 3px solid #6a00ff;
     }
-    #settings-panel h2 {
-      font-weight: 900;
-      margin-bottom: 16px;
-      font-size: 20px;
-      letter-spacing: 1.2px;
-      color: var(--accent2);
+
+    .news-item {
+      background: rgba(30, 30, 60, 0.4);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 3px solid #ff00aa;
     }
-    #settings-panel label {
+
+    .download-option {
+      background: rgba(30, 30, 60, 0.4);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 14px;
-      cursor: pointer;
     }
-    #settings-panel input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-    }
-    #settings-panel select {
-      margin-left: 6px;
-      background: #222;
+
+    .download-btn {
+      background: linear-gradient(135deg, #6a00ff, #ff00aa);
       border: none;
-      color: var(--text);
-      border-radius: 8px;
-      padding: 4px 8px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      color: white;
       cursor: pointer;
-      font-size: 14px;
+      font-weight: bold;
+      transition: transform 0.2s;
     }
+
+    .download-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Styles for the Games tab */
+    #games input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #555;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      background: #1a1a2e;
+      color: #e0e0e0;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+      gap: 20px;
+    }
+
+    .game-card {
+      background: rgba(30, 30, 60, 0.4);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .game-card:hover {
+      transform: translateY(-3px);
+      background: rgba(40, 40, 80, 0.6);
+    }
+
+    .game-card img {
+      width: 128px;
+      height: 128px;
+      object-fit: cover;
+      margin-bottom: 8px;
+    }
+
+    /* Fix for TickCounter widgets */
+    .tickcounter {
+      display: block !important;
+      width: 100% !important;
+      height: auto !important;
+      margin-bottom: 20px !important;
+      position: relative !important;
+    }
+    /* Countdown Styling */
+.countdown-box {
+  margin-bottom: 30px;
+  background: rgba(30, 30, 60, 0.4);
+  padding: 15px;
+  border-radius: 10px;
+  border-left: 3px solid #6a00ff;
+}
+
+.tickcounter {
+  display: block;
+  width: 100%;
+  height: 100px !important;
+  margin: 10px 0;
+}
   </style>
 </head>
 <body>
+  <!-- Terms of Service Modal -->
+  <div id="tos-modal">
+    <div id="tos-content">
+      <h1>FyreX Terms of Service</h1>
+      <h2>SCROLL DOWN</h2>
+      <p>By using FyreX, you agree to the following terms:</p>
 
-<nav class="sidebar" aria-label="Main menu">
-  <header>FyreX</header>
-  <div class="menu">
-    <button class="menu-item active" id="menu-home" aria-controls="content-home" aria-selected="true" role="tab" tabindex="0">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l9-9 9 9h-3v9h-12v-9h-3z"/></svg>
-      Home
-    </button>
-    <button class="menu-item" id="menu-settings" aria-controls="content-settings" aria-selected="false" role="tab" tabindex="-1">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.31.07-.63.07-.94s-.03-.63-.07-.94l2.03-1.58a.5.5 0 00.11-.65l-1.91-3.3a.5.5 0 00-.61-.22l-2.39.96a7.13 7.13 0 00-1.63-.95l-.36-2.54a.5.5 0 00-.5-.42h-3.82a.5.5 0 00-.5.42l-.36 2.54a7.15 7.15 0 00-1.63.95l-2.39-.96a.5.5 0 00-.6.22l-1.92 3.3a.5.5 0 00.1.65l2.03 1.58c-.04.31-.07.63-.07.94s.03.63.07.94l-2.03 1.58a.5.5 0 00-.11.65l1.91 3.3a.5.5 0 00.61.22l2.39-.96c.5.38 1.04.68 1.63.95l.36 2.54a.5.5 0 00.5.42h3.82a.5.5 0 00.5-.42l.36-2.54c.6-.27 1.13-.57 1.63-.95l2.39.96a.5.5 0 00.6-.22l1.92-3.3a.5.5 0 00-.1-.65l-2.03-1.58zM12 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z"/></svg>
-      Settings
-    </button>
-  </div>
-  <footer>© 2025 FyreX</footer>
-</nav>
+      <h3>TEACHERS + STUDENT NOTICE</h3>
+      <p>You agree that if you are using this site in school you are done with all work, and if you break this rule,<b>YOU</b> are responsible for any grade reductions or punishments</p>
+      <p>This site is designed to be used outside of school, and is very expensive to make new links, so PLEASE do not block us ^-^</p>
+      
+      <h3>1. Acceptable Use</h3>
+      <p>You agree not to use FyreX for any illegal activities or to connect to unauthorized servers. Magecraft users connecting to FyreX will be banned.</p>
+      
+      <h3>2. Chromebook Edition</h3>
+      <p>The Chromebook edition is not supported on MMS Windows desktop devices. Using it will cause game crashes.</p>
+      
+      <h3>3. Account Responsibility</h3>
+      <p>You are responsible for all activities that occur under your account.</p>
+      
+      <h3>4. Modifications</h3>
+      <p>FyreX may update these terms at any time. Continued use is accepted.</p>
+      
+      <h3>5. Limitation of Liability</h3>
+      <p>FyreX is not responsible for any damages resulting from use of the game.</p>
 
-<main class="content">
-  <section id="content-home" role="tabpanel" tabindex="0" aria-labelledby="menu-home">
-    <h1>Available Games</h1>
-    <div id="games" aria-live="polite"></div>
-  </section>
-
-  <section id="content-settings" role="tabpanel" tabindex="0" aria-labelledby="menu-settings" hidden>
-    <div id="settings-panel">
-      <h2>Settings</h2>
-      <label>
-        <input type="checkbox" id="setting-preload" checked />
-        Preload game images on load
-      </label>
-      <label>
-        <input type="checkbox" id="setting-fakeLoading" checked />
-        Show initial fake loading screen (5 seconds)
-      </label>
-      <label>
-        <input type="checkbox" id="setting-caching" checked />
-        Enable caching for assets
-      </label>
-      <label>
-        <input type="checkbox" id="setting-randomLoadingTime" checked />
-        Random loading time on Play (1–10s)
-      </label>
-      <label>
-        Redirect URL base:
-        <select id="setting-urlBase">
-          <option value="">Same folder</option>
-          <option value="games/">/games/ folder</option>
-        </select>
-      </label>
+      <h3>6. In-Game bans</h3>
+      <p>If you get banned in-game, you must wait out ALL ban/mute times, and ban evasion, or other forms of alt account abuse will increase your ban duration.</p>
+      <div id="tos-actions">
+        <button id="tos-decline">Decline</button>
+        <button id="tos-accept">I Accept</button>
+      </div>
     </div>
-  </section>
-</main>
+  </div>
 
-<div id="loader" role="alert" aria-live="assertive" aria-label="Loading game">
-  <div id="loader-text">Loading...</div>
-  <div id="loader-bar-container">
-    <div id="loader-bar"></div>
+  <canvas id="space-bg"></canvas>
+
+  <div id="loading-screen">
+    <h1>Initializing FyreX</h1>
+    <div id="loading-bar-container">
+      <div id="loading-bar"></div>
+    </div>
+    <div id="loading-text">Connecting to servers...</div>
+    <div id="loading-text">Contact us on Discord if services are down.</div>
+  </div>
+
+  <div id="main-content">
+    <nav class="navbar">
+      <button class="tab-button active" data-tab="home">Home</button>
+      <button class="tab-button" data-tab="news">News</button>
+      <button class="tab-button" data-tab="Play">Fyrecraft</button>
+      <button class="tab-button" data-tab="support">Countdowns</button>
+      <button class="tab-button" data-tab="games">ALL GAMES</button>
+      <button class="tab-button" data-tab="about">About</button>
+    </nav>
+
+    <div class="container">
+      <!-- Home Tab -->
+      <div id="home" class="tab-content active">
+        <h1>Welcome to FyreX Launcher</h1>
+        <p>Embark on an interstellar journey with FyreX - the ultimate Eagler platform that takes your experience beyond the stars.</p>
+        <h3>Visitor Counter:</h3>
+        <a href='https://www.free-counters.org/'>free HitCounters</a> <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=75681d6f81ab68488b2bbe5c6e2461b1bfafd77e'></script>
+<script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1299772/t/1"></script>
+
+        <div class="feature-grid">
+          <a href="wallpaper.png" download>
+            <h1>DOWNLOAD OUR NEW WALLPAPER</h1>
+          </a>
+          <h2>Please set it as your wallpaper so we can win our war against securly classroom!! ^-^</h2>
+          <div class="feature-card">
+            <h3>Cross-Platform</h3>
+            <p>Play seamlessly across Chromebook, Desktop, and Home devices with progress tracking, and account saving.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Built-In Chat</h3>
+            <p>Talk with your friends and strangers and have fun!</p>
+          </div>
+          <div class="feature-card">
+            <h3>Cloud Sync</h3>
+            <p>Your worlds and settings follow you across all devices automatically for free.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Performance</h3>
+            <p>Optimized rendering engine in Chromebook Edition delivers up to 40% better FPS than Desktop edition.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Don't use Chromebook edition on MMS Desktops</h3>
+            <p>For some reason MMS's Windows desktop devices think that FyreX is running an exploit on devices because we use WASM technologies.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- News Tab -->
+      <div id="news" class="tab-content">
+        <h1>FyreX News</h1>
+         <div class="news-item">
+          <h2>Version 1.2 "The Rebranding" Released</h2>
+          <p>We're thrilled to announce the rebrand of Fyrecraft Launcher!</p>
+          <p>• Renamed to FyreX Launcher</p>
+          <p>• uhhh</p>
+        </div>
+               
+        <div class="news-item">
+          <h2>Version 1.1 "The Games Update" Released</h2>
+          <p>We're thrilled to announce the launch of our new website! The "The Games Update" update brings:</p>
+          <p>• Add games.</p>
+          <p>• Add Search</p>
+          <p>• Fast game loading powered by other devices on the network (kinda broken but ill fix in 1.2)</p>
+          <p>• The acutal games will be added this wekend</p>
+        </div>
+        <div class="news-item">
+          <h2>Version 1.0 "NebulaFC" Released</h2>
+          <p>We're thrilled to announce the launch of our new website! The "Nebula" update brings:</p>
+          <p>• Completely redesigned UI with dark cosmic theme</p>
+          <p>• New URL for unbl0cked access anywhere</p>
+          <p>• Server performance improvements up to 40% faster loading</p>
+          <p>• Experimental FCV2 renderer support in Chromebook edition.</p>
+        </div>
+        <div class="news-item">
+          <h2>Upcoming Community Event</h2>
+          <p>Join us on [monthplaceholder[ [dateplaceholder]'th for the Trial of Fyre tournament!</p>
+          <p>• No prize pool because im broke!!</p>
+          <p>• in-game ranks for participants</p>
+        </div>
+      </div>
+
+      <!-- Play Tab -->
+      <div id="Play" class="tab-content">
+        <h1>Play Fyrecraft</h1>
+        <h3>Warning to Magecraft users using fyrecraft client: Adding magecraft to the server list or direct connecting will ban your device off Fyrecraft!!</h3>
+        <p>Using other servers on here is against our Terms of Service.</p>
+        <div class="download-option">
+          <div>
+            <h3>Desktop edition</h3>
+            <p>20MB Browseer game | Version 4.0</p>
+            <h3>KNOWN ISSUE: DOES NOT LAUNCH. WE WILL FIX THIS SOON</h3>
+          </div>
+          <button class="download-btn" onclick="window.location.href='desktop/index.html'">Play now</button>
+        </div>
+        <div class="download-option">
+          <div>
+            <h3>Chromebook Edition (or devices that are NOT mms desktops)</h3>
+            <p>20MB WASM loader | Version 4.0</p>
+          </div>
+          <button class="download-btn" onclick="window.location.href='chromebook/launcher.html'">Play now</button>
+        </div>
+      </div>
+
+<!-- Countdowns Tab -->
+<div id="support" class="tab-content">
+  <h1>Countdowns</h1>
+
+  <!-- SCHOOL IS OVER (Link preserved) -->
+  <div class="countdown-box">
+    <script>
+      (function(d, s, id) { 
+        var js, pjs = d.getElementsByTagName(s)[0]; 
+        if (d.getElementById(id)) return; 
+        js = d.createElement(s); js.id = id; 
+        js.src = "//www.tickcounter.com/static/js/loader.js"; 
+        pjs.parentNode.insertBefore(js, pjs); 
+      }(document, "script", "tickcounter-sdk"));
+    </script>
+    <a data-type="countdown" data-id="7209553" class="tickcounter" 
+       style="display: block; width: 100%; height: 100px; position: relative; margin: 15px 0;" 
+       title="SCHOOL IS OVER" 
+       href="//www.tickcounter.com/countdown/7209553/school-is-over">
+       SCHOOL IS OVER
+    </a>
+  </div>
+
+  <!-- MEMORIAL DAY WEEKEND (Link preserved) -->
+  <div class="countdown-box">
+    <script>
+      (function(d, s, id) { 
+        var js, pjs = d.getElementsByTagName(s)[0]; 
+        if (d.getElementById(id)) return; 
+        js = d.createElement(s); js.id = id; 
+        js.src = "//www.tickcounter.com/static/js/loader.js"; 
+        pjs.parentNode.insertBefore(js, pjs); 
+      }(document, "script", "tickcounter-sdk"));
+    </script>
+    <a data-type="countdown" data-id="7209556" class="tickcounter" 
+       style="display: block; width: 100%; height: 100px; position: relative; margin: 15px 0;" 
+       title="memorial day weekend" 
+       href="//www.tickcounter.com/countdown/7209556/memorial-day-weekend">
+       memorial day weekend
+    </a>
+  </div>
+
+  <!-- BEST HOLIDAY (Link preserved) -->
+  <div class="countdown-box">
+    <script>
+      (function(d, s, id) { 
+        var js, pjs = d.getElementsByTagName(s)[0]; 
+        if (d.getElementById(id)) return; 
+        js = d.createElement(s); js.id = id; 
+        js.src = "//www.tickcounter.com/static/js/loader.js"; 
+        pjs.parentNode.insertBefore(js, pjs); 
+      }(document, "script", "tickcounter-sdk"));
+    </script>
+    <a data-type="countdown" data-id="7209576" class="tickcounter" 
+       style="display: block; width: 100%; height: 100px; position: relative; margin: 15px 0;" 
+       title="best holiday" 
+       href="//www.tickcounter.com/countdown/7209576/best-holiday">
+       best holiday
+    </a>
   </div>
 </div>
+      <!-- Games Tab -->
+      <div id="games" class="tab-content">
+        <h1>Games</h1>
+        <h2>GAMES FIXED!</h2>
+        <button id="rebuildCacheBtn">Check for Updates (new game additions, etc)</button>
+        <input type="text" id="games-search" placeholder="Search games...">
+        <div id="recommended-games">
+          <h2>Recommended Games</h2>
+          <div class="games-grid" id="recommended-grid"></div>
+        </div>
+        <div id="all-games">
+          <h2>All Games</h2>
+          <div class="games-grid" id="all-games-grid"></div>
+        </div>
+      </div>
 
-<div id="initial-loader" aria-label="Initial loading screen" role="alert" aria-live="assertive" style="display:none;">
-  FyreX Loading
-  <div id="initial-progress">
-    <div id="initial-bar"></div>
+      <!-- About Tab -->
+      <div id="about" class="tab-content">
+        <h1>About FyreX</h1>
+        <p>More information about the game and its community.</p>
+          <h2>FyreX game launcher is a game site that is designed to replace the old site, known as fyre games (im the biggest bird)</h2>
+        <h2>This site was originally a placeholder site, while I was working on this site, then someone known as RONAN leaked the site to the football kids and it got 11K users.</h2>
+        <h2>so were back now i guess</h2>
+      </div>
+    </div>
   </div>
-</div>
 
-<script>
-  const gamesJsonUrl = 'games.json';
-
-  const gamesContainer = document.getElementById('games');
-  const loader = document.getElementById('loader');
-  const loaderBar = document.getElementById('loader-bar');
-  const loaderText = document.getElementById('loader-text');
-  const initialLoader = document.getElementById('initial-loader');
-  const initialBar = document.getElementById('initial-bar');
-
-  const menuHome = document.getElementById('menu-home');
-  const menuSettings = document.getElementById('menu-settings');
-  const contentHome = document.getElementById('content-home');
-  const contentSettings = document.getElementById('content-settings');
-
-  const settingPreload = document.getElementById('setting-preload');
-  const settingFakeLoading = document.getElementById('setting-fakeLoading');
-  const settingCaching = document.getElementById('setting-caching');
-  const settingRandomLoadingTime = document.getElementById('setting-randomLoadingTime');
-  const settingUrlBase = document.getElementById('setting-urlBase');
-
-  let gamesList = [];
-
-  // Sidebar tab switching
-  function switchTab(newTab) {
-    if (newTab === 'home') {
-      menuHome.classList.add('active');
-      menuHome.setAttribute('aria-selected', 'true');
-      menuHome.tabIndex = 0;
-      contentHome.hidden = false;
-
-      menuSettings.classList.remove('active');
-      menuSettings.setAttribute('aria-selected', 'false');
-      menuSettings.tabIndex = -1;
-      contentSettings.hidden = true;
+  <!-- Rest of your JavaScript remains unchanged -->
+  <script>
+    // Terms of Service handling
+    const tosAccepted = localStorage.getItem('tosAccepted') === 'true';
+    const tosModal = document.getElementById('tos-modal');
+    
+    if (!tosAccepted) {
+      tosModal.style.display = 'flex';
+      
+      document.getElementById('tos-accept').addEventListener('click', function() {
+        localStorage.setItem('tosAccepted', 'true');
+        tosModal.style.display = 'none';
+        startLoadingProcess();
+      });
+      
+      document.getElementById('tos-decline').addEventListener('click', function() {
+        alert('You must accept the Terms of Service to use FyreX Launcher.');
+      });
     } else {
-      menuSettings.classList.add('active');
-      menuSettings.setAttribute('aria-selected', 'true');
-      menuSettings.tabIndex = 0;
-      contentSettings.hidden = false;
-
-      menuHome.classList.remove('active');
-      menuHome.setAttribute('aria-selected', 'false');
-      menuHome.tabIndex = -1;
-      contentHome.hidden = true;
+      tosModal.style.display = 'none';
+      startLoadingProcess();
     }
-  }
-  menuHome.addEventListener('click', () => switchTab('home'));
-  menuSettings.addEventListener('click', () => switchTab('settings'));
-
-  async function loadGames() {
-    try {
-      const res = await fetch(gamesJsonUrl, {cache: settingCaching.checked ? 'default' : 'no-store'});
-      if (!res.ok) throw new Error('Failed to load games.json');
-      gamesList = await res.json();
-      renderGames(gamesList);
-      if (settingPreload.checked) preloadImages(gamesList);
-    } catch {
-      gamesContainer.innerHTML = '<p style="color:#bbb">Failed to load games.json</p>';
-    }
-  }
-
-  function renderGames(games) {
-    if (!Array.isArray(games) || games.length === 0) {
-      gamesContainer.innerHTML = '<p style="color:#bbb">No games available</p>';
-      return;
-    }
-    gamesContainer.innerHTML = '';
-    games.forEach(game => {
-      const card = document.createElement('div');
-      card.className = 'game-card';
-      card.innerHTML = `
-        <img src="${game.directory}/${game.image || 'cover.png'}" alt="${game.name}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22100%22><rect width=%22160%22 height=%22100%22 fill=%23031a18%22/><text x=%2280%22 y=%2250%22 fill=%22%23ccc%22 font-size=%2214%22 font-family=%22Arial%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22>No Cover</text></svg>'" />
-        <div class="game-title">${game.name}</div>
-        <button class="btn-play" type="button">Play</button>
-      `;
-      const btn = card.querySelector('.btn-play');
-      btn.addEventListener('click', () => onPlayClick(game, btn));
-      gamesContainer.appendChild(card);
-    });
-  }
-
-  function preloadImages(games) {
-    games.forEach(game => {
-      const img = new Image();
-      img.src = `${game.directory}/${game.image || 'cover.png'}`;
-    });
-  }
-
-  function onPlayClick(game, button) {
-    button.disabled = true;
-    loader.classList.add('active');
-    loaderText.textContent = `Loading ${game.name}...`;
-    loaderBar.style.width = '0%';
-
-    // Random time or fixed 3 seconds
-    let duration = 3000;
-    if (settingRandomLoadingTime.checked) {
-      duration = Math.floor(Math.random() * 9000) + 1000;
-    }
-
-    const start = performance.now();
-
-    function animate(time) {
-      const elapsed = time - start;
-      const progress = Math.min(elapsed / duration, 1);
-      loaderBar.style.width = (progress * 100) + '%';
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        // Redirect with optional base path
-        const basePath = settingUrlBase.value || '';
-        window.location.href = `${basePath}${game.directory}/index.html`;
+    
+    function startLoadingProcess() {
+      // Load Three.js from CDN and other assets
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = src;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
       }
-    }
-    requestAnimationFrame(animate);
-  }
 
-  // Initial fake loading screen
-  async function initialLoad() {
-    if (!settingFakeLoading.checked) return;
+      const assetsToLoad = [
+        { type: 'script', url: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js' }
+      ];
 
-    initialLoader.style.display = 'flex';
-    let width = 0;
-    const duration = 5000; // 5 seconds
-    const start = performance.now();
+      async function initializeLoader() {
+        const loadingBar = document.getElementById('loading-bar');
+        const loadingText = document.getElementById('loading-text');
+        const totalAssets = assetsToLoad.length;
+        let loadedAssets = 0;
 
-    return new Promise(resolve => {
-      function progress(t) {
-        const elapsed = t - start;
-        const pct = Math.min(elapsed / duration, 1);
-        initialBar.style.width = (pct * 100) + '%';
-        if (pct < 1) {
-          requestAnimationFrame(progress);
-        } else {
-          initialLoader.style.display = 'none';
-          resolve();
+        function updateProgress(assetName) {
+          loadedAssets++;
+          const progress = Math.round((loadedAssets / totalAssets) * 100);
+          loadingBar.style.width = `${progress}%`;
+          loadingText.textContent = `Loading ${assetName}... (${progress}%)`;
+          
+          if (progress >= 100) {
+            loadingText.textContent = "Launching!";
+            setTimeout(completeLoading, 500);
+          }
+        }
+
+        for (const asset of assetsToLoad) {
+          try {
+            if (asset.type === 'script') {
+              await loadScript(asset.url);
+            }
+            updateProgress(asset.url.split('/').pop());
+          } catch (error) {
+            console.error(`Failed to load ${asset.url}:`, error);
+            updateProgress(asset.url.split('/').pop());
+          }
+        }
+
+        if (totalAssets === 0) {
+          updateProgress('complete');
         }
       }
-      requestAnimationFrame(progress);
-    });
-  }
 
-  async function startApp() {
-    await initialLoad();
-    await loadGames();
-  }
+      function completeLoading() {
+        document.getElementById('loading-screen').style.opacity = '0';
+        document.getElementById('main-content').style.opacity = '1';
+        setTimeout(() => {
+          document.getElementById('loading-screen').style.display = 'none';
+          initializeApp();
+        }, 500);
+      }
 
-  // Init
-  startApp();
+      initializeLoader();
+    }
 
-</script>
+    function initializeApp() {
+      // Modified Three.js Background for a denser, more dynamic starfield
+      if (typeof THREE !== 'undefined') {
+        const canvas = document.getElementById('space-bg');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ 
+          canvas, 
+          antialias: true,
+          alpha: true
+        });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        
+        // Create an enhanced starfield with increased density and varied sizes
+        const starsGeometry = new THREE.BufferGeometry();
+        const starCount = 15000;
+        const positions = new Float32Array(starCount * 3);
+        const sizes = new Float32Array(starCount);
+        const colors = new Float32Array(starCount * 3);
+        
+        for (let i = 0; i < starCount; i++) {
+          const i3 = i * 3;
+          positions[i3] = (Math.random() - 0.5) * 3000;
+          positions[i3 + 1] = (Math.random() - 0.5) * 3000;
+          positions[i3 + 2] = (Math.random() - 0.5) * 3000;
+          
+          sizes[i] = 0.05 + Math.random() * 0.3;
+          
+          colors[i3] = 0.7 + Math.random() * 0.3;
+          colors[i3 + 1] = 0.7 + Math.random() * 0.3;
+          colors[i3 + 2] = 0.8 + Math.random() * 0.2;
+        }
+        
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        starsGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        
+        const starsMaterial = new THREE.PointsMaterial({
+          size: 0.15,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.9,
+          sizeAttenuation: true
+        });
+        
+        const starfield = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(starfield);
+        
+        camera.position.z = 150;
+        
+        // Animation loop with subtle rotation and twinkle effect
+        function animate() {
+          requestAnimationFrame(animate);
+          starfield.rotation.x += 0.0002;
+          starfield.rotation.y += 0.0003;
+          const time = Date.now() * 0.0005;
+          starsMaterial.opacity = 0.8 + Math.sin(time) * 0.2;
+          renderer.render(scene, camera);
+        }
+        animate();
+        
+        window.addEventListener('resize', () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+      }
+
+      // Tab functionality
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('.tab-button, .tab-content').forEach(element => {
+            element.classList.remove('active');
+          });
+          button.classList.add('active');
+          document.getElementById(button.dataset.tab).classList.add('active');
+        });
+      });
+
+      // Launch button with enhanced animation
+      const launchBtn = document.querySelector('.launch-button');
+      if (launchBtn) {
+        launchBtn.addEventListener('click', function() {
+          this.style.transform = 'scale(1.05)';
+          this.style.boxShadow = '0 15px 30px rgba(106, 0, 255, 0.5)';
+          
+          const particles = [];
+          const particleCount = 1000;
+          const containerRect = document.querySelector('.container').getBoundingClientRect();
+          
+          for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.width = `${4 + Math.random() * 8}px`;
+            particle.style.height = particle.style.width;
+            particle.style.backgroundColor = ['#6a00ff', '#ff00aa', '#ffffff'][Math.floor(Math.random() * 3)];
+            particle.style.borderRadius = '50%';
+            particle.style.left = `${launchBtn.offsetLeft + launchBtn.offsetWidth/2}px`;
+            particle.style.top = `${launchBtn.offsetTop + launchBtn.offsetHeight/2}px`;
+            particle.style.pointerEvents = 'none';
+            particle.style.transform = 'translate(-50%, -50%)';
+            particle.style.opacity = '1';
+            particle.style.zIndex = '10';
+            document.body.appendChild(particle);
+            
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 1 + Math.random() * 4;
+            const lifetime = 800 + Math.random() * 700;
+            
+            particles.push({
+              element: particle,
+              x: 0,
+              y: 0,
+              vx: Math.cos(angle) * velocity,
+              vy: Math.sin(angle) * velocity,
+              lifetime: lifetime,
+              age: 0
+            });
+          }
+          
+          const particleInterval = setInterval(() => {
+            particles.forEach(p => {
+              p.x += p.vx;
+              p.y += p.vy;
+              p.vy += 0.1;
+              p.age += 16;
+              p.element.style.left = `${p.x + launchBtn.offsetLeft + launchBtn.offsetWidth/2}px`;
+              p.element.style.top = `${p.y + launchBtn.offsetTop + launchBtn.offsetHeight/2}px`;
+              p.element.style.opacity = 1 - (p.age / p.lifetime);
+              if (p.age >= p.lifetime) {
+                p.element.remove();
+              }
+            });
+            
+            for (let i = particles.length - 1; i >= 0; i--) {
+              if (particles[i].age >= particles[i].lifetime) {
+                particles.splice(i, 1);
+              }
+            }
+            
+            if (particles.length === 0) {
+              clearInterval(particleInterval);
+            }
+          }, 16);
+          
+          setTimeout(() => {
+            launchBtn.style.transform = 'scale(1)';
+            launchBtn.style.boxShadow = '0 8px 20px rgba(106, 0, 255, 0.3)';
+          }, 300);
+          
+          console.log('Launch sequence initiated!');
+        });
+      }
+
+      // Download buttons functionality
+      document.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => { this.style.transform = 'scale(1)'; }, 200);
+          console.log('Download initiated for:', this.parentElement.querySelector('h3').textContent);
+        });
+      });
+
+      // Games Tab: Load and render games from games.json
+      function loadGames() {
+        fetch('games.json')
+          .then(response => response.json())
+          .then(games => {
+            // Separate recommended games (recommended === "1") and others
+            const recommendedGames = games.filter(game => game.recommended === "1");
+            const otherGames = games.filter(game => game.recommended !== "1");
+
+            const recommendedGrid = document.getElementById('recommended-grid');
+            const allGamesGrid = document.getElementById('all-games-grid');
+
+            // Helper function to create a game card
+            function createGameCard(game) {
+              const card = document.createElement('div');
+              card.classList.add('game-card');
+              const img = document.createElement('img');
+              img.src = `${game.directory}/${game.image}`;
+              img.alt = game.name;
+              img.width = 128;
+              img.height = 128;
+              card.appendChild(img);
+
+const title = document.createElement('div');
+title.textContent = game.name;
+card.appendChild(title);
+
+              
+              // Clicking on the game card opens the game launcher page
+              card.addEventListener('click', () => {
+                window.location.href = game.directory + '/index.html';
+              });
+              return card;
+            }
+
+            function renderGames() {
+              // Clear current grids
+              recommendedGrid.innerHTML = '';
+              allGamesGrid.innerHTML = '';
+
+              // Get the search filter (if any)
+              const query = document.getElementById('games-search').value.toLowerCase();
+
+              // Render recommended games that match the search filter
+              recommendedGames
+                .filter(game => game.name.toLowerCase().includes(query))
+                .forEach(game => {
+                  recommendedGrid.appendChild(createGameCard(game));
+                });
+
+              // Render non-recommended games that match the search filter
+              otherGames
+                .filter(game => game.name.toLowerCase().includes(query))
+                .forEach(game => {
+                  allGamesGrid.appendChild(createGameCard(game));
+                });
+            }
+
+            // Initial render
+            renderGames();
+            
+            // Update render on search input
+            document.getElementById('games-search').addEventListener('input', renderGames);
+          })
+          .catch(error => {
+            console.error('Error loading games:', error);
+          });
+      }
+
+      // Load games after initializing the app
+      loadGames();
+    }
+  </script>
 </body>
 </html>
