@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>YouTube Unbl*cked - Search & Manual</title>
+  <title>YourTube</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
   <style>
@@ -19,7 +19,9 @@
   </style>
 </head>
 <body>
-  <h1>YouTube Unbl*cked - Search & Manual Link</h1>
+  <h1>YourTube</h1>
+  <h2>made with <3 by fyre</h2>
+  <p>yes its just youtube lol</p>
 
   <div class="tabs">
     <button class="tab-btn active" id="searchTabBtn">Search</button>
@@ -67,7 +69,7 @@
       const resultsDiv = document.getElementById("results");
 
       if(!query){ showError("results","E001","Empty search query"); return; }
-      resultsDiv.innerHTML = "<p class='message'>Searching...</p>";
+      resultsDiv.innerHTML = "<p class='message'>Searching... This will take up to 30 seconds</p>";
 
       // Try search engines in order
       const engines = [
@@ -79,7 +81,7 @@
       let ids = [];
       for(const engine of engines){
         try{
-          const res = await fetch(engine.url);
+          const res = await fetch(engine.url);f
           const data = await res.json();
           ids = extractIds(data.contents);
           ids = [...new Set(ids)];
