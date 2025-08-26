@@ -50,50 +50,79 @@
     const manualTab = document.getElementById("manualTab");
 
     // Tab switching
-    searchTabBtn.onclick = () => { searchTabBtn.classList.add("active"); manualTabBtn.classList.remove("active"); searchTab.style.display="block"; manualTab.style.display="none"; }
-    manualTabBtn.onclick = () => { manualTabBtn.classList.add("active"); searchTabBtn.classList.remove("active"); manualTab.style.display="block"; searchTab.style.display="none"; }
+    searchTabBtn.onclick = () => {
+      searchTabBtn.classList.add("active");
+      manualTabBtn.classList.remove("active");
+      searchTab.style.display="block";
+      manualTab.style.display="none";
+    }
+    manualTabBtn.onclick = () => {
+      manualTabBtn.classList.add("active");
+      searchTabBtn.classList.remove("active");
+      manualTab.style.display="block";
+      searchTab.style.display="none";
+    }
 
-    // Utility: grab YouTube IDs from HTML
+    // Extract YouTube IDs
     function extractIds(html){
       return [...html.matchAll(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g)]
         .map(m=>m[1]);
     }
 
-    // Error display
+    // Show errors
     function showError(target, code, msg){
       document.getElementById(target).innerHTML = `<p class="message error">Error ${code}: ${msg}</p>`;
     }
 
+    // Proxies to cycle
+    const proxies = [
+      u => `https://test.cors.workers.dev/?url=${encodeURIComponent(u)}`,
+      u => `https://proxy.cors.sh/${u}`,
+      u => `https://api.cors.lol/?url=${encodeURIComponent(u)}`,
+      u => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
+      u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+      u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+      u => `https://cors-anywhere.herokuapp.com/${u}`,
+      u => `https://cors.x2u.in/${u}`,
+      u => `https://thingproxy.freeboard.io/fetch/${u}`,
+      u => `https://whateverorigin.org/get?url=${encodeURIComponent(u)}`,
+      u => `https://gobetween.oklabs.org/pipe/${u}`,
+      u => `https://cors.io/?url=${encodeURIComponent(u)}`
+    ];
+
+    // Search
     async function searchVideos(){
       const query = document.getElementById("searchBox").value.trim();
       const resultsDiv = document.getElementById("results");
-
       if(!query){ showError("results","E001","Empty search query"); return; }
-      resultsDiv.innerHTML = "<p class='message'>Searching... This will take up to 30 seconds</p>";
 
-      // Try search engines in order
-      const engines = [
-        { name:"Bing", url:`https://api.allorigins.win/get?url=${encodeURIComponent("https://www.bing.com/search?q=site:youtube.com+"+query+"+videos")}` },
-        { name:"DuckDuckGo", url:`https://api.allorigins.win/get?url=${encodeURIComponent("https://duckduckgo.com/html/?q=site:youtube.com+"+query)}` },
-        { name:"Brave", url:`https://api.allorigins.win/get?url=${encodeURIComponent("https://search.brave.com/search?q=site:youtube.com+"+query)}` }
-      ];
+      resultsDiv.innerHTML = "<p class='message'>Searching... cycling proxies</p>";
+
+      const targetUrl = `https://search.brave.com/search?q=site:youtube.com+${encodeURIComponent(query)}`;
 
       let ids = [];
-      for(const engine of engines){
+      for(const makeProxy of proxies){
+        const url = makeProxy(targetUrl);
+        console.log(`[TRY] ${url}`);
         try{
-          const res = await fetch(engine.url);f
-          const data = await res.json();
-          ids = extractIds(data.contents);
-          ids = [...new Set(ids)];
-          if(ids.length>0){ break; } // success
+          const res = await fetch(url);
+          if(res.ok){
+            const text = await res.text();
+            ids = extractIds(text);
+            ids = [...new Set(ids)];
+            if(ids.length > 0){
+              console.log(`[OK] Found results via ${url}`);
+              break;
+            }
+          }
         }catch(e){
-          console.warn(`Search ${engine.name} failed`, e);
+          console.warn(`[FAIL] ${url}`, e.message);
         }
       }
 
-      resultsDiv.innerHTML="";
+      resultsDiv.innerHTML = "";
       if(ids.length===0){
-        showError("results","E003","No videos found or all engines failed.");
+        showError("results","E003","No videos found or all proxies failed.");
         return;
       }
 
@@ -112,13 +141,11 @@
       const input = document.getElementById("manualUrl").value.trim();
       const manualDiv = document.getElementById("manual-video");
       manualDiv.innerHTML="";
-
       if(!input){ showError("manual-video","E001","Empty link field"); return; }
 
       let idMatch = input.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
       let videoId = idMatch ? idMatch[1] : null;
       if(!videoId && input.length===11 && /^[a-zA-Z0-9_-]+$/.test(input)){ videoId=input; }
-
       if(!videoId){ showError("manual-video","E004","Invalid YouTube link or ID"); return; }
 
       const iframe=document.createElement("iframe");
