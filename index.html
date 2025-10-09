@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FyreX Launcher V4 - Python Backend Integrated</title>
+    <title>FyreX Games V4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
@@ -34,7 +33,7 @@ body {
     font-family: 'Inter', sans-serif; 
     background-color: #0a0a1a; 
     color: white; 
-    overflow-y: auto;  /* allow vertical scroll */
+    overflow-y: auto; /* allow vertical scroll */
     overflow-x: hidden; /* prevent horizontal scroll */
 }
 
@@ -66,9 +65,9 @@ body {
 #main-content {
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
-    min-height: auto;   /* stop forcing full viewport */
-    display: block;     /* normal block flow for scrolling */
-    padding-bottom: 50px; /* spacing at bottom */
+    min-height: auto;
+    display: block;
+    padding-bottom: 50px;
 }
 
 /* Custom scrollbar for chat */
@@ -81,31 +80,58 @@ body {
     background: rgba(255, 255, 255, 0.1); 
 }
 
-/* Game card hover effect */
-.game-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 10px 20px rgba(106, 0, 255, 0.4);
-}
+/* --- NEW STYLES --- */
 
-/* Dynamic accordion detail max-height */
-.game-details {
-    max-height: 0;
+/* New styles for the game grid and tiles */
+.game-tile {
+    aspect-ratio: 1 / 1;
+    background-size: cover;
+    background-position: center;
+    border-radius: 0.75rem; /* rounded-xl */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0.75rem; /* p-3 */
     overflow: hidden;
-    transition: max-height 0.4s ease-in-out;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    border: 2px solid transparent;
+}
+.game-tile:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(106, 0, 255, 0.7);
+    border-color: #6a00ff;
+}
+.game-tile::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%);
+}
+.game-tile-name {
+    position: relative;
+    z-index: 2;
+    font-weight: 600; /* semibold */
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
 }
 
-/* Game library container */
-#game-list {
-    max-width: 1200px;  /* cap width of game library */
-    margin: 0 auto;     /* center horizontally */
+/* Modal animations */
+.animate-fade-in-up {
+    animation: fadeInUp 0.3s ease-out forwards;
+}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Individual game card sizing */
-.game-card {
-    width: 100%;        /* fill grid column */
-    max-width: 500px;   /* cap per card width */
-    margin: 0 auto;     /* center each card */
-}
 
 /* Optional: scrollbar for whole page if needed */
 ::-webkit-scrollbar {
@@ -141,7 +167,7 @@ body {
                 </div>
                 <button type="submit" id="auth-button"
                         class="w-full py-3 rounded-lg font-bold text-lg text-white transition duration-300 
-                                 bg-fyre-primary hover:bg-opacity-80 focus:outline-none focus:ring-4 focus:ring-fyre-primary/50">
+                               bg-fyre-primary hover:bg-opacity-80 focus:outline-none focus:ring-4 focus:ring-fyre-primary/50">
                     Log In
                 </button>
             </form>
@@ -177,9 +203,13 @@ body {
             
             <div class="lg:col-span-2">
                 <h2 class="text-2xl font-bold text-white mb-4">Game Library</h2>
-                <div id="game-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div id="loading-game-msg" class="text-center text-gray-500 italic md:col-span-2">Loading game list...</div>
-                    </div>
+                <div class="mb-4">
+                    <input type="text" id="game-search-input" placeholder="Search for a game..." class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:ring-fyre-secondary focus:border-fyre-secondary text-white transition duration-300">
+                </div>
+
+                <div id="game-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                    <div id="loading-game-msg" class="text-center text-gray-500 italic col-span-full">Loading game list...</div>
+                </div>
             </div>
 
             <div>
@@ -199,9 +229,9 @@ body {
                     </div>
                     <form id="chat-form" onsubmit="sendChatMessage(event)" class="flex space-x-2">
                         <input type="text" id="chat-input" placeholder="Type your message..." required
-                                 class="flex-grow px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:ring-fyre-secondary focus:border-fyre-secondary text-white text-sm">
+                               class="flex-grow px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:ring-fyre-secondary focus:border-fyre-secondary text-white text-sm">
                         <button type="submit"
-                                 class="bg-fyre-secondary px-4 py-2 rounded-lg text-white font-semibold hover:bg-fyre-secondary/80 transition duration-300">
+                                class="bg-fyre-secondary px-4 py-2 rounded-lg text-white font-semibold hover:bg-fyre-secondary/80 transition duration-300">
                             Send
                         </button>
                     </form>
@@ -209,25 +239,33 @@ body {
             </div>
         </div>
     </div>
+    
+    <div id="game-details-modal" class="hidden fixed inset-0 bg-fyre-dark bg-opacity-90 flex items-center justify-center z-50 p-4">
+        <div id="game-details-content" class="bg-fyre-card border border-fyre-primary p-6 rounded-xl shadow-2xl w-full max-w-2xl relative text-white animate-fade-in-up">
+        </div>
+    </div>
+
+    <div id="game-player-modal" class="hidden fixed inset-0 bg-fyre-dark z-[200]">
+        <button onclick="closeGame()" class="absolute top-4 right-4 text-white bg-red-600 hover:bg-red-700 rounded-full w-8 h-8 flex items-center justify-center text-xl font-bold z-50">&times;</button>
+        <iframe id="game-iframe" src="" frameborder="0" class="w-full h-full"></iframe>
+    </div>
 
 
     <script>
         // --- Configuration & State ---
-        // !!! IMPORTANT: The server URL has been set to the requested domain. !!!
-        const BACKEND_URL = 'https://backend.imcalledfyre.com'; // Using HTTPS/WSS for production endpoint
-        const GAMES_JSON_PATH = 'games.json'; // Path to the external game list file
+        const BACKEND_URL = 'https://backend.imcalledfyre.com';
+        const GAMES_JSON_PATH = 'https://corsproxy.io/?url=./games.json';
         
         let socket = null;
-        let authMode = 'login'; // 'login' or 'signup'
+        let authMode = 'login';
         let authToken = localStorage.getItem('fyrexToken') || '';
         let authUsername = localStorage.getItem('fyrexUsername') || '';
         let userUUID = ''; 
         
-        // Cache for all dynamic data
         let appDataCache = {
             ratings: {},
             messages: [],
-            games: [] // This will store the data from games.json
+            games: []
         };
 
         // --- Authentication & Setup ---
@@ -252,7 +290,6 @@ body {
             messageElement.textContent = 'Processing...';
 
             try {
-                // HTTP Auth endpoints use HTTPS based on the BACKEND_URL
                 const endpoint = `${BACKEND_URL}/${authMode}`;
                 const response = await fetch(endpoint, {
                     method: 'POST',
@@ -281,7 +318,7 @@ body {
                 }
             } catch (error) {
                 console.error('Authentication Error:', error);
-                messageElement.textContent = `Network error: Could not connect to ${BACKEND_URL}. Check deployment setup.`;
+                messageElement.textContent = `Network error: Could not connect to the server.`;
                 messageElement.classList.remove('text-green-400');
                 messageElement.classList.add('text-red-400');
             }
@@ -305,11 +342,8 @@ body {
             document.getElementById('conn-status').classList.remove('bg-green-500', 'bg-red-500');
             document.getElementById('conn-status').classList.add('bg-fyre-primary');
 
-            // Socket.IO will automatically use WSS if the origin is HTTPS, 
-            // but we explicitly pass the secure URL here.
             socket = io(BACKEND_URL, {
                 query: { token: authToken },
-                // Force secure transport matching wss://
                 transports: ['websocket'], 
                 secure: true
             });
@@ -339,10 +373,8 @@ body {
                 appDataCache.messages = data.messages || [];
                 appDataCache.ratings = data.ratings || {};
                 
-                // We render games here because we need the ratings data to be present
-                // The game list itself is loaded asynchronously in the initializeUI function
                 renderChatMessages();
-                renderGamesFromCache(); // Re-render games to update ratings
+                renderGamesFromCache(); 
             });
 
             socket.on('new_message', (message) => {
@@ -352,7 +384,7 @@ body {
             
             socket.on('ratings_update', (ratings) => {
                 appDataCache.ratings = ratings;
-                renderGamesFromCache(); // Re-render games to update ratings
+                renderGamesFromCache(document.getElementById('game-search-input').value);
             });
             
             socket.on('user_count_update', (data) => {
@@ -372,7 +404,7 @@ body {
             });
         }
 
-        // --- Chat Functions (Unchanged) ---
+        // --- Chat Functions ---
 
         function formatTimestamp(ms) {
             const date = new Date(ms);
@@ -386,7 +418,6 @@ body {
             const messageDiv = document.createElement('div');
             messageDiv.className = `flex ${isSelf ? 'justify-end' : 'justify-start'}`;
             
-            // Determine user color based on hash of username
             const hash = Array.from(message.username).reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0);
             const hue = hash % 360;
             const userColor = `hsl(${hue}, 80%, 70%)`;
@@ -433,14 +464,13 @@ body {
             }
         }
         
-        // --- Game Rating Functions (Unchanged) ---
+        // --- Game Rating Functions ---
         
         function submitRating(gameId, rating) {
             if (socket && socket.connected) {
-                // The backend will use the game's directory name as the unique ID for ratings
                 socket.emit('submit_rating', { game_id: gameId, rating: rating });
             } else {
-                 const errorMsg = {
+                const errorMsg = {
                     username: 'System', 
                     content: 'Cannot submit rating: Disconnected from server.', 
                     timestamp: Date.now()
@@ -453,7 +483,6 @@ body {
             const ratingData = appDataCache.ratings[gameId] || { average: 'N/A', count: 0, votes: {} };
             const average = ratingData.average === 'N/A' ? 0 : parseFloat(ratingData.average);
             
-            // NOTE: userVote is unreliable until UUID is provided by backend
             const userVote = 0; 
 
             const container = document.createElement('div');
@@ -464,20 +493,23 @@ body {
             
             for (let i = 1; i <= 5; i++) {
                 const star = document.createElement('span');
-                star.className = 'cursor-pointer text-xl transition-colors duration-150';
+                star.className = 'cursor-pointer text-2xl transition-colors duration-150';
                 
                 if (i <= userVote) {
                     star.textContent = '★'; 
                     star.classList.add('text-fyre-secondary');
                 } else if (i <= average && ratingData.average !== 'N/A') {
                     star.textContent = '★'; 
-                    star.classList.add('text-gray-400');
+                    star.classList.add('text-yellow-400');
                 } else {
                     star.textContent = '☆'; 
                     star.classList.add('text-gray-600');
                 }
 
-                star.onclick = () => submitRating(gameId, i);
+                star.onclick = (e) => {
+                    e.stopPropagation(); // Prevent modal from closing if rating is inside
+                    submitRating(gameId, i);
+                };
                 starContainer.appendChild(star);
             }
 
@@ -491,7 +523,7 @@ body {
             return container;
         }
 
-        // --- Game List Fetching and Rendering (Updated) ---
+        // --- NEW & REVISED Game Functions ---
 
         async function fetchGameList() {
             try {
@@ -505,69 +537,110 @@ body {
             } catch (error) {
                 console.error('Error fetching game list:', error);
                 document.getElementById('game-list').innerHTML = `
-                    <div class="text-center text-red-400 p-4 border border-red-500 rounded-lg md:col-span-2">
-                        Could not load game list from **${GAMES_JSON_PATH}**. Please check the file path and content.
+                    <div class="text-center text-red-400 p-4 border border-red-500 rounded-lg col-span-full">
+                        Could not load game list. Please check the console for details.
                     </div>
                 `;
             }
         }
 
-        function renderGamesFromCache() {
+        function renderGamesFromCache(searchText = '') {
             const gameListDiv = document.getElementById('game-list');
-            gameListDiv.innerHTML = ''; // Clear existing cards
+            gameListDiv.innerHTML = '';
 
-            if (appDataCache.games.length === 0) {
-                gameListDiv.innerHTML = '<div class="text-center text-gray-500 italic md:col-span-2">No games found.</div>';
+            const lowerCaseSearch = searchText.toLowerCase();
+            const filteredGames = appDataCache.games.filter(game =>
+                game.name.toLowerCase().includes(lowerCaseSearch)
+            );
+
+            filteredGames.sort((a, b) => {
+                const ratingA = parseFloat(appDataCache.ratings[a.directory]?.average) || 0;
+                const ratingB = parseFloat(appDataCache.ratings[b.directory]?.average) || 0;
+                return ratingB - ratingA;
+            });
+
+            if (filteredGames.length === 0) {
+                gameListDiv.innerHTML = `<div class="text-center text-gray-500 italic col-span-full">No games found${searchText ? ' matching your search' : ''}.</div>`;
                 return;
             }
 
-            appDataCache.games.forEach(game => {
-                // Use the 'directory' property as the unique ID for ratings and launching
-                const gameId = game.directory; 
-                const imagePath = game.image || 'default.png'; // Use a default image if none is provided
-                
-                const gameCard = document.createElement('div');
-                gameCard.className = 'game-card bg-fyre-card p-6 rounded-xl shadow-xl border border-fyre-secondary/30 transition-all duration-300 relative flex flex-col';
-                gameCard.innerHTML = `
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-grow">
-                            <h3 class="text-2xl font-bold text-fyre-primary">${game.name}</h3>
-                            <p class="text-gray-400 text-xs mt-1">Recommended: ${game.recommended === "1" ? 'Yes' : 'No'}</p>
-                        </div>
-                        <img src="./game-covers/${imagePath}" alt="${game.name} Cover" class="w-16 h-16 object-cover rounded-md ml-4 shadow-lg border border-fyre-primary/50">
-                        <button class="toggle-details text-2xl font-bold text-fyre-secondary/80 hover:text-fyre-secondary transition-colors ml-4" data-game-id="${gameId}">
-                            ▼
-                        </button>
-                    </div>
-                    
-                    <div id="rating-container-${gameId}" class="mb-4">
-                        </div>
+            filteredGames.forEach(game => {
+                const gameId = game.directory;
+                const imagePath = game.image || 'default.png';
+                // --- FIX: Use game.directory to build the path ---
+                const fullImagePath = `./${game.directory}/${imagePath}`;
 
-                    <div id="details-${gameId}" class="game-details mt-4 border-t border-gray-700 pt-4">
-                        <h4 class="text-lg font-semibold text-white mb-2">Launch Options: **${game.name}**</h4>
-                        <p class="text-sm text-gray-400 mb-3">Game Directory: **${game.directory}**</p>
-                        <button onclick="launchGame('${gameId}')" class="mt-3 bg-green-600 px-4 py-2 rounded-lg text-white font-bold hover:bg-green-500 transition duration-300">
-                            Launch Game
-                        </button>
-                    </div>
-                `;
+                const gameTile = document.createElement('div');
+                gameTile.className = 'game-tile shadow-lg';
+                gameTile.style.backgroundImage = `url('${fullImagePath}')`;
+                gameTile.setAttribute('onclick', `showGameDetails('${gameId}')`);
                 
-                gameListDiv.appendChild(gameCard);
+                gameTile.innerHTML = `<h3 class="game-tile-name text-lg">${game.name}</h3>`;
                 
-                // Add the star rating element
-                const ratingContainer = document.getElementById(`rating-container-${gameId}`);
-                ratingContainer.appendChild(createStarRating(gameId));
+                gameListDiv.appendChild(gameTile);
             });
+        }
 
-            initializeAccordion();
+        function showGameDetails(gameId) {
+            const game = appDataCache.games.find(g => g.directory === gameId);
+            if (!game) return;
+
+            const modal = document.getElementById('game-details-modal');
+            const contentDiv = document.getElementById('game-details-content');
+            const imagePath = game.image || 'default.png';
+            // --- FIX: Use game.directory to build the path for the modal image ---
+            const fullImagePath = `./${game.directory}/${imagePath}`;
+
+            contentDiv.innerHTML = `
+                <button onclick="hideGameDetails()" class="absolute top-3 right-4 text-gray-400 hover:text-white text-3xl font-bold transition-colors">&times;</button>
+                <div class="flex flex-col md:flex-row gap-6">
+                    <img src="${fullImagePath}" alt="${game.name} Cover" class="w-full md:w-1/3 object-cover rounded-md shadow-lg border border-fyre-primary/50">
+                    <div class="flex-grow flex flex-col">
+                        <div>
+                            <h3 class="text-3xl font-bold text-fyre-primary">${game.name}</h3>
+                            <p class="text-gray-400 text-sm mt-1 mb-4">Recommended: ${game.recommended === "1" ? 'Yes' : 'No'}</p>
+                            <div id="modal-rating-container" class="mb-4"></div>
+                            <p class="text-gray-300 mb-6">${game.description || 'No description available.'}</p>
+                        </div>
+                        <div class="mt-auto">
+                            <button onclick="launchGame('${game.directory}')" class="w-full bg-green-600 px-4 py-3 rounded-lg text-white font-bold hover:bg-green-500 transition duration-300">
+                                Launch Game
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const ratingContainer = contentDiv.querySelector('#modal-rating-container');
+            ratingContainer.appendChild(createStarRating(gameId));
+            
+            modal.classList.remove('hidden');
+        }
+
+        function hideGameDetails() {
+            document.getElementById('game-details-modal').classList.add('hidden');
+            document.getElementById('game-details-content').innerHTML = '';
         }
 
         function launchGame(gameDirectory) {
-            // Placeholder function for launching the game.
-            // In a real application, this would trigger a local file execution or redirect.
-            alert(`Launching game from directory: /games/${gameDirectory}/`);
+            hideGameDetails(); 
+            // This URL still points to the deployed Netlify site. 
+            // For local testing, you might change this to `./${gameDirectory}/`
+            const gameUrl = `./games/${gameDirectory}/`;
+            const playerModal = document.getElementById('game-player-modal');
+            const iframe = document.getElementById('game-iframe');
+            
+            iframe.src = gameUrl;
+            playerModal.classList.remove('hidden');
         }
 
+        function closeGame() {
+            const playerModal = document.getElementById('game-player-modal');
+            const iframe = document.getElementById('game-iframe');
+
+            playerModal.classList.add('hidden');
+            iframe.src = 'about:blank';
+        }
 
         // --- UI & Lifecycle ---
         
@@ -607,16 +680,12 @@ body {
             pointLight.position.set(10, 10, 10);
             scene.add(pointLight);
 
-
             function animate() {
                 requestAnimationFrame(animate);
-
                 cube.rotation.x += 0.005;
                 cube.rotation.y += 0.01;
-                
                 stars.rotation.y += 0.0005;
                 stars.rotation.x += 0.0001;
-
                 renderer.render(scene, camera);
             }
 
@@ -630,31 +699,10 @@ body {
         }
         
         function initializeUI() {
-            // Call fetchGameList instead of having a predefined list
             fetchGameList(); 
-            // initializeAccordion is called inside renderGamesFromCache
-        }
-
-        function initializeAccordion() {
-            // Remove existing listeners to prevent duplicates
-            document.querySelectorAll('.toggle-details').forEach(button => {
-                button.replaceWith(button.cloneNode(true));
-            });
             
-            document.querySelectorAll('.toggle-details').forEach(button => {
-                button.addEventListener('click', () => {
-                    const gameId = button.getAttribute('data-game-id');
-                    const details = document.getElementById(`details-${gameId}`);
-                    const icon = button;
-
-                    if (details.style.maxHeight === '0px' || details.style.maxHeight === '') {
-                        details.style.maxHeight = details.scrollHeight + 100 + "px"; 
-                        icon.textContent = '▲';
-                    } else {
-                        details.style.maxHeight = '0px';
-                        icon.textContent = '▼';
-                    }
-                });
+            document.getElementById('game-search-input').addEventListener('input', (e) => {
+                renderGamesFromCache(e.target.value);
             });
         }
         
@@ -664,7 +712,6 @@ body {
             
             document.getElementById('current-username').textContent = authUsername;
             connectSocket();
-            // Games are rendered by fetchGameList, but we call it here again to update ratings if needed
             renderGamesFromCache(); 
         }
 
