@@ -226,8 +226,13 @@ body {
             
             <div class="lg:col-span-2">
                 <h2 class="text-2xl font-bold text-white mb-4">Game Library</h2>
-                <div class="mb-4">
-                    <input type="text" id="game-search-input" placeholder="Search for a game..." class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:ring-fyre-secondary focus:border-fyre-secondary text-white transition duration-300">
+                <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                    <input type="text" id="game-search-input" placeholder="Search for a game..." class="flex-grow px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:ring-fyre-secondary focus:border-fyre-secondary text-white transition duration-300">
+                    <select id="sort-order-select" onchange="renderGamesFromCache(document.getElementById('game-search-input').value, this.value)"
+                            class="px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-fyre-secondary focus:border-fyre-secondary appearance-none cursor-pointer">
+                        <option value="rating">Sort by: ★ Rating (Default)</option>
+                        <option value="name">Sort by: Name (A-Z)</option>
+                    </select>
                 </div>
 
                 <div id="game-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -493,7 +498,10 @@ body {
                 handleBanStatus(data.is_banned || false); 
 
                 renderChatMessages();
-                renderGamesFromCache(); 
+                // When we get initial data, re-render games using the current search/sort settings
+                const currentSearch = document.getElementById('game-search-input').value;
+                const currentSort = document.getElementById('sort-order-select').value;
+                renderGamesFromCache(currentSearch, currentSort); 
             });
 
             socket.on('new_message', (message) => {
@@ -512,7 +520,21 @@ body {
             
             socket.on('ratings_update', (ratings) => {
                 appDataCache.ratings = ratings;
-                renderGamesFromCache(document.getElementById('game-search-input').value);
+                // Use current search and sort settings when updating
+                const currentSearch = document.getElementById('game-search-input').value;
+                const currentSort = document.getElementById('sort-order-select').value;
+                renderGamesFromCache(currentSearch, currentSort);
+                
+                // If the game details modal is open, update its rating display
+                const modalContent = document.getElementById('game-details-content');
+                const gameId = modalContent.dataset.gameId;
+                if (gameId) {
+                    const ratingContainer = modalContent.querySelector('#modal-rating-container');
+                    if(ratingContainer) {
+                         ratingContainer.innerHTML = ''; // Clear old rating
+                         ratingContainer.appendChild(createStarRating(gameId)); // Add new rating
+                    }
+                }
             });
             
             socket.on('user_count_update', (data) => {
@@ -621,30 +643,85 @@ body {
             const ratingData = appDataCache.ratings[gameId] || { average: 'N/A', count: 0, votes: {} };
             const average = ratingData.average === 'N/A' ? 0 : parseFloat(ratingData.average);
             
-            const userVote = 0; 
+            // 1. Get user's existing vote (assuming authUsername is the key in ratingData.votes)
+            const userVote = ratingData.votes[authUsername] || 0; 
 
             const container = document.createElement('div');
-            container.className = 'flex items-center space-x-2';
+            // Use flex-col and space-y-2 for better structure of stars and info
+            container.className = 'flex flex-col space-y-2'; 
 
             const starContainer = document.createElement('div');
-            starContainer.className = 'flex';
-            
+            starContainer.className = 'flex items-center space-x-1 text-2xl';
+
             for (let i = 1; i <= 5; i++) {
                 const star = document.createElement('span');
-                star.className = 'cursor-pointer text-2xl transition-colors duration-150';
+                // Use a larger star for better clicking/hovering and more prominent display
+                star.className = 'cursor-pointer text-3xl transition-transform duration-150 transform hover:scale-110';
+                star.textContent = '★'; 
+                star.dataset.ratingValue = i;
                 
+                // Color logic: Prioritize user's vote, then show community average
                 if (i <= userVote) {
-                    star.textContent = '★'; 
-                    star.classList.add('text-fyre-secondary');
-                } else if (i <= average && ratingData.average !== 'N/A') {
-                    star.textContent = '★'; 
+                    // User's own vote: use primary color
+                    star.classList.add('text-fyre-primary'); 
+                    star.classList.remove('text-yellow-400', 'text-gray-700');
+                } else if (i <= average) {
+                    // Community average: use a standard gold/yellow
                     star.classList.add('text-yellow-400');
+                    star.classList.remove('text-fyre-primary', 'text-gray-700');
                 } else {
-                    star.textContent = '☆'; 
-                    star.classList.add('text-gray-600');
+                    // Unrated: dim gray
+                    star.classList.add('text-gray-700');
+                    star.classList.remove('text-fyre-primary', 'text-yellow-400');
                 }
 
-                // Only allow rating if not banned
+                // Add interactive hover effect via JS for immediate visual feedback
+                star.onmouseover = function() {
+                    if (isBanned) return;
+                    // Highlight all stars up to and including this one with fyre-secondary
+                    for (let j = 1; j <= 5; j++) {
+                        const s = starContainer.querySelector(`[data-rating-value="${j}"]`);
+                        if (j <= i) {
+                            s.classList.remove('text-fyre-primary', 'text-yellow-400', 'text-gray-700');
+                            s.classList.add('text-fyre-secondary'); // Interactive hover color
+                        } else {
+                            // Clear hover color for stars after the current one
+                            s.classList.remove('text-fyre-secondary'); 
+                            // Revert to original styling (re-run initial color logic)
+                            if (j <= userVote) {
+                                s.classList.add('text-fyre-primary'); 
+                            } else if (j <= average) {
+                                s.classList.add('text-yellow-400');
+                            } else {
+                                s.classList.add('text-gray-700');
+                            }
+                        }
+                    }
+                };
+
+                // Clear hover effect when mouse leaves the star container area
+                starContainer.onmouseout = function() {
+                    if (isBanned) return;
+                    // Re-apply original colors for all stars
+                    for (let j = 1; j <= 5; j++) {
+                        const s = starContainer.querySelector(`[data-rating-value="${j}"]`);
+                        s.classList.remove('text-fyre-secondary');
+                        
+                        // Re-apply original styling
+                        if (j <= userVote) {
+                            s.classList.remove('text-yellow-400', 'text-gray-700');
+                            s.classList.add('text-fyre-primary'); 
+                        } else if (j <= average) {
+                            s.classList.remove('text-fyre-primary', 'text-gray-700');
+                            s.classList.add('text-yellow-400');
+                        } else {
+                            s.classList.remove('text-fyre-primary', 'text-yellow-400');
+                            s.classList.add('text-gray-700');
+                        }
+                    }
+                };
+                
+                // Set click handler
                 if (!isBanned) {
                     star.onclick = (e) => {
                         e.stopPropagation(); 
@@ -655,12 +732,30 @@ body {
                 starContainer.appendChild(star);
             }
 
+            const infoRow = document.createElement('div');
+            infoRow.className = 'flex items-center justify-between text-sm text-gray-300 pt-1 border-t border-gray-700';
+            
             const ratingText = document.createElement('span');
-            ratingText.className = 'text-sm text-gray-300 font-semibold';
-            ratingText.textContent = `${ratingData.average} (${ratingData.count} votes)`;
+            ratingText.className = 'font-semibold text-base';
+            ratingText.textContent = `Average: ${ratingData.average} (${ratingData.count} votes)`;
 
+            // 2. Add Encouragement Text
+            const encouragementText = document.createElement('span');
+            encouragementText.className = 'font-medium text-right text-base';
+
+            if (userVote > 0) {
+                encouragementText.textContent = `Your Vote: ${userVote}/5. Thanks!`;
+                encouragementText.classList.add('text-fyre-primary');
+            } else {
+                encouragementText.textContent = `Be the first to rate! Click the stars.`;
+                encouragementText.classList.add('text-fyre-secondary');
+            }
+            
+            infoRow.appendChild(ratingText);
+            infoRow.appendChild(encouragementText);
+            
             container.appendChild(starContainer);
-            container.appendChild(ratingText);
+            container.appendChild(infoRow);
             
             return container;
         }
@@ -709,7 +804,9 @@ body {
                 }
                 const games = await response.json();
                 appDataCache.games = games;
-                renderGamesFromCache();
+                // Use current sort setting on initial load
+                const currentSort = document.getElementById('sort-order-select').value;
+                renderGamesFromCache('', currentSort);
             } catch (error) {
                 console.error('Error fetching game list:', error);
                 document.getElementById('game-list').innerHTML = `
@@ -720,7 +817,8 @@ body {
             }
         }
 
-        function renderGamesFromCache(searchText = '') {
+        // MODIFIED: Added sortType parameter, default to 'rating'
+        function renderGamesFromCache(searchText = '', sortType = 'rating') {
             const gameListDiv = document.getElementById('game-list');
             gameListDiv.innerHTML = '';
 
@@ -729,10 +827,23 @@ body {
                 game.name.toLowerCase().includes(lowerCaseSearch)
             );
 
+            // Sorting logic based on sortType
             filteredGames.sort((a, b) => {
-                const ratingA = parseFloat(appDataCache.ratings[a.directory]?.average) || 0;
-                const ratingB = parseFloat(appDataCache.ratings[b.directory]?.average) || 0;
-                return ratingB - ratingA;
+                if (sortType === 'name') {
+                    // Sort alphabetically (A-Z)
+                    return a.name.localeCompare(b.name);
+                } else { // 'rating' or any other value defaults to rating
+                    // Sort by rating (Highest to Lowest), tie-break with name
+                    const ratingA = parseFloat(appDataCache.ratings[a.directory]?.average) || 0;
+                    const ratingB = parseFloat(appDataCache.ratings[b.directory]?.average) || 0;
+                    
+                    // Primary sort: rating (descending)
+                    if (ratingB !== ratingA) {
+                        return ratingB - ratingA;
+                    }
+                    // Secondary sort: name (alphabetical, for tie-breaking)
+                    return a.name.localeCompare(b.name);
+                }
             });
 
             if (filteredGames.length === 0) {
@@ -779,6 +890,9 @@ body {
 
             const modal = document.getElementById('game-details-modal');
             const contentDiv = document.getElementById('game-details-content');
+            // Store gameId on content div for easy access during real-time rating updates
+            contentDiv.dataset.gameId = gameId; 
+
             const imagePath = game.image || 'default.png';
             
             // Get the single, definitive path based on the new logic
@@ -807,7 +921,7 @@ body {
                         <div>
                             <h3 class="text-3xl font-bold text-fyre-primary">${game.name}</h3>
                             <p class="text-gray-400 text-sm mt-1 mb-4">Recommended: ${game.recommended === "1" ? 'Yes' : 'No'}</p>
-                            <div id="modal-rating-container" class="mb-4"></div>
+                            <div id="modal-rating-container" class="mb-4 p-3 bg-fyre-dark/30 rounded-lg"></div>
                             <p class="text-gray-300 mb-6">${game.description || 'No description available.'}</p>
                         </div>
                         <div class="mt-auto">
@@ -831,6 +945,7 @@ body {
         function hideGameDetails() {
             document.getElementById('game-details-modal').classList.add('hidden');
             document.getElementById('game-details-content').innerHTML = '';
+            document.getElementById('game-details-content').removeAttribute('data-game-id'); // Clear gameId
         }
         
         // Function updated to open game in a new tab instead of iframe modal
@@ -910,8 +1025,10 @@ body {
         function initializeUI() {
             fetchGameList(); 
             
+            // MODIFIED: Pass current sort type to the render function on search input
             document.getElementById('game-search-input').addEventListener('input', (e) => {
-                renderGamesFromCache(e.target.value);
+                const currentSort = document.getElementById('sort-order-select').value;
+                renderGamesFromCache(e.target.value, currentSort);
             });
         }
         
@@ -922,7 +1039,8 @@ body {
             document.getElementById('current-username').textContent = authUsername;
             connectSocket();
             // Ban status is checked and handled by connectSocket and initial load sequence
-            renderGamesFromCache(); 
+            
+            // Initial render called from fetchGameList now.
         }
 
         // --- Initial Load Sequence ---
