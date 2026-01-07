@@ -4277,6 +4277,11 @@
     "directory": "dadish3",
     "image": "/splash.png"
   },
+    {
+    "name": "! MORE LINKS!! VERY IMPORTANT!!! MAKE SURE TO BOOKMARK THIS!!",
+    "directory": "verifier",
+    "image": "/links.png"
+  },
   {
     "name": "Watermelon Game",
     "directory": "watermelongame",
