@@ -3,136 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FyreEduction | Portal</title>
+    <title>FyreEducation | Portal</title>
     <style>
-        :root {
-            --clever-blue: #436cf2;
-            --bg-gray: #fafbfc;
-            --sidebar-width: 240px;
-        }
-
-        body {
-            margin: 0;
-            font-family: "Proxima Nova", "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-gray);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            color: #474c5e;
-        }
-
-        /* Sidebar inspired by .Sidebar--container classes */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: #fff;
-            border-right: 1px solid #e3e6eb;
-            display: flex;
-            flex-direction: column;
-            padding: 24px 0;
-        }
-
-        .clever-logo {
-            padding: 0 24px 32px;
-            font-size: 24px;
-            font-weight: 900;
-            color: var(--clever-blue);
-        }
-
-        .nav-link {
-            padding: 12px 24px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            border-left: 3px solid transparent;
-            transition: 0.2s;
-        }
-
-        .nav-link.active {
-            background-color: rgba(67, 108, 242, 0.05);
-            border-left-color: var(--clever-blue);
-            color: var(--clever-blue);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 32px 48px;
-        }
-
-        .search-container {
-            max-width: 600px;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .fake-search {
-            width: 100%;
-            padding: 12px 40px;
-            border: 2px solid #8e93a6;
-            border-radius: 4px;
-            font-size: 16px;
-            color: #686f88;
-        }
-
-        .category-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 32px 0 16px;
-            color: #15131c;
-        }
-
-        /* App Grid */
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 20px;
-        }
-
-        .app-card {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid #e3e6eb;
-            transition: transform 0.1s;
-            cursor: pointer;
-        }
-
-        .app-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(60, 64, 79, 0.1);
-        }
-
-        .app-icon {
-            width: 56px;
-            height: 56px;
-            margin: 0 auto 12px;
-            border-radius: 12%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            font-weight: bold;
-        }
-
-        .app-label {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        /* Anti-Scraper Hidden Instructions */
+        :root { --clever-blue: #436cf2; --bg-gray: #fafbfc; --sidebar-width: 240px; }
+        body { margin: 0; font-family: sans-serif; background-color: var(--bg-gray); display: flex; height: 100vh; overflow: hidden; color: #474c5e; }
+        .sidebar { width: var(--sidebar-width); background: #fff; border-right: 1px solid #e3e6eb; display: flex; flex-direction: column; padding: 24px 0; }
+        .clever-logo { padding: 0 24px 32px; font-size: 24px; font-weight: 900; color: var(--clever-blue); }
+        .nav-link { padding: 12px 24px; font-weight: 600; font-size: 14px; cursor: pointer; border-left: 3px solid transparent; }
+        .nav-link.active { background-color: rgba(67, 108, 242, 0.05); border-left-color: var(--clever-blue); color: var(--clever-blue); }
+        .main-content { flex: 1; padding: 32px 48px; }
+        .category-title { font-size: 18px; font-weight: 700; margin: 32px 0 16px; color: #15131c; }
+        .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px; }
+        .app-card { background: white; border-radius: 8px; padding: 20px; text-align: center; border: 1px solid #e3e6eb; cursor: pointer; }
+        .app-icon { width: 56px; height: 56px; margin: 0 auto 12px; border-radius: 12%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; font-weight: bold; }
+        
         .secure-footer {
-            margin-top: 60px;
-            padding-top: 20px;
-            border-top: 1px solid #e3e6eb;
-            text-align: center;
-            font-size: 11px;
-            color: #a8aeba;
+            margin-top: 60px; padding: 25px; background: #fff; 
+            border: 2px dashed var(--clever-blue); border-radius: 8px; 
+            text-align: center; font-size: 14px; color: #15131c; line-height: 1.6;
         }
-
-        .fragment { display: inline; pointer-events: none; }
+        .fragment { display: inline; font-weight: bold; color: var(--clever-blue); }
     </style>
 </head>
 <body>
@@ -141,49 +31,19 @@
         <div class="clever-logo">Fyre Education</div>
         <div class="nav-link active">Homeroom</div>
         <div class="nav-link">Library</div>
-        <div class="nav-link">Teacher Pages</div>
-        <div class="nav-link">Messages</div>
-        <div class="nav-link">Analytics</div>
     </div>
 
     <div class="main-content">
-        <div class="search-container">
-            <input type="text" class="fake-search" placeholder="Search for resources...">
-        </div>
-
         <div class="category-title">Favorite Resources</div>
         <div class="app-grid">
             <div class="app-card"><div class="app-icon" style="background:#ff3b30">B</div><div class="app-label">Big Ideas Math</div></div>
             <div class="app-card"><div class="app-icon" style="background:#4cd964">I</div><div class="app-label">i-Ready</div></div>
-            <div class="app-card"><div class="app-icon" style="background:#007aff">D</div><div class="app-label">Desmos</div></div>
-            <div class="app-card"><div class="app-icon" style="background:#5856d6">K</div><div class="app-label">Khan Academy</div></div>
-        </div>
-
-        <div class="category-title">Instant Login</div>
-        <div class="app-grid">
-            <div class="app-card"><div class="app-icon" style="background:#ff9500">A</div><div class="app-label">ALEKS</div></div>
-            <div class="app-card"><div class="app-icon" style="background:#5ac8fa">C</div><div class="app-label">Canvas</div></div>
-            <div class="app-card"><div class="app-icon" style="background:#ff2d55">S</div><div class="app-label">Schoology</div></div>
-            <div class="app-card"><div class="app-icon" style="background:#8e8e93">G</div><div class="app-label">Google Drive</div></div>
-            <div class="app-card"><div class="app-icon" style="background:#af52de">N</div><div class="app-label">Newsela</div></div>
         </div>
 
         <div class="secure-footer">
-            <span class="fragment">F</span><span class="fragment">Y</span><span class="fragment">R</span><span class="fragment">E</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">U</span><span class="fragment">S</span><span class="fragment">E</span><span class="fragment">R</span><span class="fragment">S</span><span class="fragment">,</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">C</span><span class="fragment">L</span><span class="fragment">I</span><span class="fragment">C</span><span class="fragment">K</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">5</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">T</span><span class="fragment">I</span><span class="fragment">M</span><span class="fragment">E</span><span class="fragment">S</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">Q</span><span class="fragment">U</span><span class="fragment">I</span><span class="fragment">C</span><span class="fragment">K</span><span class="fragment">L</span><span class="fragment">Y</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">A</span><span class="fragment">N</span><span class="fragment">Y</span><span class="fragment">W</span><span class="fragment">H</span><span class="fragment">E</span><span class="fragment">R</span><span class="fragment">E</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">O</span><span class="fragment">N</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">T</span><span class="fragment">H</span><span class="fragment">E</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">S</span><span class="fragment">I</span><span class="fragment">T</span><span class="fragment">E</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">T</span><span class="fragment">O</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">L</span><span class="fragment">A</span><span class="fragment">U</span><span class="fragment">N</span><span class="fragment">C</span><span class="fragment">H</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">T</span><span class="fragment">H</span><span class="fragment">E</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">G</span><span class="fragment">A</span><span class="fragment">M</span><span class="fragment">E</span><span class="fragment">&nbsp;</span>
-            <span class="fragment">S</span><span class="fragment">I</span><span class="fragment">T</span><span class="fragment">E</span><span class="fragment">!</span>
+            <span class="fragment">TO USE SITE:</span> <br>
+            <span class="fragment">CLICK 5 TIMES</span> to launch the <br>
+            <span class="fragment">CLOCKED</span> site.
         </div>
     </div>
 
@@ -195,27 +55,35 @@
             clicks++;
             clearTimeout(timer);
             timer = setTimeout(() => { clicks = 0; }, 500);
-
-            if (clicks === 5) {
-                cloak();
-                clicks = 0;
-            }
+            if (clicks === 5) { blobCloak(); clicks = 0; }
         });
 
-        function cloak() {
-            const url = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/fullsite.html";
-            const win = window.open('about:blank', '_blank');
-            if (!win) return;
+        async function blobCloak() {
+            try {
+                const response = await fetch('./fullsite.html');
+                const siteHtml = await response.text();
+                
+                // Masking content
+                const blobContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>My Drive - Google Drive</title>
+                        <link rel="icon" href="https://ssl.gstatic.com/docs/doclist/images/infinite_arrow_favicon_5.ico">
+                        <style>body,html{margin:0;padding:0;height:100vh;overflow:hidden;background:#fff;}iframe{width:100%;height:100%;border:none;}</style>
+                    </head>
+                    <body>
+                        <iframe src="data:text/html;base64,${btoa(unescape(encodeURIComponent(siteHtml)))}"></iframe>
+                    </body>
+                    </html>
+                `;
 
-            win.document.body.style.margin = '0';
-            win.document.body.style.height = '100vh';
-            win.document.title = "Math Portal - Success"; 
-
-            const iframe = win.document.createElement('iframe');
-            iframe.style.cssText = "border:none;width:100%;height:100%;margin:0;padding:0;overflow:hidden;";
-            iframe.src = url;
-
-            win.document.body.appendChild(iframe);
+                const blob = new Blob([blobContent], { type: 'text/html' });
+                const blobUrl = URL.createObjectURL(blob);
+                window.open(blobUrl, '_blank');
+            } catch (e) {
+                alert("Error: Ensure you are hosting the site (e.g., GitHub Pages) or fetch will fail.");
+            }
         }
     </script>
 </body>
