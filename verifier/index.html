@@ -1,80 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>FyreX Link Checker</title>
+<title>FyreX Checker</title>
 <style>
-  body { font-family: sans-serif; background: #111; color: #eee; padding: 20px; }
-  .domain { display: inline-block; margin: 5px; padding: 10px 15px; border-radius: 12px; cursor: pointer; color: #fff; }
-  .green { background: #4caf50; }
-  .red { background: #f44336; }
-  .yellow { background: #ffeb3b; color: #111; }
-  .purple { background: #9c27b0; }
-  #status { margin-bottom: 20px; }
+body { background:#111;color:#eee;font-family:sans-serif }
+.domain { padding:10px;margin:5px;border-radius:10px }
+.green { background:#4caf50 }
+.red { background:#f44336 }
+.purple { background:#9c27b0 }
+button { margin:4px;padding:6px 10px }
+#schoolButtons button { font-size:16px }
 </style>
 </head>
 <body>
 
 <h2>FyreX Domain Status</h2>
-<p>Green = probably unblocked</p>
-<p>Red = probably blocked (Extension)</p>
-<p>Yellow = probably blocked (Network)</p>
-<p>Purple = server issue</p>
-<div id="status">Connecting...</div>
+
+<div id="schoolButtons">
+  <button onclick="setSchool('ELHS')">ELHS</button>
+  <button onclick="setSchool('MMS')">MMS</button>
+  <button onclick="setSchool('OTHER')">Other</button>
+</div>
+
+<p id="schoolLabel"></p>
+
 <div id="domains"></div>
-<p>This site uses the FyreX API, meaning it will be updated the MINUTE a new link comes online.</p>
+
 <script>
-const ws = new WebSocket('wss://fyrexapi.imcalledfyre.com');
-const domainsDiv = document.getElementById('domains');
-const statusDiv = document.getElementById('status');
+let school = localStorage.getItem('school');
+const label = document.getElementById('schoolLabel');
 
-ws.onopen = () => statusDiv.textContent = 'Connected to server...';
-ws.onclose = () => statusDiv.textContent = 'Disconnected!';
-ws.onerror = () => statusDiv.textContent = 'WebSocket error!';
+function setSchool(s) {
+  school = s;
+  localStorage.setItem('school', s);
+  label.textContent = `Viewing as: ${s}`;
+}
 
-ws.onmessage = async (event) => {
-  domainsDiv.innerHTML = '';
-  const data = JSON.parse(event.data); // [{domain, status}, ...]
-  
-  data.forEach(d => {
-    const bubble = document.createElement('div');
-    bubble.className = 'domain';
-    bubble.textContent = d.domain;
+if (school) label.textContent = `Viewing as: ${school}`;
 
-    // Try to fetch /verify.txt
-    fetch(`https://${d.domain}/verify.txt`, { method: 'GET', redirect: 'manual' })
-      .then(async res => {
-        // Check for redirects
-        if (res.status >= 300 && res.status < 400) {
-          bubble.classList.add('red');
-          bubble.title = 'Blocked: Redirected';
-        } else {
-          const text = await res.text();
-          if (text.trim() === 'works') {
-            bubble.classList.add('green');
-            bubble.title = 'Probably unblocked';
-            bubble.onclick = () => window.open(`https://${d.domain}`, '_blank');
-          } else {
-            bubble.classList.add('red');
-            bubble.title = 'Blocked: Verification text incorrect';
-          }
-        }
-      })
-      .catch(err => {
-        // Check error type
-        const msg = err.message.toLowerCase();
-        if (msg.includes('network') || msg.includes('failed to fetch')) {
-          bubble.classList.add('yellow');
-          bubble.title = 'Network restriction / Connection issue';
-        } else {
-          bubble.classList.add('purple');
-          bubble.title = 'Server issue / DNS problem';
-        }
-      });
+const ws = new WebSocket(`wss://fyrexapi.imcalledfyre.com`);
+const container = document.getElementById('domains');
 
-    domainsDiv.appendChild(bubble);
+function avgForUser(d) {
+  if (school === 'ELHS') return d.elhsAvg;
+  if (school === 'MMS') return d.mmsAvg;
+  return Math.max(d.elhsAvg ?? 0, d.mmsAvg ?? 0);
+}
+
+ws.onmessage = e => {
+  if (!school) return;
+
+  container.innerHTML = '';
+  JSON.parse(e.data).forEach(d => {
+    const avg = avgForUser(d);
+
+    let cls = 'purple';
+    let text = 'Unknown – test it';
+
+    if (avg != null) {
+      if (avg >= 0.6) {
+        cls = 'green';
+        text = 'Working';
+      } else {
+        cls = 'red';
+        text = 'Probably blocked – report it';
+      }
+    }
+
+    const el = document.createElement('div');
+    el.className = `domain ${cls}`;
+    el.innerHTML = `
+      <b>${d.domain}</b><br>
+      ${text}<br>
+      <button onclick="vote('${d.domain}',true)">Works</button>
+      <button onclick="vote('${d.domain}',false)">Blocked</button>
+    `;
+    container.appendChild(el);
   });
 };
+
+function vote(domain, working) {
+  let s = school;
+  if (!working) {
+    s = prompt('Blocked where? ELHS / MMS / Other')?.toUpperCase();
+    if (!['ELHS','MMS','OTHER'].includes(s)) return;
+  }
+
+  fetch('/vote', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ domain, working, school:s })
+  });
+}
 </script>
 
 </body>
