@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>FyreX Checker</title>
+<style>
+body { background:#111;color:#eee;font-family:sans-serif }
+.domain { padding:10px;margin:6px;border-radius:10px }
+.green { background:#4caf50 }
+.red { background:#f44336 }
+.purple { background:#9c27b0 }
+button { margin:4px;padding:6px 10px }
+</style>
+</head>
+<body>
+
+<h2>FyreX Domain Status</h2>
+
+<div>
+  <button onclick="setSchool('ELHS')">ELHS</button>
+  <button onclick="setSchool('MMS')">MMS</button>
+  <button onclick="setSchool('OTHER')">Other</button>
+</div>
+
+<p id="schoolLabel"></p>
+<div id="domains"></div>
+
+<script>
+const WS_URL = 'wss://fyrexapi.imcalledfyre.com';
+let school = localStorage.getItem('school');
+const label = document.getElementById('schoolLabel');
+const container = document.getElementById('domains');
+
+function setSchool(s) {
+  school = s;
+  localStorage.setItem('school', s);
+  label.textContent = `Viewing as: ${s}`;
+}
+
+if (school) label.textContent = `Viewing as: ${school}`;
+
+const ws = new WebSocket(WS_URL);
+
+function avgForUser(d) {
+  if (school === 'ELHS') return d.elhsAvg;
+  if (school === 'MMS') return d.mmsAvg;
+  return Math.max(d.elhsAvg ?? 0, d.mmsAvg ?? 0);
+}
+
+ws.onmessage = e => {
+  if (!school) return;
+
+  container.innerHTML = '';
+  JSON.parse(e.data).forEach(d => {
+    const avg = avgForUser(d);
+
+    let cls = 'purple';
+    let text = 'Unknown – test it';
+
+    if (avg != null) {
+      if (avg >= 0.6) {
+        cls = 'green';
+        text = 'Working';
+      } else {
+        cls = 'red';
+        text = 'Probably blocked – report it';
+      }
+    }
+
+    const el = document.createElement('div');
+    el.className = `domain ${cls}`;
+    el.innerHTML = `
+      <b>${d.domain}</b><br>
+      ${text}<br>
+      <button onclick="vote('${d.domain}',true)">Works</button>
+      <button onclick="vote('${d.domain}',false)">Blocked</button>
+    `;
+    container.appendChild(el);
+  });
+};
+
+function vote(domain, working) {
+  let s = school;
+  if (!working) {
+    s = prompt('Blocked where? ELHS / MMS / Other')?.toUpperCase();
+    if (!['ELHS','MMS','OTHER'].includes(s)) return;
+  }
+
+  fetch('https://fyrexapi.imcalledfyre.com/vote', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ domain, working, school:s })
+  });
+}
+</script>
+
+</body>
+</html>

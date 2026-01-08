@@ -3,853 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>google classroom</title>
-    
-    <!-- css -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- font thing that kills the site if i dont use it for some fucking reason -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Google Fonts: Inter & Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
-
-    <!-- more stuff for server -->
-    <!-- we dont even use the server -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
-
+    <title>FyreEduction | Portal</title>
     <style>
         :root {
-            --bg-color: #f0f2f5;
-            --surface-color: rgba(255, 255, 255, 0.95);
-            --glass-border: 1px solid rgba(255, 255, 255, 0.5);
-            --primary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --accent-color: #0d6efd;
-            --text-main: #2d3436;
-            --text-secondary: #636e72;
-            --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.1);
+            --clever-blue: #436cf2;
+            --bg-gray: #fafbfc;
+            --sidebar-width: 240px;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            background-image: 
-                radial-gradient(at 10% 10%, rgba(79, 172, 254, 0.1) 0px, transparent 50%),
-                radial-gradient(at 90% 90%, rgba(0, 242, 254, 0.1) 0px, transparent 50%);
-            background-attachment: fixed;
-            min-height: 100vh;
+            margin: 0;
+            font-family: "Proxima Nova", "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-gray);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            color: #474c5e;
         }
 
-        .glass-card {
-            background: var(--surface-color);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: var(--glass-border);
-            border-radius: 20px;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .navbar-glass {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            padding: 1rem 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-        }
-        .brand-text {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-        }
-
-        .game-list-item {
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-left: 4px solid transparent;
-        }
-        .game-list-item:hover {
-            background-color: rgba(13, 110, 253, 0.05);
-            border-left-color: var(--accent-color);
-            padding-left: 1.5rem !important;
-        }
-        .status-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            background-color: #dee2e6;
-        }
-        .status-dot.cached {
-            background-color: #198754;
-            box-shadow: 0 0 5px #198754;
-        }
-
-        #immersive-frame-container {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: #000;
-            display: none;
+        /* Sidebar inspired by .Sidebar--container classes */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #fff;
+            border-right: 1px solid #e3e6eb;
+            display: flex;
             flex-direction: column;
-            animation: fadeIn 0.3s ease;
+            padding: 24px 0;
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .immersive-header {
-            height: 50px;
-            background: #1a1a1a;
-            color: #fff;
+        .clever-logo {
+            padding: 0 24px 32px;
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--clever-blue);
+        }
+
+        .nav-link {
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: 0.2s;
+        }
+
+        .nav-link.active {
+            background-color: rgba(67, 108, 242, 0.05);
+            border-left-color: var(--clever-blue);
+            color: var(--clever-blue);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px 48px;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .fake-search {
+            width: 100%;
+            padding: 12px 40px;
+            border: 2px solid #8e93a6;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #686f88;
+        }
+
+        .category-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 32px 0 16px;
+            color: #15131c;
+        }
+
+        /* App Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        .app-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e3e6eb;
+            transition: transform 0.1s;
+            cursor: pointer;
+        }
+
+        .app-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(60, 64, 79, 0.1);
+        }
+
+        .app-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 12px;
+            border-radius: 12%;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            border-bottom: 1px solid #333;
-        }
-        iframe.game-frame {
-            flex-grow: 1;
-            width: 100%;
-            border: none;
-            background: #fff;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
         }
 
-        #debug-overlay {
-            position: fixed;
-            top: 10px; right: 10px;
-            width: 300px;
-            background: rgba(0, 0, 0, 0.85);
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            padding: 15px;
-            border-radius: 8px;
-            z-index: 10000;
-            border: 1px solid #00ff00;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
-            display: none;
-            backdrop-filter: blur(5px);
+        .app-label {
+            font-size: 13px;
+            font-weight: 600;
         }
-        .debug-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            border-bottom: 1px solid rgba(0, 255, 0, 0.3);
-            padding-bottom: 2px;
+
+        /* Anti-Scraper Hidden Instructions */
+        .secure-footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #e3e6eb;
+            text-align: center;
+            font-size: 11px;
+            color: #a8aeba;
         }
-        .debug-val { font-weight: bold; }
+
+        .fragment { display: inline; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <!-- Debug Menu -->
-    <div id="debug-overlay">
-        <h6 class="fw-bold border-bottom border-success pb-2 mb-2">NETWORK DIAGNOSTICS</h6>
-        <div class="debug-row"><span>Requests Sent:</span> <span id="dbg-total" class="debug-val">0</span></div>
-        <div class="debug-row"><span>Cached (Hits):</span> <span id="dbg-cache" class="debug-val">0</span></div>
-        <div class="debug-row"><span>Network (DL):</span> <span id="dbg-network" class="debug-val">0</span></div>
-        <div class="mt-2 small text-muted text-end">Press '\' to toggle</div>
+    <div class="sidebar">
+        <div class="clever-logo">Fyre Education</div>
+        <div class="nav-link active">Homeroom</div>
+        <div class="nav-link">Library</div>
+        <div class="nav-link">Teacher Pages</div>
+        <div class="nav-link">Messages</div>
+        <div class="nav-link">Analytics</div>
     </div>
 
-    <!-- Ad Modal -->
-    <div class="modal fade" id="adModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4 text-center p-4">
-                <h5 class="fw-bold mb-3">Please Wait...</h5>
-                <div class="mb-4 bg-light rounded overflow-hidden position-relative">
-                    <div style="width: 100%;margin: auto;position: relative; z-index: 99998;">
-                        <iframe data-aa='2422692' src='//acceptable.a-ads.com/2422692/?size=Adaptive'
-                                          style='border:0; padding:0; width:100%; height:250px; overflow:hidden;display: block;margin: auto'></iframe>
-                    </div>
-                </div>
-                <p class="text-muted small fst-italic mb-3">Ads keep this site running</p>
-                <button id="close-ad-btn" class="btn btn-primary rounded-pill w-75 mx-auto" disabled>
-                    Skip in <span id="ad-timer">5</span>s
-                </button>
-            </div>
+    <div class="main-content">
+        <div class="search-container">
+            <input type="text" class="fake-search" placeholder="Search for resources...">
         </div>
-    </div>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-glass sticky-top mb-4">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-                <i class="fas fa-layer-group text-primary fs-4"></i>
-                <span class="brand-text fs-4">FyreX Lite</span>
-                <span class="badge bg-light text-primary border rounded-pill ms-2 font-monospace" style="font-size: 0.7rem;">V1.2.0</span>
-            </a>
-            
-            <div class="d-flex align-items-center gap-3">
-                <button onclick="openStorageModal()" class="btn btn-light rounded-pill border px-3 shadow-sm d-flex align-items-center gap-2 transition-hover">
-                    <i class="fas fa-hdd text-secondary"></i>
-                    <span class="d-none d-md-inline small fw-bold text-secondary">Manage Data</span>
-                </button>
-            </div>
+        <div class="category-title">Favorite Resources</div>
+        <div class="app-grid">
+            <div class="app-card"><div class="app-icon" style="background:#ff3b30">B</div><div class="app-label">Big Ideas Math</div></div>
+            <div class="app-card"><div class="app-icon" style="background:#4cd964">I</div><div class="app-label">i-Ready</div></div>
+            <div class="app-card"><div class="app-icon" style="background:#007aff">D</div><div class="app-label">Desmos</div></div>
+            <div class="app-card"><div class="app-icon" style="background:#5856d6">K</div><div class="app-label">Khan Academy</div></div>
         </div>
-    </nav>
 
-    <div class="container-fluid px-4">
-        <div class="row g-4">
-            
-            <!-- Main Game List -->
-            <div class="col-lg-8 order-lg-1 order-2">
-                
-                <!-- Homepage Ad Banner -->
-                <div class="glass-card p-3 mb-4 text-center" id="homepage-banner-ad">
-                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                        <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">Advertisement</small>
-                        <small class="text-muted fst-italic" style="font-size: 0.65rem;">Ads keep this site running</small>
-                    </div>
-                    <div class="mt-2" style="width: 100%;margin: auto;position: relative; z-index: 1;">
-                      <iframe data-aa='2422692' src='//acceptable.a-ads.com/2422692/?size=Adaptive'
-                                        style='border:0; padding:0; width:70%; height:90px; overflow:hidden;display: block;margin: auto'></iframe>
-                    </div>
-                </div>
-
-                <div class="glass-card p-4 h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-                        <div>
-                            <h4 class="m-0 fw-bold" style="font-family: 'Poppins', sans-serif;">Library</h4>
-                            <p>We got a new hosting provider so please report any broken game to me via tiktok or in person!</p<
-                                                        <p>I hope you guys like the new site because this took a long time to make! (4 hours)</p>
-                            <p>Questions/comments? Message me on tiktok @imcalledfyre</p>
-                            <p class="text-muted small m-0">Alphabetical Index</p>
-                        </div>
-                        <div class="input-group w-auto">
-                            <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3"><i class="fas fa-search text-muted"></i></span>
-                            <input type="text" id="search-input" class="form-control border-start-0 rounded-end-pill" placeholder="Filter games..." style="box-shadow: none;">
-                        </div>
-                    </div>
-
-                    <div id="game-list" class="list-group list-group-flush rounded-3 overflow-hidden border">
-                        <div class="p-4 text-center text-muted">Loading database...</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sidebar -->
-            <div class="col-lg-4 order-lg-2 order-1">
-                <div class="glass-card p-0 mb-4 overflow-hidden">
-                    <div class="p-3 bg-light border-bottom">
-                        <h6 class="m-0 fw-bold text-uppercase text-secondary small">System Status</h6>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon"><i class="fas fa-wifi"></i></div>
-                        <div class="flex-grow-1">
-                            <div class="small fw-bold text-dark">Network</div>
-                            <div id="network-status-text" class="small text-success">Online</div>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon"><i class="fas fa-database"></i></div>
-                        <div class="flex-grow-1">
-                            <div class="small fw-bold text-dark">Cached Games</div>
-                            <div class="small text-muted"><span id="cached-count-badge">0</span> installed</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-card p-3">
-                    <h6 class="fw-bold text-secondary text-uppercase small mb-3">Settings</h6>
-                    <button onclick="checkForUpdates()" id="update-btn" class="btn btn-outline-primary btn-sm w-100 mb-2 rounded-3 text-start">
-                        <i class="fas fa-cloud-download-alt me-2"></i> Check Updates
-                    </button>
-                    <button onclick="window.location.reload()" class="btn btn-outline-dark btn-sm w-100 mb-2 rounded-3 text-start">
-                        <i class="fas fa-sync-alt me-2"></i> Refresh UI
-                    </button>
-                    <button onclick="nukeStorage()" class="btn btn-danger btn-sm w-100 rounded-3 text-start bg-opacity-10 text-dark border-0">
-                        <i class="fas fa-bomb me-2"></i> Wipe All Data
-                    </button>
-                </div>
-            </div>
+        <div class="category-title">Instant Login</div>
+        <div class="app-grid">
+            <div class="app-card"><div class="app-icon" style="background:#ff9500">A</div><div class="app-label">ALEKS</div></div>
+            <div class="app-card"><div class="app-icon" style="background:#5ac8fa">C</div><div class="app-label">Canvas</div></div>
+            <div class="app-card"><div class="app-icon" style="background:#ff2d55">S</div><div class="app-label">Schoology</div></div>
+            <div class="app-card"><div class="app-icon" style="background:#8e8e93">G</div><div class="app-label">Google Drive</div></div>
+            <div class="app-card"><div class="app-icon" style="background:#af52de">N</div><div class="app-label">Newsela</div></div>
         </div>
-    </div>
 
-    <!-- Game Details Modal -->
-    <div class="modal fade" id="detailsModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                <div class="modal-header border-0 pb-0 position-absolute end-0 top-0 z-3">
-                    <button type="button" class="btn-close bg-white p-2 m-2 rounded-circle shadow-sm" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-0">
-                    <div class="row g-0">
-                        <div class="col-md-5 bg-light d-flex align-items-center justify-content-center" style="min-height: 300px; background-size: cover; background-position: center;" id="modal-game-img"></div>
-                        <div class="col-md-7 p-4 d-flex flex-column">
-                            <h2 class="fw-bold mb-1" id="modal-game-title">Game Title</h2>
-                            <div class="mb-3 d-flex gap-2 align-items-center">
-                                <span class="badge bg-secondary rounded-pill" id="modal-game-rating">★ 4.5</span>
-                                <span class="badge bg-light text-dark border" id="modal-game-status">Checking cache...</span>
-                            </div>
-                            <p class="text-secondary flex-grow-1" id="modal-game-desc">No description available.</p>
-                            <div class="d-grid gap-2">
-                                <button id="modal-btn-play" class="btn btn-primary btn-lg rounded-pill fw-bold">
-                                    <i class="fas fa-play me-2"></i> Play Now
-                                </button>
-                                <button id="modal-btn-download" class="btn btn-outline-dark rounded-pill">
-                                    <i class="fas fa-download me-2"></i> Download for Offline
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Iframe Launcher (Immersive Mode) -->
-    <div id="immersive-frame-container">
-        <div class="immersive-header">
-            <div class="d-flex align-items-center">
-                <i class="fas fa-gamepad me-2 text-primary"></i>
-                <span id="active-game-title" class="fw-bold font-monospace">GAME_TITLE</span>
-            </div>
-            <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-light border-secondary" onclick="toggleFullscreen()">
-                    <i class="fas fa-expand"></i>
-                </button>
-                <button class="btn btn-sm btn-danger px-3" onclick="closeGame()">
-                    <i class="fas fa-times me-1"></i> EXIT
-                </button>
-            </div>
-        </div>
-        <iframe id="game-iframe" class="game-frame" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
-            sandbox="allow-downloads allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts">
-        </iframe>
-    </div>
-
-    <!-- Storage Manager Modal -->
-    <div class="modal fade" id="storageModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold">Storage Manager</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="bg-light p-3 rounded-3 mb-4">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="small fw-bold text-secondary">Total Usage</span>
-                            <span id="storage-usage-text" class="small fw-bold text-primary">0 MB</span>
-                        </div>
-                        <div class="progress-custom">
-                            <div id="storage-bar" class="progress-bar-custom h-100" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    <h6 class="fw-bold mb-3 small text-uppercase text-muted">Installed Games</h6>
-                    <div id="storage-list" class="list-group list-group-flush"></div>
-                </div>
-            </div>
+        <div class="secure-footer">
+            <span class="fragment">F</span><span class="fragment">Y</span><span class="fragment">R</span><span class="fragment">E</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">U</span><span class="fragment">S</span><span class="fragment">E</span><span class="fragment">R</span><span class="fragment">S</span><span class="fragment">,</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">C</span><span class="fragment">L</span><span class="fragment">I</span><span class="fragment">C</span><span class="fragment">K</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">5</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">T</span><span class="fragment">I</span><span class="fragment">M</span><span class="fragment">E</span><span class="fragment">S</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">Q</span><span class="fragment">U</span><span class="fragment">I</span><span class="fragment">C</span><span class="fragment">K</span><span class="fragment">L</span><span class="fragment">Y</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">A</span><span class="fragment">N</span><span class="fragment">Y</span><span class="fragment">W</span><span class="fragment">H</span><span class="fragment">E</span><span class="fragment">R</span><span class="fragment">E</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">O</span><span class="fragment">N</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">T</span><span class="fragment">H</span><span class="fragment">E</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">S</span><span class="fragment">I</span><span class="fragment">T</span><span class="fragment">E</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">T</span><span class="fragment">O</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">L</span><span class="fragment">A</span><span class="fragment">U</span><span class="fragment">N</span><span class="fragment">C</span><span class="fragment">H</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">T</span><span class="fragment">H</span><span class="fragment">E</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">G</span><span class="fragment">A</span><span class="fragment">M</span><span class="fragment">E</span><span class="fragment">&nbsp;</span>
+            <span class="fragment">S</span><span class="fragment">I</span><span class="fragment">T</span><span class="fragment">E</span><span class="fragment">!</span>
         </div>
     </div>
 
     <script>
-        const GAMES_JSON_PATH = 'games.json';
-        const CACHE_NAME = 'game-cache-v1';
-        let gamesData = [];
-        let currentGameInModal = null;
-        let backslashCount = 0;
-        let debugPollInterval = null;
-        let debugVisible = false;
-        let keyHistory = ''; 
-        const cheatCode = 'noads';
-        let adsDisabled = localStorage.getItem('fyrexAdsDisabled') === 'true';
+        let clicks = 0;
+        let timer;
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => {
-                        console.log('SW Registered:', reg.scope);
-                        refreshCacheStatus();
-                    })
-                    .catch(err => console.error('SW Fail:', err));
-            });
-            
-            navigator.serviceWorker.addEventListener('message', event => {
-                if(event.data) {
-                    document.getElementById('dbg-total').textContent = event.data.total;
-                    document.getElementById('dbg-cache').textContent = event.data.cached;
-                    document.getElementById('dbg-network').textContent = event.data.network;
-                }
-            });
-        }
+        document.addEventListener('click', () => {
+            clicks++;
+            clearTimeout(timer);
+            timer = setTimeout(() => { clicks = 0; }, 500);
 
-        async function init() {
-            if(adsDisabled) document.getElementById('homepage-banner-ad').style.display = 'none';
-
-            document.addEventListener('keyup', (e) => {
-                if(e.key.length === 1) {
-                    keyHistory += e.key.toLowerCase();
-                    if(keyHistory.length > 20) keyHistory = keyHistory.slice(-20);
-                }
-
-                if (e.key === '\\') {
-                    if (keyHistory.endsWith(cheatCode)) {
-                        adsDisabled = !adsDisabled;
-                        localStorage.setItem('fyrexAdsDisabled', adsDisabled);
-                        const banner = document.getElementById('homepage-banner-ad');
-                        if(banner) banner.style.display = adsDisabled ? 'none' : 'block';
-                        alert(`Ads are now ${adsDisabled ? 'DISABLED' : 'ENABLED'}`);
-                        keyHistory = ''; 
-                    }
-                    backslashCount++;
-                    if (backslashCount >= 5) {
-                        toggleDebugMenu();
-                        backslashCount = 0;
-                    }
-                } else {
-                    backslashCount = 0;
-                }
-            });
-
-            // Delay showing the initial ad slightly to ensure Bootstrap is fully ready
-            setTimeout(() => showAd(null), 500);
-
-            try {
-                let res;
-                try {
-                    res = await fetch(GAMES_JSON_PATH);
-                } catch(netErr) {
-                    console.warn("Network fetch failed, trying cache...", netErr);
-                    if('caches' in window) {
-                        const cache = await caches.open(CACHE_NAME);
-                        res = await cache.match(GAMES_JSON_PATH);
-                    }
-                }
-
-                if(!res || !res.ok) throw new Error("Failed to fetch games list");
-                
-                const resClone = res.clone();
-                gamesData = await res.json();
-                gamesData.sort((a, b) => a.name.localeCompare(b.name));
-                
-                if('caches' in window) {
-                    const cache = await caches.open(CACHE_NAME);
-                    cache.put(GAMES_JSON_PATH, resClone);
-                    await cacheAppShell(cache);
-                }
-
-                renderGames();
-                refreshCacheStatus();
-                setupNetworkListeners();
-            } catch (e) {
-                console.error(e);
-                document.getElementById('game-list').innerHTML = `
-                    <div class="p-4 text-center text-danger">
-                        <i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>
-                        <strong>Database Error</strong><br>
-                        Could not load game list.<br>
-                        <small class="text-muted">Ensure "games.json" exists and you are online.</small>
-                    </div>`;
+            if (clicks === 5) {
+                cloak();
+                clicks = 0;
             }
+        });
+
+        function cloak() {
+            const url = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/fullsite.html";
+            const win = window.open('about:blank', '_blank');
+            if (!win) return;
+
+            win.document.body.style.margin = '0';
+            win.document.body.style.height = '100vh';
+            win.document.title = "Math Portal - Success"; 
+
+            const iframe = win.document.createElement('iframe');
+            iframe.style.cssText = "border:none;width:100%;height:100%;margin:0;padding:0;overflow:hidden;";
+            iframe.src = url;
+
+            win.document.body.appendChild(iframe);
         }
-        
-        function toggleDebugMenu() {
-            debugVisible = !debugVisible;
-            const menu = document.getElementById('debug-overlay');
-            menu.style.display = debugVisible ? 'block' : 'none';
-            if (debugVisible) {
-                debugPollInterval = setInterval(() => {
-                    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                        const messageChannel = new MessageChannel();
-                        messageChannel.port1.onmessage = (event) => {
-                            document.getElementById('dbg-total').textContent = event.data.total;
-                            document.getElementById('dbg-cache').textContent = event.data.cached;
-                            document.getElementById('dbg-network').textContent = event.data.network;
-                        };
-                        navigator.serviceWorker.controller.postMessage({ type: 'GET_STATS' }, [messageChannel.port2]);
-                    }
-                }, 1000);
-            } else {
-                clearInterval(debugPollInterval);
-            }
-        }
-        
-        async function cacheAppShell(cache) {
-            try {
-                const shellResources = [
-                    './',
-                    './updated.html', 
-                    'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
-                    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-                    'https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js'
-                ];
-                await cache.addAll(shellResources);
-            } catch(e) {
-                console.warn('App Shell caching failed:', e);
-            }
-        }
-
-        async function checkForUpdates() {
-            const btn = document.getElementById('update-btn');
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
-            btn.disabled = true;
-            try {
-                const cache = await caches.open(CACHE_NAME);
-                // Use absolute path for index to avoid 404 on current file
-                const currentUrl = window.location.href;
-                const [indexRes, gamesRes] = await Promise.all([
-                    fetch(currentUrl, { cache: 'reload' }), 
-                    fetch(GAMES_JSON_PATH, { cache: 'reload' })
-                ]);
-                if (indexRes.ok) {
-                    await cache.put(currentUrl, indexRes);
-                    await cache.put('./', indexRes.clone());
-                }
-                if (gamesRes.ok) {
-                    await cache.put(GAMES_JSON_PATH, gamesRes);
-                }
-                alert("Updated successfully! Reloading...");
-                window.location.reload();
-            } catch(e) {
-                alert("Update failed. Are you online?");
-            } finally {
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
-            }
-        }
-
-        function renderGames(filter = '') {
-            const list = document.getElementById('game-list');
-            list.innerHTML = '';
-            const filtered = gamesData.filter(g => g.name.toLowerCase().includes(filter.toLowerCase()));
-            if(filtered.length === 0) {
-                list.innerHTML = `<div class="p-4 text-center text-muted">No games found.</div>`;
-                return;
-            }
-            filtered.forEach(game => {
-                const a = document.createElement('a');
-                a.className = 'list-group-item list-group-item-action game-list-item d-flex justify-content-between align-items-center py-3 px-4';
-                a.onclick = () => openGameDetails(game);
-                const statusId = `status-dot-${game.directory}`;
-                a.innerHTML = `<span class="fw-bold text-dark">${game.name}</span><span id="${statusId}" class="status-dot" title="Not Downloaded"></span>`;
-                list.appendChild(a);
-            });
-            refreshCacheStatus();
-        }
-
-        function showAd(callback) {
-            if (adsDisabled) {
-                if (callback) callback();
-                return;
-            }
-            const modalEl = document.getElementById('adModal');
-            if(!modalEl) return;
-            const modal = new bootstrap.Modal(modalEl);
-            const btn = document.getElementById('close-ad-btn');
-            
-            let seconds = 5;
-            btn.disabled = true;
-            btn.innerHTML = `Skip in <span id="ad-timer">${seconds}</span>s`;
-            
-            modal.show();
-            const interval = setInterval(() => {
-                seconds--;
-                if (seconds <= 0) {
-                    clearInterval(interval);
-                    btn.disabled = false;
-                    btn.innerHTML = "Continue";
-                } else {
-                    const ts = document.getElementById('ad-timer');
-                    if(ts) ts.textContent = seconds;
-                }
-            }, 1000);
-            
-            btn.onclick = () => {
-                modal.hide();
-                btn.onclick = null; 
-                clearInterval(interval);
-                if (callback) callback();
-            };
-        }
-
-        function openGameDetails(game) {
-            currentGameInModal = game;
-            document.getElementById('modal-game-title').textContent = game.name;
-            document.getElementById('modal-game-desc').textContent = game.description || "No description provided.";
-            document.getElementById('modal-game-rating').textContent = "★ " + (Math.random() * (5 - 3) + 3).toFixed(1); 
-            
-            const imgUrl = getGameImage(game);
-            const imgContainer = document.getElementById('modal-game-img');
-            imgContainer.style.backgroundImage = `url('${imgUrl}')`;
-            
-            const playBtn = document.getElementById('modal-btn-play');
-            const dlBtn = document.getElementById('modal-btn-download');
-            
-            playBtn.onclick = () => {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('detailsModal'));
-                modal.hide();
-                launchGame(game);
-            };
-            dlBtn.onclick = () => handleModalDownloadToggle(game);
-            
-            checkGameCacheStatus(game).then(isCached => {
-                updateModalButtons(isCached);
-            });
-            const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
-            modal.show();
-        }
-
-        function updateModalButtons(isCached) {
-            const statusBadge = document.getElementById('modal-game-status');
-            const dlBtn = document.getElementById('modal-btn-download');
-            if (isCached) {
-                statusBadge.textContent = "Downloaded";
-                statusBadge.className = "badge bg-success";
-                dlBtn.innerHTML = '<i class="fas fa-trash me-2"></i> Delete from Cache';
-                dlBtn.className = "btn btn-outline-danger rounded-pill";
-            } else {
-                statusBadge.textContent = "Online";
-                statusBadge.className = "badge bg-secondary";
-                dlBtn.innerHTML = '<i class="fas fa-download me-2"></i> Download for Offline';
-                dlBtn.className = "btn btn-outline-dark rounded-pill";
-            }
-        }
-
-        async function handleModalDownloadToggle(game) {
-            const dlBtn = document.getElementById('modal-btn-download');
-            const isCached = dlBtn.innerHTML.includes('Delete');
-            if (isCached) {
-                if (confirm(`Remove "${game.name}" from storage?`)) {
-                    dlBtn.disabled = true;
-                    dlBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Deleting...';
-                    await deleteGameData(game.directory);
-                    updateModalButtons(false);
-                    dlBtn.disabled = false;
-                    refreshCacheStatus();
-                }
-            } else {
-                showAd(async () => {
-                    dlBtn.disabled = true;
-                    dlBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Downloading...';
-                    await downloadGame(game);
-                    updateModalButtons(true);
-                    dlBtn.disabled = false;
-                    refreshCacheStatus();
-                });
-            }
-        }
-
-        function cleanPath(path) {
-            if (!path) return '';
-            let p = path;
-            if (p.startsWith('./')) p = p.substring(2);
-            if (p.startsWith('/')) p = p.substring(1);
-            if (p.endsWith('/')) p = p.slice(0, -1);
-            return p;
-        }
-
-        function getGameImage(game) {
-            if (!game.image || game.image === 'default.png') return 'https://placehold.co/400x300/e9ecef/6c757d?text=No+Image';
-            const dir = cleanPath(game.directory);
-            if (dir.endsWith('.html')) return `/images/${game.image}`;
-            return `/${dir}/${game.image}`;
-        }
-
-        function getGameRoot(game) {
-            let dir = cleanPath(game.directory);
-            if (dir.endsWith('.html')) return `/${dir}`;
-            // FIX: Return directory path with trailing slash for folder-based games
-            return `/${dir}/`; 
-        }
-
-        async function downloadGame(game, silent = false) {
-            const cache = await caches.open(CACHE_NAME);
-            const indexUrl = getGameRoot(game);
-            // Fix: ensure root always has trailing slash and is derived from the FULL path
-            const fullIndexUrl = new URL(indexUrl, window.location.origin).href;
-            const root = fullIndexUrl.substring(0, fullIndexUrl.lastIndexOf('/') + 1);
-
-            try {
-                const response = await fetch(indexUrl);
-                if (!response.ok) throw new Error('Index file missing');
-                const htmlText = await response.text();
-                await cache.put(indexUrl, new Response(htmlText, { headers: {'Content-Type': 'text/html'} }));
-
-                const urlsToCache = new Set();
-                urlsToCache.add(getGameImage(game));
-
-                const patterns = [
-                    /src=["']([^"']+)["']/g,
-                    /href=["']([^"']+)["']/g,
-                    /url\((?:['"]?)([^'")]+)(?:['"]?)\)/g
-                ];
-
-                patterns.forEach(regex => {
-                    let match;
-                    while ((match = regex.exec(htmlText)) !== null) {
-                        const path = match[1];
-                        if (path.startsWith('data:') || path.startsWith('#') || path.startsWith('http')) continue;
-                        try {
-                            // Resolve path relative to the game's root, not the current page
-                            const absoluteUrl = new URL(path, root).href;
-                            if (absoluteUrl.startsWith(window.location.origin)) {
-                                urlsToCache.add(absoluteUrl);
-                            }
-                        } catch(e) {}
-                    }
-                });
-
-                const assets = Array.from(urlsToCache);
-                await Promise.allSettled(assets.map(url => 
-                    fetch(url).then(res => {
-                        if(res.ok) return cache.put(url, res);
-                    })
-                ));
-            } catch (err) {
-                console.error("Download failed:", err);
-                if (!silent) alert("Error downloading game files.");
-            }
-        }
-
-        async function deleteGameData(directory) {
-            const cache = await caches.open(CACHE_NAME);
-            const keys = await cache.keys();
-            const deletions = keys
-                .filter(req => req.url.includes(`/${directory}/`) || req.url.includes(directory))
-                .map(req => cache.delete(req));
-            await Promise.all(deletions);
-        }
-
-        async function checkGameCacheStatus(game) {
-            if (!('caches' in window)) return false;
-            const cache = await caches.open(CACHE_NAME);
-            const indexUrl = new URL(getGameRoot(game), window.location.origin).href;
-            const match = await cache.match(indexUrl);
-            return !!match;
-        }
-
-        async function refreshCacheStatus() {
-            if (!('caches' in window)) return;
-            const cache = await caches.open(CACHE_NAME);
-            const keys = await cache.keys();
-            const cachedUrls = new Set(keys.map(k => k.url));
-            let count = 0;
-            gamesData.forEach(game => {
-                const dot = document.getElementById(`status-dot-${game.directory}`);
-                if(!dot) return;
-                const indexUrl = new URL(getGameRoot(game), window.location.origin).href;
-                if (cachedUrls.has(indexUrl)) {
-                    dot.classList.add('cached');
-                    dot.title = "Available Offline";
-                    count++;
-                } else {
-                    dot.classList.remove('cached');
-                    dot.title = "Not Downloaded";
-                }
-            });
-            document.getElementById('cached-count-badge').textContent = count;
-            updateStorageMeter();
-        }
-
-        async function updateStorageMeter() {
-            if (navigator.storage && navigator.storage.estimate) {
-                const { usage, quota } = await navigator.storage.estimate();
-                const mbUsed = (usage / (1024 * 1024)).toFixed(1);
-                const percent = Math.min((usage / quota) * 100, 100);
-                const text = document.getElementById('storage-usage-text');
-                const bar = document.getElementById('storage-bar');
-                if(text) text.textContent = `${mbUsed} MB`;
-                if(bar) bar.style.width = `${percent}%`;
-            }
-        }
-
-        function openStorageModal() {
-            const list = document.getElementById('storage-list');
-            list.innerHTML = '';
-            caches.open(CACHE_NAME).then(async cache => {
-                const keys = await cache.keys();
-                const urls = keys.map(k => k.url);
-                const installedGames = gamesData.filter(g => 
-                    urls.includes(new URL(getGameRoot(g), window.location.origin).href)
-                );
-                if (installedGames.length === 0) {
-                    list.innerHTML = '<div class="text-center text-muted py-3">No downloads found.</div>';
-                } else {
-                    installedGames.forEach(g => {
-                        const item = document.createElement('div');
-                        item.className = 'list-group-item d-flex justify-content-between align-items-center bg-transparent';
-                        item.innerHTML = `<span class="fw-bold">${g.name}</span><button class="btn btn-sm btn-outline-danger" onclick="deleteGameAndRefresh('${g.directory}')"><i class="fas fa-trash"></i></button>`;
-                        list.appendChild(item);
-                    });
-                }
-            });
-            const modal = new bootstrap.Modal(document.getElementById('storageModal'));
-            modal.show();
-        }
-
-        async function deleteGameAndRefresh(dir) {
-            await deleteGameData(dir);
-            openStorageModal(); 
-            refreshCacheStatus();
-        }
-
-        async function nukeStorage() {
-            if(confirm("DANGER: This will delete ALL cached games. Continue?")) {
-                await caches.delete(CACHE_NAME);
-                window.location.reload();
-            }
-        }
-
-        function launchGame(game) {
-            showAd(() => {
-                const container = document.getElementById('immersive-frame-container');
-                const iframe = document.getElementById('game-iframe');
-                const title = document.getElementById('active-game-title');
-                iframe.src = getGameRoot(game);
-                title.textContent = game.name;
-                container.style.display = 'flex';
-                checkGameCacheStatus(game).then(isCached => {
-                    if (!isCached) {
-                        console.log(`[Auto-Cache] Downloading ${game.name} assets in background...`);
-                        downloadGame(game, true).then(() => {
-                            console.log(`[Auto-Cache] ${game.name} cached successfully.`);
-                            refreshCacheStatus();
-                            if (currentGameInModal && currentGameInModal.directory === game.directory) {
-                                updateModalButtons(true);
-                            }
-                        });
-                    }
-                });
-            });
-        }
-
-        function closeGame() {
-            const container = document.getElementById('immersive-frame-container');
-            const iframe = document.getElementById('game-iframe');
-            iframe.src = 'about:blank';
-            container.style.display = 'none';
-        }
-
-        function toggleFullscreen() {
-            const iframe = document.getElementById('game-iframe');
-            if (!document.fullscreenElement) {
-                iframe.requestFullscreen();
-            } else {
-                document.exitFullscreen();
-            }
-        }
-
-        function setupNetworkListeners() {
-            const updateStatus = () => {
-                const el = document.getElementById('network-status-text');
-                if (navigator.onLine) {
-                    el.textContent = 'Online';
-                    el.className = 'small text-success';
-                } else {
-                    el.textContent = 'Offline';
-                    el.className = 'small text-danger';
-                }
-            };
-            window.addEventListener('online', updateStatus);
-            window.addEventListener('offline', updateStatus);
-            updateStatus();
-        }
-
-        document.getElementById('search-input').addEventListener('input', (e) => renderGames(e.target.value));
-
-        init();
     </script>
 </body>
 </html>

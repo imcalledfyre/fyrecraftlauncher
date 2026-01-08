@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>google classroom</title>
+    
+    <!-- css -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- font thing that kills the site if i dont use it for some fucking reason -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts: Inter & Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- more stuff for server -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+
+<style>
+
+    :root {
+
+        --bg-color: #f0f2f5;
+
+        /* Transparent reflection base */
+
+        --surface-color: rgba(255, 255, 255, 0.25);
+
+        --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+
+        --primary-gradient: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+
+        --accent-color: #ffffff;
+
+        --text-main: #2d3436;
+
+        --text-secondary: #4a4a4a;
+
+        --shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+
+    }
+
+
+
+    /* 3D Pastel Animated Mesh Background */
+
+    body {
+
+        font-family: 'Inter', sans-serif;
+
+        color: var(--text-main);
+
+        margin: 0;
+
+        min-height: 100vh;
+
+        background: linear-gradient(-45deg, #ffcfdf, #bfe9ff, #fffae3, #d4ffd6);
+
+        background-size: 400% 400%;
+
+        animation: gradientBG 15s ease infinite;
+
+        background-attachment: fixed;
+
+    }
+
+
+
+    @keyframes gradientBG {
+
+        0% { background-position: 0% 50%; }
+
+        50% { background-position: 100% 50%; }
+
+        100% { background-position: 0% 50%; }
+
+    }
+
+
+
+    /* Transparent Reflection (Glassmorphism) */
+
+    .glass-card {
+
+        background: var(--surface-color);
+
+        backdrop-filter: blur(16px) saturate(180%);
+
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+
+        border: var(--glass-border);
+
+        border-radius: 20px;
+
+        box-shadow: var(--shadow-soft);
+
+    }
+
+
+
+    .navbar-glass {
+
+        background: rgba(255, 255, 255, 0.3);
+
+        backdrop-filter: blur(12px);
+
+        -webkit-backdrop-filter: blur(12px);
+
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+
+        padding: 1rem 0;
+
+    }
+
+
+
+    .brand-text {
+
+        font-family: 'Poppins', sans-serif;
+
+        font-weight: 700;
+
+        background: var(--primary-gradient);
+
+        -webkit-background-clip: text;
+
+        -webkit-text-fill-color: transparent;
+
+        letter-spacing: -0.5px;
+
+    }
+
+
+
+    /* List Item Reflection Effects */
+
+    .game-list-item {
+
+        background: rgba(255, 255, 255, 0.1) !important;
+
+        cursor: pointer;
+
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+        border: none !important;
+
+        border-left: 4px solid transparent !important;
+
+        margin-bottom: 8px;
+
+        border-radius: 12px !important;
+
+        backdrop-filter: blur(5px);
+
+    }
+
+
+
+    .game-list-item:hover {
+
+        background: rgba(255, 255, 255, 0.4) !important;
+
+        transform: scale(1.02);
+
+        border-left-color: var(--accent-color) !important;
+
+        padding-left: 1.5rem !important;
+
+    }
+
+
+
+    .status-dot {
+
+        width: 10px; height: 10px;
+
+        border-radius: 50%;
+
+        display: inline-block;
+
+        background-color: rgba(0,0,0,0.1);
+
+    }
+
+
+
+    .status-dot.cached {
+
+        background-color: #00ff88;
+
+        box-shadow: 0 0 10px #00ff88;
+
+    }
+
+
+
+    /* Immersive & Debug Elements */
+
+    #immersive-frame-container {
+
+        position: fixed;
+
+        inset: 0;
+
+        z-index: 9999;
+
+        background: #000;
+
+        display: none;
+
+        flex-direction: column;
+
+    }
+
+
+
+    .immersive-header {
+
+        height: 50px;
+
+        background: rgba(20, 20, 20, 0.9);
+
+        backdrop-filter: blur(10px);
+
+        color: #fff;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        padding: 0 20px;
+
+    }
+
+
+
+    iframe.game-frame {
+
+        flex-grow: 1;
+
+        width: 100%;
+
+        border: none;
+
+    }
+
+
+
+    #debug-overlay {
+
+        position: fixed;
+
+        top: 10px; right: 10px;
+
+        width: 280px;
+
+        background: rgba(0, 0, 0, 0.7);
+
+        backdrop-filter: blur(10px);
+
+        color: #00ff00;
+
+        font-family: monospace;
+
+        padding: 15px;
+
+        border-radius: 12px;
+
+        z-index: 10000;
+
+        display: none;
+
+    }
+
+
+
+    /* Ad Containers with Glass style */
+
+    .jank-ad-container {
+
+        width: 100%;
+
+        height: 250px;
+
+        background: rgba(255, 255, 255, 0.2);
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        overflow: hidden;
+
+        border-radius: 12px;
+
+    }
+
+
+
+    .banner-jank-ad {
+
+        height: 90px;
+
+    }
+
+</style>
+</head>
+<body>
+
+    <!-- Debug Menu -->
+    <div id="debug-overlay">
+        <h6 class="fw-bold border-bottom border-success pb-2 mb-2">NETWORK DIAGNOSTICS</h6>
+        <div class="debug-row"><span>Requests Sent:</span> <span id="dbg-total" class="debug-val">0</span></div>
+        <div class="debug-row"><span>Cached (Hits):</span> <span id="dbg-cache" class="debug-val">0</span></div>
+        <div class="debug-row"><span>Network (DL):</span> <span id="dbg-network" class="debug-val">0</span></div>
+        <div class="mt-2 small text-muted text-end">Press '\' to toggle</div>
+    </div>
+
+    <!-- The "Artisanal" Ad Modal -->
+    <div class="modal fade" id="adModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center p-4">
+                <h5 class="fw-bold mb-3">LAUNCHING GAME!!</h5>
+                <div class="mb-4 bg-light rounded overflow-hidden position-relative">
+                    <div class="jank-ad-container" id="modal-ad-box">
+                        <img src="" alt="totally real ad" id="modal-ad-img">
+                    </div>
+                </div>
+                <p class="text-muted small fst-italic mb-3">dm on tiktok if u wanna put an ad here</p>
+                <button id="close-ad-btn" class="btn btn-primary rounded-pill w-75 mx-auto" disabled>
+                    Ready in <span id="ad-timer">2</span>s
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-glass sticky-top mb-4">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <i class="fas fa-layer-group text-primary fs-4"></i>
+                <span class="brand-text fs-4">FyreX Lite</span>
+                <span class="badge bg-light text-primary border rounded-pill ms-2 font-monospace" style="font-size: 0.7rem;">[NEW!!] 1.3.0</span>
+            </a>
+            
+            <div class="d-flex align-items-center gap-3">
+                <button onclick="openStorageModal()" class="btn btn-light rounded-pill border px-3 shadow-sm d-flex align-items-center gap-2 transition-hover">
+                    <i class="fas fa-hdd text-secondary"></i>
+                    <span class="d-none d-md-inline small fw-bold text-secondary">Manage Data</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4">
+        <div class="row g-4">
+            
+            <!-- Main Game List -->
+            <div class="col-lg-8 order-lg-1 order-2">
+                
+                <!-- Homepage "Ad" Banner -->
+                <div class="glass-card p-3 mb-4 text-center" id="homepage-banner-ad">
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                        <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">Sponsor Spotlight</small>
+                        <small class="text-muted fst-italic" style="font-size: 0.65rem;"></small>
+                    </div>
+                    <div class="mt-2 jank-ad-container banner-jank-ad">
+                        <img src="" id="banner-ad-img" alt="banner">
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                        <div>
+                            <h4 class="m-0 fw-bold" style="font-family: 'Poppins', sans-serif;">Library</h4>
+                            <p>We got a new hosting provider so please report any broken game to me via tiktok or in person!</p>
+                            <p>I hope you guys like the new site because this took a long time to make! (4 hours)</p>
+                            <p>Questions/comments? Message me on tiktok @imcalledfyre</p>
+                            <p class="text-muted small m-0">Alphabetical Index</p>
+                        </div>
+                        <div class="input-group w-auto">
+                            <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" id="search-input" class="form-control border-start-0 rounded-end-pill" placeholder="Filter games..." style="box-shadow: none;">
+                        </div>
+                    </div>
+
+                    <div id="game-list" class="list-group list-group-flush rounded-3 overflow-hidden border">
+                        <div class="p-4 text-center text-muted">Loading database...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4 order-lg-2 order-1">
+                <div class="glass-card p-0 mb-4 overflow-hidden">
+                    <div class="p-3 bg-light border-bottom">
+                        <h6 class="m-0 fw-bold text-uppercase text-secondary small">System Status</h6>
+                    </div>
+                    <div class="stat-item d-flex p-3 gap-3">
+                        <div class="stat-icon"><i class="fas fa-wifi text-primary"></i></div>
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-dark">Network</div>
+                            <div id="network-status-text" class="small text-success">Online</div>
+                        </div>
+                    </div>
+                    <div class="stat-item d-flex p-3 gap-3">
+                        <div class="stat-icon"><i class="fas fa-database text-primary"></i></div>
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-dark">Cached Games</div>
+                            <div class="small text-muted"><span id="cached-count-badge">0</span> installed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-3">
+                    <h6 class="fw-bold text-secondary text-uppercase small mb-3">Settings</h6>
+                    <button onclick="checkForUpdates()" id="update-btn" class="btn btn-outline-primary btn-sm w-100 mb-2 rounded-3 text-start">
+                        <i class="fas fa-cloud-download-alt me-2"></i> Check Updates
+                    </button>
+                    <button onclick="window.location.reload()" class="btn btn-outline-dark btn-sm w-100 mb-2 rounded-3 text-start">
+                        <i class="fas fa-sync-alt me-2"></i> Refresh UI
+                    </button>
+                    <button onclick="nukeStorage()" class="btn btn-danger btn-sm w-100 rounded-3 text-start bg-opacity-10 text-dark border-0">
+                        <i class="fas fa-bomb me-2"></i> Wipe All Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Details Modal -->
+    <div class="modal fade" id="detailsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-0 pb-0 position-absolute end-0 top-0 z-3">
+                    <button type="button" class="btn-close bg-white p-2 m-2 rounded-circle shadow-sm" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <div class="col-md-5 bg-light d-flex align-items-center justify-content-center" style="min-height: 300px; background-size: cover; background-position: center;" id="modal-game-img"></div>
+                        <div class="col-md-7 p-4 d-flex flex-column">
+                            <h2 class="fw-bold mb-1" id="modal-game-title">Game Title</h2>
+                            <div class="mb-3 d-flex gap-2 align-items-center">
+                                <span class="badge bg-secondary rounded-pill" id="modal-game-rating">★ 4.5</span>
+                                <span class="badge bg-light text-dark border" id="modal-game-status">Checking cache...</span>
+                            </div>
+                            <p class="text-secondary flex-grow-1" id="modal-game-desc">No description available.</p>
+                            <div class="d-grid gap-2">
+                                <button id="modal-btn-play" class="btn btn-primary btn-lg rounded-pill fw-bold">
+                                    <i class="fas fa-play me-2"></i> Play Now
+                                </button>
+                                <button id="modal-btn-download" class="btn btn-outline-dark rounded-pill">
+                                    <i class="fas fa-download me-2"></i> Download for Offline
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Iframe Launcher (Immersive Mode) -->
+    <div id="immersive-frame-container">
+        <div class="immersive-header">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-gamepad me-2 text-primary"></i>
+                <span id="active-game-title" class="fw-bold font-monospace">GAME_TITLE</span>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-light border-secondary" onclick="toggleFullscreen()">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button class="btn btn-sm btn-danger px-3" onclick="closeGame()">
+                    <i class="fas fa-times me-1"></i> EXIT
+                </button>
+            </div>
+        </div>
+        <iframe id="game-iframe" class="game-frame" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
+            sandbox="allow-downloads allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts">
+        </iframe>
+    </div>
+
+    <!-- Storage Manager Modal -->
+    <div class="modal fade" id="storageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Storage Manager</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="bg-light p-3 rounded-3 mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small fw-bold text-secondary">Total Usage</span>
+                            <span id="storage-usage-text" class="small fw-bold text-primary">0 MB</span>
+                        </div>
+                        <div class="progress progress-sm" style="height: 6px;">
+                            <div id="storage-bar" class="progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <h6 class="fw-bold mb-3 small text-uppercase text-muted">Installed Games</h6>
+                    <div id="storage-list" class="list-group list-group-flush"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GAMES_JSON_PATH = 'games.json';
+        const CACHE_NAME = 'game-cache-v1';
+        
+        // --- JANKY AD ASSETS CONFIG ---
+        // Since we can't scan directories in browser, list your images here
+        // If you add a new image to ./ads/, put the filename in this array
+        const AD_POOL = ['ad1.png', 'ad2.png']; 
+        
+        let gamesData = [];
+        let backslashCount = 0;
+        let debugPollInterval = null;
+        let debugVisible = false;
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => refreshCacheStatus())
+                    .catch(err => console.error('SW Fail:', err));
+            });
+        }
+
+        async function init() {
+            // Pick a random image for the homepage banner on load
+            updateAdImage('banner-ad-img');
+
+            document.addEventListener('keyup', (e) => {
+                if (e.key === '\\') {
+                    backslashCount++;
+                    if (backslashCount >= 5) {
+                        toggleDebugMenu();
+                        backslashCount = 0;
+                    }
+                } else {
+                    backslashCount = 0;
+                }
+            });
+
+            try {
+                let res = await fetch(GAMES_JSON_PATH);
+                if(!res || !res.ok) {
+                    if('caches' in window) {
+                        const cache = await caches.open(CACHE_NAME);
+                        res = await cache.match(GAMES_JSON_PATH);
+                    }
+                }
+                if(!res || !res.ok) throw new Error("Database MIA");
+                
+                gamesData = await res.json();
+                gamesData.sort((a, b) => a.name.localeCompare(b.name));
+                renderGames();
+                refreshCacheStatus();
+                setupNetworkListeners();
+            } catch (e) {
+                console.error(e);
+                document.getElementById('game-list').innerHTML = `<div class="p-4 text-center text-danger">Database Error</div>`;
+            }
+        }
+
+        function updateAdImage(elementId) {
+            const img = document.getElementById(elementId);
+            if (!img) return;
+            const randomAd = AD_POOL[Math.floor(Math.random() * AD_POOL.length)];
+            img.src = `./ads/${randomAd}`;
+            img.onerror = () => { img.src = 'https://placehold.co/600x250?text=Your+Ad+Here'; };
+        }
+
+        function showAd(callback) {
+            const modalEl = document.getElementById('adModal');
+            const modal = new bootstrap.Modal(modalEl);
+            const btn = document.getElementById('close-ad-btn');
+            
+            // Swap image every time we show the popup
+            updateAdImage('modal-ad-img');
+            
+            let seconds = 2; // User requested 2 seconds
+            btn.disabled = true;
+            btn.innerHTML = `Ready in <span id="ad-timer">${seconds}</span>s`;
+            
+            modal.show();
+            const interval = setInterval(() => {
+                seconds--;
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    btn.disabled = false;
+                    btn.innerHTML = "Play Now";
+                } else {
+                    document.getElementById('ad-timer').textContent = seconds;
+                }
+            }, 1000);
+            
+            btn.onclick = () => {
+                modal.hide();
+                if (callback) callback();
+            };
+        }
+
+        function renderGames(filter = '') {
+            const list = document.getElementById('game-list');
+            list.innerHTML = '';
+            const filtered = gamesData.filter(g => g.name.toLowerCase().includes(filter.toLowerCase()));
+            filtered.forEach(game => {
+                const a = document.createElement('a');
+                a.className = 'list-group-item list-group-item-action game-list-item d-flex justify-content-between align-items-center py-3 px-4';
+                a.onclick = () => openGameDetails(game);
+                a.innerHTML = `<span class="fw-bold text-dark">${game.name}</span><span id="status-dot-${game.directory}" class="status-dot"></span>`;
+                list.appendChild(a);
+            });
+            refreshCacheStatus();
+        }
+
+        function openGameDetails(game) {
+            document.getElementById('modal-game-title').textContent = game.name;
+            document.getElementById('modal-game-desc').textContent = game.description || "No description.";
+            
+            const imgContainer = document.getElementById('modal-game-img');
+            imgContainer.style.backgroundImage = `url('${getGameImage(game)}')`;
+            
+            const playBtn = document.getElementById('modal-btn-play');
+            playBtn.onclick = () => {
+                bootstrap.Modal.getInstance(document.getElementById('detailsModal')).hide();
+                launchGame(game);
+            };
+            
+            checkGameCacheStatus(game).then(updateModalButtons);
+            new bootstrap.Modal(document.getElementById('detailsModal')).show();
+        }
+
+        function launchGame(game) {
+            showAd(() => {
+                const container = document.getElementById('immersive-frame-container');
+                const iframe = document.getElementById('game-iframe');
+                document.getElementById('active-game-title').textContent = game.name;
+                iframe.src = getGameRoot(game);
+                container.style.display = 'flex';
+            });
+        }
+
+        function getGameRoot(game) {
+            let dir = game.directory || '';
+            if (dir.startsWith('./')) dir = dir.substring(2);
+            if (dir.endsWith('.html')) return `./${dir}`;
+            return `./${dir}/`;
+        }
+
+        function getGameImage(game) {
+            if (!game.image) return 'https://placehold.co/400x300?text=No+Preview';
+            return `${getGameRoot(game)}${game.image}`;
+        }
+
+        async function checkGameCacheStatus(game) {
+            if (!('caches' in window)) return false;
+            const cache = await caches.open(CACHE_NAME);
+            const match = await cache.match(new URL(getGameRoot(game), window.location.origin).href);
+            return !!match;
+        }
+
+        function updateModalButtons(isCached) {
+            const statusBadge = document.getElementById('modal-game-status');
+            statusBadge.textContent = isCached ? "Downloaded" : "Online";
+            statusBadge.className = isCached ? "badge bg-success" : "badge bg-secondary";
+        }
+
+        async function refreshCacheStatus() {
+            if (!('caches' in window)) return;
+            const cache = await caches.open(CACHE_NAME);
+            const keys = await cache.keys();
+            const cachedUrls = new Set(keys.map(k => k.url));
+            let count = 0;
+            gamesData.forEach(game => {
+                const dot = document.getElementById(`status-dot-${game.directory}`);
+                if(!dot) return;
+                const url = new URL(getGameRoot(game), window.location.origin).href;
+                if (cachedUrls.has(url)) {
+                    dot.classList.add('cached');
+                    count++;
+                }
+            });
+            document.getElementById('cached-count-badge').textContent = count;
+        }
+
+        function toggleDebugMenu() {
+            debugVisible = !debugVisible;
+            document.getElementById('debug-overlay').style.display = debugVisible ? 'block' : 'none';
+        }
+
+        function closeGame() {
+            document.getElementById('game-iframe').src = 'about:blank';
+            document.getElementById('immersive-frame-container').style.display = 'none';
+        }
+
+        function setupNetworkListeners() {
+            const update = () => {
+                const el = document.getElementById('network-status-text');
+                el.textContent = navigator.onLine ? 'Online' : 'Offline';
+                el.className = navigator.onLine ? 'small text-success' : 'small text-danger';
+            };
+            window.addEventListener('online', update);
+            window.addEventListener('offline', update);
+            update();
+        }
+
+        document.getElementById('search-input').addEventListener('input', (e) => renderGames(e.target.value));
+        init();
+    </script>
+</body>
+</html>
