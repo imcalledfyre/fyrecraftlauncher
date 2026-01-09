@@ -1,1 +1,13 @@
-<h1>Site disabled for maintnence</h1>>
+<!-- Button example -->
+<button onclick="openDomain('example.com')">Open Domain</button>
+
+<script>
+function openDomain(domain) {
+  // Create a temporary anchor element to force a real user-initiated navigation
+  const a = document.createElement('a');
+  a.href = `./verifier.html`;
+  a.target = '_blank';          // Open in a new tab/window
+  a.rel = 'noopener noreferrer'; // Security best practice
+  a.click();
+}
+</script>
