@@ -126,7 +126,7 @@
         let allGames = [];
         let filteredGames = [];
         let currentPage = 1;
-        const itemsPerPage = 12; // Lower number = faster load, less image spam
+        const itemsPerPage = 40; // bumped up for the heavy hitters
 
         async function fetchGameList() {
             try {
@@ -172,9 +172,13 @@
                     img = img.startsWith('/') ? `/images${img}` : `/images/${img}`;
                 }
 
+                // adding an onerror to hide the whole card if the image flops
                 card.innerHTML = `
                     <div class="img-container rounded-t-2xl relative">
-                        <img src="${img}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" loading="lazy" onerror="this.src='https://placehold.co/400x250/0f0f0f/444?text=No+Preview'">
+                        <img src="${img}" 
+                             class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" 
+                             loading="lazy" 
+                             onerror="this.closest('.game-card').style.display='none'">
                     </div>
                     <div class="p-4">
                         <h3 class="font-bold text-sm truncate text-zinc-100">${game.name}</h3>
