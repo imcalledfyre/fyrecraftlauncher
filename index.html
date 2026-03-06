@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FyreX Games V5</title>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <script>
@@ -12,234 +15,370 @@
             theme: {
                 extend: {
                     colors: {
-                        'fyre-bg': '#050505',
-                        'fyre-card': '#0f0f0f',
+                        'fyre-bg': '#030303',
+                        'fyre-card': 'rgba(255, 255, 255, 0.015)',
                         'fyre-primary': '#00f2ff',
-                        'fyre-border': '#1a1a1a',
+                        'fyre-border': 'rgba(255, 255, 255, 0.05)',
                     }
                 }
             }
         }
     </script>
 
-<style>
-    body {
-        background-color: #050505;
-        color: #e4e4e7;
-        font-family: 'Inter', system-ui, sans-serif;
-        overflow-x: hidden;
-    }
+    <style>
+        :root {
+            --fyre-bg: #030303;
+            --fyre-primary: #00f2ff;
+            --fyre-border: rgba(255, 255, 255, 0.05);
+            --fyre-card: rgba(255, 255, 255, 0.015);
 
-    /* no more aero glass, we are in our minimalist era */
-    .game-card {
-        background: #0f0f0f;
-        border: 1px solid #1a1a1a;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+            /* Orb Colors for FyreX Theme */
+            --orb-1: #00f2ff;
+            --orb-2: #0055ff;
+            --orb-3: #8a2be2;
+        }
 
-    .game-card:hover {
-        border-color: #00f2ff;
-        transform: translateY(-4px);
-        box-shadow: 0 10px 30px -10px rgba(0, 242, 255, 0.3);
-    }
+        body {
+            background-color: var(--fyre-bg);
+            color: #e4e4e7;
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+        }
 
-    .img-container {
-        aspect-ratio: 16/10;
-        background-color: #000;
-        overflow: hidden;
-        border-bottom: 1px solid #1a1a1a;
-    }
+        /* --- DYNAMIC BACKGROUND ORBS --- */
+        #dynamic-bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
 
-    /* this is needed for some reason and if it isnt there it breaks the code */
-    #game-iframe {
-        width: 100%;
-        height: 100%;
-        border: none;
-    }
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.5;
+        }
 
-    /* h a b m u r g e r */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #00f2ff; }
-</style>
+        .orb-1 {
+            width: 40vw; height: 40vw;
+            background: var(--orb-1);
+            top: -10%; left: -10%;
+            animation: float 25s ease-in-out infinite alternate;
+        }
+
+        .orb-2 {
+            width: 50vw; height: 50vw;
+            background: var(--orb-2);
+            bottom: -20%; right: -10%;
+            animation: float 20s ease-in-out infinite alternate-reverse;
+        }
+
+        .orb-3 {
+            width: 30vw; height: 30vw;
+            background: var(--orb-3);
+            top: 40%; left: 30%;
+            animation: float 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(10vw, 10vh) scale(1.2); }
+        }
+
+        /* --- UI STYLING & PURE CSS GLASS --- */
+        #home-view {
+            position: relative;
+            z-index: 10;
+        }
+
+        .glass-panel {
+            position: relative;
+            z-index: 10;
+            border: 1px solid var(--fyre-border);
+            background: var(--fyre-card);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-nav {
+            border-bottom: 1px solid var(--fyre-border);
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        /* Card Styling */
+        .game-card {
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 280px;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 242, 255, 0.4);
+            box-shadow: 0 10px 40px rgba(0, 242, 255, 0.15);
+        }
+
+        /* Adaptive Image Loading */
+        .game-img-container {
+            width: 100%;
+            aspect-ratio: 16/10;
+            background-color: #000;
+            overflow: hidden;
+            position: relative;
+            border-bottom: 1px solid var(--fyre-border);
+        }
+
+        /* Search Input */
+        .search-input {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--fyre-border);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(0, 242, 255, 0.5);
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+        }
+
+        /* --- IMMERSIVE OVERLAY (GAME RUNNING) --- */
+        #immersive-container {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--fyre-bg);
+            z-index: 10000;
+            flex-direction: column;
+        }
+
+        .immersive-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: rgba(5, 5, 5, 0.2);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--fyre-border);
+            z-index: 10001;
+        }
+
+        #game-iframe {
+            flex-grow: 1;
+            width: 100%;
+            border: none;
+            background: #000;
+        }
+    </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="antialiased">
 
-    <div id="main-view" class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-fyre-primary rounded-lg text-black">
+    <!-- Background Layer (Killed during gameplay to prevent lag) -->
+    <div id="dynamic-bg-layer">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Main Site View -->
+    <div id="home-view">
+        <!-- Navigation -->
+        <nav class="glass-panel glass-nav fixed w-full top-0 z-50">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <i class="ph-fill ph-game-controller text-3xl text-fyre-primary"></i>
+                    <span class="text-xl font-black tracking-widest text-white drop-shadow-lg">FYREX<span class="text-fyre-primary">V6</span></span>
                 </div>
-                <h1 class="text-3xl font-black italic tracking-tighter uppercase">
-                    FyreX Games <span class="text-fyre-primary">V5</span>
-                </h1>
-                <p>Not sure if any liddle schoolers are claiming that they made this site or not, but nobody at MMS made this game site, this site is indepenedantly hosted by tiktok.com/@imcalledfyre. This site is free to use and selling access to this website violates fyre network services terms of service</p>
             </div>
+        </nav>
 
-            <div class="relative w-full md:w-80">
-                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"></i>
-                <input type="text" id="game-search-input" placeholder="Search database..." 
-                       class="w-full bg-fyre-card border border-fyre-border py-3 pl-12 pr-4 rounded-xl focus:outline-none focus:border-fyre-primary transition-all text-sm">
-            </div>
-        </header>
+        <!-- Hero Section -->
+        <div class="pt-32 pb-16 min-h-[50vh] flex flex-col items-center justify-center relative px-6">
+            <h1 class="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500 mb-6 text-center tracking-tight drop-shadow-2xl">
+                WELCOME TO <br /> FyreX V6
+            </h1>
+            <p>This site is provided by tiktok.com/@imcalledfyre free of charge and selling access to this website or it's services is a violation o Fyre Network services and will result in your access to services being suspended.</p>
+        </div>
 
-        <!-- Grid -->
-        <div id="game-list" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-5">
-            <!-- loading state -->
-            <div class="col-span-full text-center py-20 text-zinc-500 animate-pulse">
-                Fetching manifests...
+        <!-- Search Section -->
+        <div class="sticky top-[73px] z-40 bg-white/5 backdrop-blur-2xl border-b border-t border-fyre-border py-4 mb-10 shadow-lg">
+            <div class="max-w-3xl mx-auto px-6 relative">
+                <i class="ph ph-magnifying-glass absolute left-10 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
+                <input type="text" id="game-search-input" placeholder="Search the archives..." class="search-input w-full py-4 pl-14 pr-6 rounded-2xl text-lg font-medium">
             </div>
         </div>
 
-        <!-- Pagination -->
-        <div id="pagination-controls" class="mt-12 mb-20 flex justify-center items-center gap-6">
-            <button id="prev-btn" onclick="changePage(-1)" class="p-3 rounded-xl bg-fyre-card border border-fyre-border hover:bg-zinc-800 disabled:opacity-20 disabled:pointer-events-none transition">
-                <i class="ph-bold ph-caret-left"></i>
-            </button>
-            <div class="flex flex-col items-center">
-                <span id="page-info" class="text-xs font-mono uppercase tracking-widest text-zinc-500">Page 1 of 1</span>
+        <!-- Games Grid -->
+        <div class="max-w-7xl mx-auto px-6 pb-40">
+            <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Game cards injected via Javascript -->
             </div>
-            <button id="next-btn" onclick="changePage(1)" class="p-3 rounded-xl bg-fyre-card border border-fyre-border hover:bg-zinc-800 disabled:opacity-20 disabled:pointer-events-none transition">
-                <i class="ph-bold ph-caret-right"></i>
-            </button>
         </div>
     </div>
 
-    <!-- Immersive Overlay -->
-    <div id="immersive-container" class="fixed inset-0 bg-black z-[100] hidden flex-col">
-        <div class="h-14 border-b border-zinc-800 flex items-center justify-between px-4 bg-zinc-950">
-            <div class="flex items-center gap-3">
-                <span class="text-fyre-primary font-black italic">FYREX</span>
-                <span id="immersive-game-title" class="text-zinc-400 text-sm border-l border-zinc-700 pl-3">Game Title</span>
+    <!-- Immersive Gameplay Container -->
+    <div id="immersive-container">
+        <div class="immersive-header">
+            <div class="flex items-center gap-4">
+                <button onclick="closeImmersive()" class="text-gray-400 hover:text-white hover:bg-white/10 p-2 rounded-lg transition-colors flex items-center justify-center">
+                    <i class="ph ph-x text-2xl"></i>
+                </button>
+                <div class="h-6 w-px bg-fyre-border"></div>
+                <h2 id="immersive-game-title" class="text-xl font-bold text-white tracking-wide drop-shadow-md">Game Title</h2>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="reloadGame()" class="p-2 text-zinc-400 hover:text-white"><i class="ph-bold ph-arrow-clockwise"></i></button>
-                <button onclick="toggleFullscreen()" class="p-2 text-zinc-400 hover:text-white"><i class="ph-bold ph-corners-out"></i></button>
-                <button onclick="closeImmersive()" class="ml-2 px-4 py-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg text-xs font-bold transition">EXIT</button>
+                <button onclick="reloadGame()" class="text-gray-400 hover:text-white hover:bg-white/10 p-2 rounded-lg transition-colors" title="Reload">
+                    <i class="ph ph-arrows-clockwise text-2xl"></i>
+                </button>
+                <button onclick="toggleFullscreen()" class="text-gray-400 hover:text-white hover:bg-white/10 p-2 rounded-lg transition-colors" title="Toggle Fullscreen">
+                    <i class="ph ph-corners-out text-2xl"></i>
+                </button>
             </div>
         </div>
-        <iframe id="game-iframe" src="about:blank" allowfullscreen allow="autoplay; gamepad; accelerometer; gyroscope"></iframe>
+        <iframe id="game-iframe" src="about:blank"></iframe>
     </div>
 
     <script>
         let allGames = [];
-        let filteredGames = [];
-        let currentPage = 1;
-        const itemsPerPage = 40; // bumped up for the heavy hitters
 
         async function fetchGameList() {
             try {
-                // In a real env, this fetches your local json
-                const response = await fetch('./games.json');
-                if (!response.ok) throw new Error("Database offline");
+                const response = await fetch('games.json');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
                 allGames = await response.json();
-                allGames.sort((a, b) => a.name.localeCompare(b.name));
-                filteredGames = [...allGames];
-                renderGames();
+
+                if (!allGames || allGames.length === 0) {
+                    throw new Error('Database is empty');
+                }
+
+                renderGames(allGames);
             } catch (error) {
-                console.error(error);
-                document.getElementById('game-list').innerHTML = `<p class="col-span-full text-center text-red-500">Failed to connect to database. Check console.</p>`;
+                console.error("Error loading games.json:", error);
+                const grid = document.getElementById('games-grid');
+                grid.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center text-center py-24 text-red-500 bg-red-950/10 backdrop-blur-md rounded-2xl border border-red-900/30">
+                        <i class="ph-fill ph-warning-octagon text-6xl mb-4"></i>
+                        <h2 class="text-3xl font-bold text-white mb-2">SYSTEM FAILURE</h2>
+                        <p class="text-red-300 max-w-md">Could not establish a connection to games.json. Please verify the database file exists in the root directory.</p>
+                    </div>
+                `;
             }
         }
 
-        function renderGames() {
-            const list = document.getElementById('game-list');
-            const pageInfo = document.getElementById('page-info');
-            const totalPages = Math.ceil(filteredGames.length / itemsPerPage) || 1;
-            
-            // Fix bounds if search reduces count
-            if (currentPage > totalPages) currentPage = totalPages;
-            
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const pageItems = filteredGames.slice(start, end);
+        function renderGames(games) {
+            const grid = document.getElementById('games-grid');
+            grid.innerHTML = '';
 
-            list.innerHTML = '';
-            
-            if (pageItems.length === 0) {
-                list.innerHTML = `<p class="col-span-full text-center py-20 text-zinc-600">No results found for that query.</p>`;
+            if(games.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-20">No games found matching your search.</p>`;
+                return;
             }
 
-            pageItems.forEach(game => {
+            games.forEach((game) => {
                 const card = document.createElement('div');
-                card.className = 'game-card rounded-2xl cursor-pointer group';
-                card.onclick = () => launchGame(game);
-                
-                // image logic 
-                let img = game.image;
-                if (!img.startsWith('http') && !img.startsWith('/images')) {
+                card.className = 'glass-panel game-card group'; // added 'group' for image hover effects
+                card.onclick = () => openImmersive(game);
+
+                // image logic stolen from the old version
+                let img = game.image || '';
+                if (img && !img.startsWith('http') && !img.startsWith('/images') && !img.startsWith('data:')) {
                     img = img.startsWith('/') ? `/images${img}` : `/images/${img}`;
                 }
 
                 // adding an onerror to hide the whole card if the image flops
                 card.innerHTML = `
-                    <div class="img-container rounded-t-2xl relative">
-                        <img src="${img}" 
-                             class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" 
-                             loading="lazy" 
+                    <div class="game-img-container">
+                        <img src="${img}"
+                             class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                             loading="lazy"
                              onerror="this.closest('.game-card').style.display='none'">
                     </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-sm truncate text-zinc-100">${game.name}</h3>
-                        <p class="text-[10px] text-zinc-500 uppercase mt-1 tracking-widest">${game.type || 'Web App'}</p>
+                    <div class="p-5 flex-grow flex flex-col justify-center bg-transparent relative z-10" style="text-shadow: 0 4px 12px rgba(0,0,0,0.9);">
+                        <h3 class="text-lg font-bold text-white mb-1 truncate">${game.name}</h3>
+                        <p class="text-xs text-fyre-primary font-medium flex items-center gap-1 mt-auto drop-shadow-lg">
+                            <span>Open game</span>
+                            <i class="ph-bold ph-caret-right"></i>
+                        </p>
                     </div>
                 `;
-                list.appendChild(card);
+                grid.appendChild(card);
             });
-
-            pageInfo.innerText = `Page ${currentPage} of ${totalPages}`;
-            document.getElementById('prev-btn').disabled = currentPage === 1;
-            document.getElementById('next-btn').disabled = currentPage === totalPages;
-        }
-
-        function changePage(dir) {
-            currentPage += dir;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            renderGames();
         }
 
         function handleSearch(query) {
-            filteredGames = allGames.filter(g => 
-                g.name.toLowerCase().includes(query.toLowerCase())
-            );
-            currentPage = 1; // reset to first page on search
-            renderGames();
+            const q = query.toLowerCase();
+            const filtered = allGames.filter(g => g.name.toLowerCase().includes(q));
+            renderGames(filtered);
         }
 
-        function launchGame(game) {
+        /* --- IMMERSIVE OVERLAY & PERFORMANCE LOGIC --- */
+
+        function openImmersive(game) {
             const container = document.getElementById('immersive-container');
             const iframe = document.getElementById('game-iframe');
+            const homeView = document.getElementById('home-view');
+            const bgLayer = document.getElementById('dynamic-bg-layer');
+
             document.getElementById('immersive-game-title').textContent = game.name;
-            iframe.src = game.directory;
+            iframe.src = game.directory || 'about:blank';
+
             container.style.display = 'flex';
             document.body.style.overflow = 'hidden';
+
+            homeView.style.display = 'none';
+            bgLayer.style.display = 'none';
         }
 
         function closeImmersive() {
             const container = document.getElementById('immersive-container');
             const iframe = document.getElementById('game-iframe');
+            const homeView = document.getElementById('home-view');
+            const bgLayer = document.getElementById('dynamic-bg-layer');
+
             iframe.src = 'about:blank';
+
             container.style.display = 'none';
             document.body.style.overflow = 'auto';
+
+            homeView.style.display = 'block';
+            bgLayer.style.display = 'block';
         }
 
         function reloadGame() {
             const iframe = document.getElementById('game-iframe');
             const currentSrc = iframe.src;
             iframe.src = 'about:blank';
-            setTimeout(() => { iframe.src = currentSrc; }, 10);
+            setTimeout(() => { iframe.src = currentSrc; }, 50);
         }
 
         function toggleFullscreen() {
             const container = document.getElementById('immersive-container');
             if (!document.fullscreenElement) {
-                container.requestFullscreen();
+                container.requestFullscreen().catch(err => {
+                    console.error(`Error attempting to enable full-screen: ${err.message}`);
+                });
             } else {
                 document.exitFullscreen();
             }
         }
 
+        // Initialization
         window.onload = () => {
             fetchGameList();
             document.getElementById('game-search-input').addEventListener('input', (e) => {
